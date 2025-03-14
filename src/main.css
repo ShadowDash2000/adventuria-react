@@ -1,10 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-blue: #20c7bf;
-  --color-green: #20c723;
-  --color-red: #c72020;
-  --color-purple: #783d73;
+    --color-blue: #20c7bf;
+    --color-green: #20c723;
+    --color-red: #c72020;
+    --color-purple: #783d73;
+
+    --animate-fadeInUp: fadeInUp .1s ease-in-out 1;
+
+    @keyframes fadeInUp {
+        0% {
+            transform: translateY(-20vh);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
 }
 
 #root {

@@ -10,7 +10,7 @@ export const Header = () => {
     return (
         <header className="flex justify-between items-end mt-1 px-10 pt-5">
             <div className="flex ml-1.8 gap-4">
-                <Button style={'bg-blue'} onClick={() => openModal(LoginModal)}>Вход</Button>
+                <Button style={'bg-blue'} onClick={() => openModal(<LoginModal/>)}>Вход</Button>
                 <Button style={'bg-green'}>Правила</Button>
             </div>
             <div>

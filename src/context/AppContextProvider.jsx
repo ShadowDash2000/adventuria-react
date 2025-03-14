@@ -1,4 +1,4 @@
-import {useContext, createContext, useMemo, useEffect, useState} from "react";
+import {useContext, createContext, useMemo, useEffect} from "react";
 import PocketBase from "pocketbase";
 import {useUsersStore} from "../pocketbase/users.js";
 
@@ -13,7 +13,7 @@ export const AppContextProvider = ({children}) => {
         users.fetch();
     }, []);
 
-    return <AppContext.Provider value={{users}}>
+    return <AppContext.Provider value={{pb, users}}>
         {children}
     </AppContext.Provider>;
 }

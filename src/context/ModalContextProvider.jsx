@@ -19,7 +19,11 @@ export const ModalContextProvider = ({children}) => {
             <Modal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
-                appElement={document.body}
+                appElement={document.getElementById('root')}
+                className="bg-[#303e54] rounded-xl px-10 py-6 animate-fadeInUp"
+                overlayClassName="overflow-y-auto fixed p-20 inset-0 bg-black/[.4]"
+                bodyOpenClassName="scroll-auto overflow-hidden"
+                portalClassName="w-full"
             >
                 {modalContent}
             </Modal>
