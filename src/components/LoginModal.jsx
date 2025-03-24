@@ -1,32 +1,68 @@
-import {Button} from "./Button.jsx";
 import {useAppContext} from "../context/AppContextProvider.jsx";
-import {useModalContext} from "../context/ModalContextProvider.jsx";
+import {useState} from "react";
+import {CloseButton, Dialog, Portal, Button, Input, Field} from "@chakra-ui/react";
+import {useForm} from "react-hook-form";
+import {PasswordInput} from "./ui/password-input.jsx";
 
 export const LoginModal = () => {
     const {pb} = useAppContext();
-    const {closeModal} = useModalContext();
+    const [open, setOpen] = useState(false);
+    const {register, handleSubmit, formState: {errors}} = useForm();
 
-    const submitHandler = async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData(e.target);
+    const onSubmit = async (values) => {
         const authResult = await pb.collection('users').authWithPassword(
-            formData.get('login'),
-            formData.get('password'),
+            values['login'],
+            values['password'],
         );
 
-        if (authResult.token) closeModal();
+        if (authResult.token) setOpen(false);
     }
 
     return (
-        <>
-            <h2 className="text-center text-6xl font-bold pb-5 uppercase">Вход</h2>
-            <form onSubmit={submitHandler} className="flex flex-col items-center justify-center gap-5">
-                <input placeholder={'Логин'} name={'login'} type={'text'} className="bg-white text-black rounded-sm"/>
-                <input placeholder={'Пароль'} name={'password'} type={'password'}
-                       className="bg-white text-black rounded-sm"/>
-                <Button>Войти</Button>
-            </form>
-        </>
+        <Dialog.Root lazyMount open={open} onOpenChange={(e) => {
+            setOpen(e.open)
+        }}>
+            <Dialog.Trigger asChild>
+                <Button colorPalette={'blue'} rounded={'lg'}>Вход</Button>
+            </Dialog.Trigger>
+            <Portal>
+                <Dialog.Backdrop></Dialog.Backdrop>
+                <Dialog.Positioner>
+                    <Dialog.Content>
+                        <Dialog.Header>
+                            <Dialog.Title>Вход</Dialog.Title>
+                        </Dialog.Header>
+                        <Dialog.Body>
+                            <form onSubmit={handleSubmit(onSubmit)} className={'flex flex-col gap-3'}>
+                                <Field.Root required>
+                                    <Field.Label>
+                                        Логин <Field.RequiredIndicator/>
+                                    </Field.Label>
+                                    <Input
+                                        placeholder={'Логин'}
+                                        {...register('login', {required: true})}
+                                        aria-invalid={errors.login ? "true" : "false"}
+                                    />
+                                </Field.Root>
+                                <Field.Root required>
+                                    <Field.Label>
+                                        Пароль <Field.RequiredIndicator/>
+                                    </Field.Label>
+                                    <PasswordInput
+                                        placeholder={'Пароль'}
+                                        {...register('password', {required: true})}
+                                        aria-invalid={errors.password ? "true" : "false"}
+                                    />
+                                </Field.Root>
+                                <Button type={'submit'} colorPalette={'blue'} rounded={'lg'}>Войти</Button>
+                            </form>
+                        </Dialog.Body>
+                        <Dialog.CloseTrigger asChild>
+                            <CloseButton size="sm"/>
+                        </Dialog.CloseTrigger>
+                    </Dialog.Content>
+                </Dialog.Positioner>
+            </Portal>
+        </Dialog.Root>
     )
 }

@@ -5,7 +5,7 @@ import {useUsersStore} from "../pocketbase/users.js";
 const AppContext = createContext(null);
 
 export const AppContextProvider = ({children}) => {
-    const pb = useMemo(() => new PocketBase('http://127.0.0.1:8090/'), []);
+    const pb = useMemo(() => new PocketBase(import.meta.env.VITE_PB_URL), []);
     const users = useUsersStore();
 
     useEffect(() => {
@@ -13,7 +13,7 @@ export const AppContextProvider = ({children}) => {
         users.fetch();
     }, []);
 
-    return <AppContext.Provider value={{pb, users}}>
+    return <AppContext.Provider value={{pb}}>
         {children}
     </AppContext.Provider>;
 }
