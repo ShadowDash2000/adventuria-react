@@ -23,4 +23,5 @@ export const useUsersStore = create((set, get) => ({
         set({users: usersMap});
     },
     getById: (id) => get().users.get(id),
+    getByLogin: (login) => get().users.get(login),
 }))

@@ -1,7 +1,7 @@
 import {Outlet} from "react-router-dom";
 import {Header} from "./Header.jsx";
 import {AppContextProvider} from "../context/AppContextProvider.jsx";
-import {defaultConfig, defineConfig, createSystem, ChakraProvider} from "@chakra-ui/react";
+import {defaultConfig, defineConfig, createSystem, ChakraProvider, Flex} from "@chakra-ui/react";
 import {ColorModeProvider} from "./ui/color-mode.jsx";
 
 export const Layout = () => {
@@ -28,9 +28,16 @@ export const Layout = () => {
             <ColorModeProvider {...colorModeConfig} />
             <AppContextProvider>
                 <Header/>
-                <main>
+                <Flex
+                    as="main"
+                    justify="center"
+                    w="100%"
+                    overflowX="hidden"
+                    p="0"
+                    m="0"
+                >
                     <Outlet/>
-                </main>
+                </Flex>
             </AppContextProvider>
         </ChakraProvider>
     )
