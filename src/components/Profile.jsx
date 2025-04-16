@@ -1,13 +1,16 @@
-import {useUsersStore} from "../pocketbase/users.js";
+import {UserActions} from "./UserActions.jsx";
+import {Suspense} from "react";
 import {useParams} from "react-router-dom";
+import {LuLoader} from "react-icons/lu";
 
 export const Profile = () => {
     const login = useParams()?.login;
-    const user = useUsersStore(state => state.getByLogin(login));
 
     return (
         <>
-
+            <Suspense fallback={<LuLoader/>}>
+                <UserActions login={login}/>
+            </Suspense>
         </>
     )
 }

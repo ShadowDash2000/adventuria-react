@@ -1,9 +1,9 @@
 import {Flex, For, Grid, GridItem, Image} from "@chakra-ui/react";
 import {Cell} from "./Cell.jsx";
-import {useCellsStore} from "../pocketbase/cells.js";
+import {useCellsBoard} from "../pocketbase/cells.js";
 
 export const Board = () => {
-    const cells = useCellsStore();
+    const {cells} = useCellsBoard();
 
     return (
         <Flex
@@ -34,7 +34,7 @@ export const Board = () => {
                 mb="3.6%"
                 gap=".6vw"
             >
-                <For each={cells.getBoardFormatted()}>
+                <For each={cells}>
                     {(lineElements) => (
                         <Grid autoFlow="column">
                             <For each={lineElements}>

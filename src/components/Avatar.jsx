@@ -1,17 +1,24 @@
 import {Avatar, defineStyle} from "@chakra-ui/react";
+import {useAppContext} from "../context/AppContextProvider.jsx";
 
-export const UserAvatar = ({src = '', color = 'white'}) => {
+export const UserAvatar = ({user}) => {
+    const {pb} = useAppContext();
+
     const ringCss = defineStyle({
         outlineWidth: "3px",
-        outlineColor: "colorPalette.500",
+        outlineColor: user?.color ? user.color : 'white',
         outlineOffset: "2px",
         outlineStyle: "solid",
     })
 
     return (
-        <Avatar.Root css={ringCss} colorPalette={color}>
+        <Avatar.Root css={ringCss}>
             <Avatar.Fallback></Avatar.Fallback>
-            <Avatar.Image src={src}></Avatar.Image>
+            {
+                user?.avatar ?
+                    <Avatar.Image src={pb.files.getURL(user, user.avatar)}/>
+                    : null
+            }
         </Avatar.Root>
     )
 }

@@ -1,27 +1,41 @@
-import {create} from "zustand";
+import {useAppContext} from "../context/AppContextProvider.jsx";
+import {useSuspenseQuery} from "@tanstack/react-query";
 
 const collectionName = 'users';
 
-export const useUsersStore = create((set, get) => ({
-    pb: null,
-    users: new Map(),
+export const useUsers = () => {
+    const {pb} = useAppContext();
 
-    setPocketBase: (pb) => set({pb: pb}),
-    fetch: async () => {
-        const users = await get().pb.collection(collectionName).getFullList({
-            sort: '-points',
-        });
+    return useSuspenseQuery({
+        queryKey: ['users'],
+        queryFn: async () => {
+            const users = await pb.collection(collectionName).getFullList();
 
-        const usersMap = new Map();
-        users.forEach((user) => usersMap.set(user.id, user));
+            const usersMap = new Map();
+            users.forEach((user) => usersMap.set(user.id, user));
+            return usersMap;
+        },
+    });
+}
 
-        set({users: usersMap});
-    },
-    update: (user) => {
-        const usersMap = new Map(get().users);
-        usersMap.set(user.id, user);
-        set({users: usersMap});
-    },
-    getById: (id) => get().users.get(id),
-    getByLogin: (login) => get().users.get(login),
-}))
+export const useUserByLogin = (login) => {
+    const {data: users, ...rest} = useUsers();
+    let userRes = null;
+
+    if (users) {
+        for (const [id, user] of users.entries()) {
+            if (user.name === login) {
+                userRes = user;
+                break;
+            }
+        }
+    }
+
+    return {user: userRes, ...rest};
+}
+
+export const useUserById = (id) => {
+    const {data: users, ...rest} = useUsers();
+    const user = users?.get(id);
+    return {user, ...rest};
+}

@@ -5,7 +5,7 @@ import {useForm} from "react-hook-form";
 import {PasswordInput} from "./ui/password-input.jsx";
 
 export const LoginModal = () => {
-    const {pb} = useAppContext();
+    const {pb, setUser} = useAppContext();
     const [open, setOpen] = useState(false);
     const {register, handleSubmit, formState: {errors}} = useForm();
 
@@ -15,7 +15,10 @@ export const LoginModal = () => {
             values['password'],
         );
 
-        if (authResult.token) setOpen(false);
+        if (authResult.token) {
+            setOpen(false);
+            setUser(authResult.record);
+        }
     }
 
     return (

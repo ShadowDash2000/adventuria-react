@@ -1,49 +1,45 @@
-import {create} from "zustand";
+import {useAppContext} from "../context/AppContextProvider.jsx";
+import {useSuspenseQuery} from "@tanstack/react-query";
 
 const collectionName = 'cells';
 
-export const useCellsStore = create((set, get) => ({
-    pb: null,
-    cells: new Map(),
+export const useCells = () => {
+    const {pb} = useAppContext();
 
-    setPocketBase: (pb) => set({pb: pb}),
-    fetch: async () => {
-        const cells = await get().pb.collection(collectionName).getFullList({
-            sort: 'sort',
-        });
+    return useSuspenseQuery({
+        queryKey: ['cells'],
+        queryFn: async () => {
+            const cells = await pb.collection(collectionName).getFullList();
 
-        const cellsMap = new Map();
-        cells.forEach((cell) => cellsMap.set(cell.id, cell));
+            const cellsMap = new Map();
+            cells.forEach((cell) => cellsMap.set(cell.id, cell));
+            return cellsMap;
+        },
+    });
+}
 
-        set({cells: cellsMap});
-    },
-    update: (cell) => {
-        const cellsMap = new Map(get().cells);
-        cellsMap.set(cell.id, cell);
-        set({cells: cellsMap});
-    },
-    getById: (id) => get().cells.get(id),
-    getBoardFormatted: () => {
-        const lineElements = 7;
-        const result = [];
-        let line = 0;
-        let currentLine = [];
-        let elementIndex = 1;
+export const useCellsBoard = () => {
+    const {data: cells, ...rest} = useCells();
 
-        for (const cell of get().cells.values()) {
-            currentLine[elementIndex] = cell;
+    const lineElements = cells.size > 7 ? 7 : cells.size;
+    const result = [];
+    let line = 0;
+    let currentLine = [];
+    let elementIndex = 1;
 
-            if (elementIndex % lineElements === 0) {
-                if (line % 2 === 1) currentLine.reverse();
+    for (const cell of cells.values()) {
+        currentLine[elementIndex] = cell;
 
-                result.push(currentLine);
-                currentLine = [];
-                line++;
-            }
+        if (elementIndex % lineElements === 0) {
+            if (line % 2 === 1) currentLine.reverse();
 
-            elementIndex++;
+            result.push(currentLine);
+            currentLine = [];
+            line++;
         }
 
-        return result.reverse();
-    },
-}))
+        elementIndex++;
+    }
+
+    return {cells: result.reverse(), ...rest};
+}

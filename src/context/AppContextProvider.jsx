@@ -1,24 +1,22 @@
-import {useContext, createContext, useMemo, useEffect} from "react";
+import {useContext, createContext, useMemo, useEffect, useState} from "react";
 import PocketBase from "pocketbase";
-import {useUsersStore} from "../pocketbase/users.js";
-import {useCellsStore} from "../pocketbase/cells.js";
 
 const AppContext = createContext(null);
 
 export const AppContextProvider = ({children}) => {
     const pb = useMemo(() => new PocketBase(import.meta.env.VITE_PB_URL), []);
-    const users = useUsersStore();
-    const cells = useCellsStore();
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        users.setPocketBase(pb);
-        cells.setPocketBase(pb);
-
-        users.fetch();
-        cells.fetch();
+        if (pb.authStore.isValid) {
+            pb.collection('users').authRefresh();
+            setUser(pb.authStore.record);
+        } else {
+            pb.authStore.clear();
+        }
     }, []);
 
-    return <AppContext.Provider value={{pb}}>
+    return <AppContext.Provider value={{pb, user, setUser}}>
         {children}
     </AppContext.Provider>;
 }
