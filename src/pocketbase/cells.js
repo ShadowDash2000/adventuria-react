@@ -9,7 +9,9 @@ export const useCells = () => {
     return useSuspenseQuery({
         queryKey: ['cells'],
         queryFn: async () => {
-            const cells = await pb.collection(collectionName).getFullList();
+            const cells = await pb.collection(collectionName).getFullList({
+                filter: 'isActive = true',
+            });
 
             const cellsMap = new Map();
             cells.forEach((cell) => cellsMap.set(cell.id, cell));

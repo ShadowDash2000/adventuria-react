@@ -1,6 +1,7 @@
 import {Box, Image} from "@chakra-ui/react";
 import {useAppContext} from "../context/AppContextProvider.jsx";
 import {CellTooltip} from "./CellTooltip.jsx";
+import {CellInfo} from "./CellInfoModal.jsx";
 
 export const Cell = ({cell, width, height}) => {
     const {pb} = useAppContext();
@@ -17,15 +18,7 @@ export const Cell = ({cell, width, height}) => {
                 height="100%"
             />
             <CellTooltip cell={cell}>
-                <Box
-                    top={0}
-                    zIndex={2}
-                    position="absolute"
-                    borderWidth=".2vw"
-                    borderColor={{base: "transparent", _hover: "border.inverted"}}
-                    width={width}
-                    height={height}
-                />
+                <CellInfo cell={cell} width={width} height={height}/>
             </CellTooltip>
         </Box>
     )
