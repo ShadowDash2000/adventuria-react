@@ -4,7 +4,6 @@ import {useQuery} from "@tanstack/react-query";
 import {LuLoader} from "react-icons/lu";
 import {Text} from "@chakra-ui/react";
 import type {ListOptions, ListResult, RecordModel, RecordService, ClientResponseError} from "pocketbase";
-import type {PlaylistRecord} from "@shared/types/types";
 import NotFound from "../components/pages/404";
 
 interface CollectionListProviderProps<T extends RecordModel> {
@@ -34,7 +33,7 @@ export const CollectionListProvider = <T extends RecordModel>(
     const [options, setOptions] = useState(opts);
     const {isPending, isError, data, error} = useQuery({
         queryKey: [collection.collectionIdOrName, page, options],
-        queryFn: async () => await collection.getList<PlaylistRecord>(page, pageSize, options),
+        queryFn: async () => await collection.getList<T>(page, pageSize, options),
         retry: (failureCount, e: any) => {
             const error = e as ClientResponseError;
             if (error.status === 404) return false;

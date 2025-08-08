@@ -1,9 +1,9 @@
-import {Action} from "./Action";
+import {UserAction} from "./UserAction";
 import {For} from "@chakra-ui/react";
 import {useCollectionListInfinite} from "@context/CollectionListInfiniteContext";
 import {ActionRecord} from "@shared/types/action";
 
-export const UserActions = () => {
+export const UserActionsList = () => {
     const {data: actions} = useCollectionListInfinite<ActionRecord>();
 
     if (!actions) {
@@ -18,7 +18,7 @@ export const UserActions = () => {
         <For each={actions.pages}>
             {(list) => (
                 list.items.map((action) => (
-                    <Action key={action.id} action={action}/>
+                    <UserAction key={action.id} action={action}/>
                 ))
             )}
         </For>

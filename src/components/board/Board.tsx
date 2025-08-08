@@ -9,8 +9,8 @@ import {useCellsBoard} from "@shared/helpers/cells";
 export const Board = () => {
     const {data: cells} = useCollectionListAll<CellRecord>();
     const cellsFormatted = useCellsBoard(cells);
-    const boardRef = useRef(null);
-    const boardBottomRef = useRef(null);
+    const boardRef = useRef<HTMLDivElement>(null);
+    const boardBottomRef = useRef<HTMLDivElement>(null);
 
     const scrollToTop = () => {
         boardRef.current?.scrollIntoView();

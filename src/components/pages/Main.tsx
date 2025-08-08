@@ -1,4 +1,4 @@
-import {Board} from "../Board";
+import {Board} from "../board/Board";
 import {CollectionListAllProvider} from "@context/CollectionListAllContext";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 

@@ -7,7 +7,7 @@ import {useCollectionListAll} from "@context/CollectionListAllContext";
 
 export const HeaderTabs = () => {
     const params = useParams();
-    const [tabValue, setTabValue] = useState(params?.login || 'main');
+    const [tabValue, setTabValue] = useState(params.login || 'main');
     const {data: users} = useCollectionListAll<UserRecord>();
 
     return (
