@@ -61,7 +61,7 @@ Adopt Chakra UI components and style props instead of raw HTML elements and inli
 Example snippets:
 
 ```tsx
-import { Box, HStack, Button, Card, Text } from "@chakra-ui/react";
+import {Box, HStack, Button, Card, Text} from "@chakra-ui/react";
 
 <Card.Root>
   <Card.Body>

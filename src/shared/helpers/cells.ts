@@ -1,7 +1,7 @@
 import {CellRecord} from "@shared/types/cell";
 
-export const useCellsBoard = (cells: CellRecord[]) => {
-    const lineElements = cells.length > 7 ? 7 : cells.length;
+export const useCellsBoard = (cells: CellRecord[], lineSize = 7) => {
+    const lineElements = Math.min(cells.length, lineSize);
     const result = [];
     let line = 0;
     let currentLine = [];
