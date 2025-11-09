@@ -34,7 +34,6 @@ export const Board = () => {
                 position="absolute"
                 zIndex={2}
                 top="0"
-                transform="translateX(-50%)"
                 rounded="full"
             >
                 <LuArrowBigDown/>
@@ -44,7 +43,6 @@ export const Board = () => {
                 position="absolute"
                 zIndex={2}
                 bottom="0"
-                transform="translateX(-50%)"
                 rounded="full"
             >
                 <LuArrowBigUp/>

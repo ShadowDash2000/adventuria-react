@@ -1,8 +1,8 @@
-import {Button} from "@chakra-ui/react";
 import {Modal} from "@ui/modal"
 import {Rules} from "./Rules";
 import {CollectionOneFilterProvider} from "@context/CollectionOneFilterContext";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
+import {Button} from "@ui/button";
 
 export const RulesModalButton = () => {
     const {pb} = useAppContext();

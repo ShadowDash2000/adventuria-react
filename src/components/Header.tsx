@@ -2,28 +2,31 @@ import {ButtonGroup, Flex} from "@chakra-ui/react";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {LoginModalButton} from "./LoginModalButton";
 import {HeaderTabs} from "./HeaderTabs";
-import {Avatar} from "./Avatar";
 import {CollectionListAllProvider} from "@context/CollectionListAllContext";
 import {RulesModalButton} from "./RulesModalButton";
+import {Button} from "@ui/button";
 
 export const Header = () => {
-    const {pb, user, isAuth} = useAppContext();
+    const {pb, isAuth, logout} = useAppContext();
 
     return (
         <Flex
             py={4}
             px={28}
-            justify="space-between"
-            align="items-end"
+            justify="center"
+            gap={5}
         >
-            <ButtonGroup size={'md'}>
-                {isAuth ? null : <LoginModalButton/>}
-                <RulesModalButton/>
-            </ButtonGroup>
             <CollectionListAllProvider collection={pb.collection('users')}>
                 <HeaderTabs/>
             </CollectionListAllProvider>
-            {isAuth && user ? <Avatar user={user}/> : null}
+            <ButtonGroup size={'md'}>
+                {isAuth ? null : <LoginModalButton/>}
+                <RulesModalButton/>
+                {isAuth
+                    ? <Button colorPalette="red" onClick={() => logout()}>Выйти</Button>
+                    : null
+                }
+            </ButtonGroup>
         </Flex>
     )
 }

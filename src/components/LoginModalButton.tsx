@@ -1,9 +1,10 @@
-import {Button, Input, Field, Flex} from "@chakra-ui/react";
+import {Input, Field, Flex} from "@chakra-ui/react";
 import {useForm} from "react-hook-form";
 import {PasswordInput} from "@ui/password-input/password-input.js";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import type {UserRecord} from "@shared/types/user";
 import {Modal} from "@ui/modal";
+import {Button} from "@ui/button";
 
 type LoginFormValues = {
     login: string

@@ -34,11 +34,11 @@ const queryClient = new QueryClient();
 createRoot(document.getElementById('root')!).render(
     <ChakraProvider value={system}>
         <ColorModeProvider {...colorModeConfig} />
-        <AppContextProvider>
-            <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
+            <AppContextProvider>
                 <RouterProvider router={router}/>
-                <ReactQueryDevtools initialIsOpen={false}/>
-            </QueryClientProvider>
-        </AppContextProvider>
+            </AppContextProvider>
+            <ReactQueryDevtools initialIsOpen={false}/>
+        </QueryClientProvider>
     </ChakraProvider>
 )
