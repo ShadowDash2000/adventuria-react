@@ -4,13 +4,14 @@ import {CollectionListInfiniteProvider} from "@context/CollectionListInfiniteCon
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {Sort} from "@shared/hook/useSort";
 import {CollectionOneFilterProvider} from "@context/CollectionOneFilterContext";
+import {Flex} from "@chakra-ui/react";
 
 export const Profile = () => {
     const {pb} = useAppContext();
     const login = useParams().login;
 
     return (
-        <>
+        <Flex w={{base: '60vw', mdDown: '100%'}}>
             <CollectionOneFilterProvider
                 collection={pb.collection('users')}
                 filter={`name = "${login}"`}
@@ -21,11 +22,12 @@ export const Profile = () => {
                     initialSort={new Map([['created', Sort.DESC]])}
                     options={{
                         filter: `user.name = "${login}"`,
+                        expand: 'game,cell',
                     }}
                 >
                     <UserActionsList/>
                 </CollectionListInfiniteProvider>
             </CollectionOneFilterProvider>
-        </>
+        </Flex>
     )
 }

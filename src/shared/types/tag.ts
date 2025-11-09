@@ -1,9 +1,10 @@
-import type {AuthRecord} from "pocketbase";
+import type {RecordModel} from "pocketbase";
 import type {IsoDateString} from "@shared/types/pocketbase";
 
-export type UserRecord = {
+export type TagRecord = {
     created: IsoDateString
     updated: IsoDateString
+    id_db: number
     name: string
-    avatar?: string
-} & AuthRecord
+    checksum: string
+} & RecordModel

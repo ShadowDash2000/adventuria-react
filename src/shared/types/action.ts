@@ -1,5 +1,8 @@
 import type {RecordModel} from "pocketbase";
-import {IsoDateString, RecordIdString} from "@shared/types/pocketbase";
+import type {IsoDateString, RecordIdString} from "@shared/types/pocketbase";
+import type {GameRecord} from "@shared/types/game";
+import type {UserRecord} from "@shared/types/user";
+import type {CellRecord} from "@shared/types/cell";
 
 export type ActionRecord = {
     created: IsoDateString
@@ -7,6 +10,14 @@ export type ActionRecord = {
     user: RecordIdString
     cell: RecordIdString
     type: string
-    value: string
+    game: RecordIdString
     comment: string
+    diceRoll: number
+    expand?: ActionRecordExpand
 } & RecordModel
+
+export type ActionRecordExpand = {
+    user: UserRecord
+    cell: CellRecord
+    game?: GameRecord
+}

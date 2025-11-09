@@ -1,5 +1,5 @@
 import type {RecordModel} from "pocketbase";
-import {IsoDateString, RecordIdString} from "@shared/types/pocketbase";
+import type {IsoDateString, RecordIdString} from "@shared/types/pocketbase";
 
 export type CellRecord = {
     created: IsoDateString

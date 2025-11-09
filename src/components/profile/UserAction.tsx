@@ -1,22 +1,21 @@
-import {Button, Card, HStack, Box, Text} from "@chakra-ui/react";
+import {Button, Card, HStack, Box, Text, Image, VStack, DataList, Stack} from "@chakra-ui/react";
 import {LuPencil} from "react-icons/lu";
 import HTMLReactParser from "html-react-parser";
 import {FC, useEffect, useState} from "react";
-import {Avatar} from "../Avatar";
 import {ActionRecord} from "@shared/types/action";
-import {useCollectionOneFilter} from "@context/CollectionOneFilterContext";
-import {UserRecord} from "@shared/types/user";
 import {EditorContent, useEditor} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
+import {formatDateLocalized} from "@shared/helpers/helper";
+import {ActionFactory} from "@shared/types/actions/action-factory";
 
 type ActionProps = {
     action: ActionRecord;
 }
 
 export const UserAction: FC<ActionProps> = ({action}) => {
-    const {data: profileUser} = useCollectionOneFilter<UserRecord>();
     const {pb, user: authUser, isAuth} = useAppContext();
+    const actionController = ActionFactory.get(action.type);
 
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -71,25 +70,50 @@ export const UserAction: FC<ActionProps> = ({action}) => {
     };
 
     return (
-        <Card.Root>
-            <Card.Body>
-                <HStack mb="6" gap="3">
-                    <Avatar user={profileUser}/>
-                </HStack>
-                <Card.Description>
-                    {isEditing ? (
-                        <Box borderWidth="1px" borderColor="gray.200" rounded="md" p="2">
-                            <EditorContent editor={editor}/>
-                        </Box>
-                    ) : (
-                        HTMLReactParser(comment)
-                    )}
-                    {!!error && (
-                        <Text color="red.500" mt="2" fontSize="xs">
-                            {error}
-                        </Text>
-                    )}
-                </Card.Description>
+        <Card.Root w="100%">
+            <Card.Body pb={0}>
+                <Stack
+                    align={{base: 'flex-start"', mdDown: 'center'}}
+                    direction={{base: 'row', mdDown: 'column'}}
+                >
+                    <VStack>
+                        <Image
+                            src={action.expand?.game?.cover}
+                        />
+                        <Text>{action.expand?.game?.name}</Text>
+                    </VStack>
+                    <VStack>
+                        {actionController.statusNode()}
+                        <DataList.Root orientation="horizontal">
+                            <DataList.Item key="cell">
+                                <DataList.ItemLabel>Клетка</DataList.ItemLabel>
+                                <DataList.ItemValue>{action.expand?.cell.name}</DataList.ItemValue>
+                            </DataList.Item>
+                            <DataList.Item key="dice-roll">
+                                <DataList.ItemLabel>Бросок кубика</DataList.ItemLabel>
+                                <DataList.ItemValue>{action.diceRoll}</DataList.ItemValue>
+                            </DataList.Item>
+                            <DataList.Item key="created">
+                                <DataList.ItemLabel>Начало действия</DataList.ItemLabel>
+                                <DataList.ItemValue>{formatDateLocalized(action.created)}</DataList.ItemValue>
+                            </DataList.Item>
+                        </DataList.Root>
+                        <Card.Description>
+                            {isEditing ? (
+                                <Box borderWidth="1px" borderColor="gray.200" rounded="md" p="2">
+                                    <EditorContent editor={editor}/>
+                                </Box>
+                            ) : (
+                                HTMLReactParser(comment)
+                            )}
+                            {!!error && (
+                                <Text color="red.500" mt="2" fontSize="xs">
+                                    {error}
+                                </Text>
+                            )}
+                        </Card.Description>
+                    </VStack>
+                </Stack>
             </Card.Body>
             <Card.Footer>
                 {isEditing ? (
