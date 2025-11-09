@@ -10,13 +10,15 @@ interface CollectionListProviderProps<T extends RecordModel> {
     collection: RecordService<T>
     page?: number
     pageSize: number
-    options?: ListOptions
+    filter?: string
+    expand?: string
+    fields?: string
+    skipTotal?: boolean
     children: ReactNode
 }
 
 interface CollectionListProviderType<T extends RecordModel> {
     data: ListResult<T>
-    setOptions: Dispatch<SetStateAction<ListOptions>>
 }
 
 export const CollectionListContext = createContext({} as CollectionListProviderType<RecordModel>);
@@ -26,14 +28,28 @@ export const CollectionListProvider = <T extends RecordModel>(
         collection,
         page = 1,
         pageSize,
-        options: opts,
+        filter = '',
+        expand = '',
+        fields = '',
+        skipTotal = false,
         children,
     }: CollectionListProviderProps<T>
 ) => {
-    const [options, setOptions] = useState(opts);
     const {isPending, isError, data, error} = useQuery({
-        queryKey: [collection.collectionIdOrName, page, options],
-        queryFn: async () => await collection.getList<T>(page, pageSize, options),
+        queryKey: [
+            collection.collectionIdOrName,
+            page,
+            filter,
+            expand,
+            fields,
+            skipTotal,
+        ],
+        queryFn: async () => await collection.getList<T>(page, pageSize, {
+            filter,
+            expand,
+            fields,
+            skipTotal,
+        }),
         retry: (failureCount, e: any) => {
             const error = e as ClientResponseError;
             if (error.status === 404) return false;
@@ -54,7 +70,6 @@ export const CollectionListProvider = <T extends RecordModel>(
 
     return <CollectionListContext.Provider value={{
         data,
-        setOptions,
     }}>
         {children}
     </CollectionListContext.Provider>

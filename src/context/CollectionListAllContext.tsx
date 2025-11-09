@@ -9,13 +9,15 @@ import NotFound from "../components/pages/404";
 
 interface CollectionListAllProviderProps<T extends RecordModel> {
     collection: RecordService<T>
-    options?: ListOptions
+    filter?: string
+    expand?: string
+    fields?: string
+    skipTotal?: boolean
     children: ReactNode
 }
 
 interface CollectionListAllProviderType<T extends RecordModel> {
     data: T[]
-    setOptions: Dispatch<SetStateAction<ListOptions>>
 }
 
 export const CollectionListAllContext = createContext({} as CollectionListAllProviderType<RecordModel>);
@@ -23,14 +25,27 @@ export const CollectionListAllContext = createContext({} as CollectionListAllPro
 export const CollectionListAllProvider = <T extends RecordModel>(
     {
         collection,
-        options: opts,
+        filter = '',
+        expand = '',
+        fields = '',
+        skipTotal = false,
         children,
     }: CollectionListAllProviderProps<T>
 ) => {
-    const [options, setOptions] = useState(opts);
     const {isPending, isError, data, error} = useQuery({
-        queryKey: [collection.collectionIdOrName, options],
-        queryFn: async () => await collection.getFullList<T>(options),
+        queryKey: [
+            collection.collectionIdOrName,
+            filter,
+            expand,
+            fields,
+            skipTotal,
+        ],
+        queryFn: async () => await collection.getFullList<T>({
+            filter,
+            expand,
+            fields,
+            skipTotal,
+        }),
         retry: (failureCount, e: any) => {
             const error = e as ClientResponseError;
             if (error.status === 404) return false;
@@ -51,7 +66,6 @@ export const CollectionListAllProvider = <T extends RecordModel>(
 
     return <CollectionListAllContext.Provider value={{
         data,
-        setOptions,
     }}>
         {children}
     </CollectionListAllContext.Provider>

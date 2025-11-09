@@ -6,6 +6,7 @@ import {ChakraProvider, createSystem, defaultConfig, defineConfig} from "@chakra
 import {ColorModeProvider} from "@ui/color-mode";
 import {AppContextProvider} from "@context/AppContextProvider/AppContextProvider";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 
 
 const colorModeConfig = {
@@ -36,6 +37,7 @@ createRoot(document.getElementById('root')!).render(
         <AppContextProvider>
             <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router}/>
+                <ReactQueryDevtools initialIsOpen={false}/>
             </QueryClientProvider>
         </AppContextProvider>
     </ChakraProvider>

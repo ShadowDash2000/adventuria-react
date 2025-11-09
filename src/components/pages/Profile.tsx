@@ -20,10 +20,8 @@ export const Profile = () => {
                     collection={pb.collection('actions')}
                     pageSize={24}
                     initialSort={new Map([['created', Sort.DESC]])}
-                    options={{
-                        filter: `user.name = "${login}"`,
-                        expand: 'game,cell',
-                    }}
+                    filter={`user.name = "${login}"`}
+                    expand='game,cell'
                 >
                     <UserActionsList/>
                 </CollectionListInfiniteProvider>

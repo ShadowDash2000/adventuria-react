@@ -1,5 +1,5 @@
 import {Button, Flex, For, Grid, GridItem, Image, VisuallyHidden} from "@chakra-ui/react";
-import {useRef} from "react";
+import {useMemo, useRef} from "react";
 import {LuArrowBigDown, LuArrowBigUp} from "react-icons/lu";
 import {useCollectionListAll} from "@context/CollectionListAllContext";
 import {CellRecord} from "@shared/types/cell";
@@ -8,7 +8,7 @@ import {useCellsBoard} from "@shared/helpers/cells";
 
 export const Board = () => {
     const {data: cells} = useCollectionListAll<CellRecord>();
-    const cellsFormatted = useCellsBoard(cells);
+    const cellsFormatted = useMemo(() => useCellsBoard(cells), []);
     const boardRef = useRef<HTMLDivElement>(null);
     const boardBottomRef = useRef<HTMLDivElement>(null);
 
@@ -55,6 +55,7 @@ export const Board = () => {
                 width="100%"
                 zIndex={1}
                 pointerEvents="none"
+                userSelect="none"
             />
             <Image
                 src="/src/assets/walls.png"
@@ -62,6 +63,7 @@ export const Board = () => {
                 width="80vw"
                 zIndex={1}
                 pointerEvents="none"
+                userSelect="none"
             />
             <Flex
                 justify="flex-end"

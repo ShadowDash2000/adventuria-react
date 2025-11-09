@@ -1,5 +1,5 @@
 import {FC, ReactNode, useState} from "react";
-import {CloseButton, Dialog, Portal, Box, Image, Blockquote, Stack} from "@chakra-ui/react";
+import {CloseButton, Dialog, Portal, Image, Blockquote, Stack} from "@chakra-ui/react";
 import HTMLReactParser from "html-react-parser";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {CellRecord} from "@shared/types/cell";

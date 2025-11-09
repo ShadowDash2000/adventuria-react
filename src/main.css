@@ -21,6 +21,13 @@ html {
     -moz-osx-font-smoothing: grayscale;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+        animation: none;
+    }
+}
+
 body {
     margin: 0;
     place-items: center;

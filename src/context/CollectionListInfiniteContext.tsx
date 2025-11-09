@@ -16,8 +16,11 @@ import NotFound from "../components/pages/404";
 interface CollectionListInfiniteProviderProps<T extends RecordModel> {
     collection: RecordService<T>
     pageSize: number
-    options?: Omit<ListOptions, 'sort'>
     initialSort?: Map<string, Sort>
+    filter?: string
+    expand?: string
+    fields?: string
+    skipTotal?: boolean
     children: ReactNode
 }
 
@@ -26,7 +29,6 @@ interface CollectionListInfiniteProviderType<T extends RecordModel> {
     isFetching: boolean
     hasNextPage: boolean
     fetchNextPage: (options?: FetchNextPageOptions | undefined) => Promise<InfiniteQueryObserverResult<InfiniteData<ListResult<T>, unknown>, Error>>,
-    setOptions: Dispatch<SetStateAction<ListOptions>>
     sortSet: (key: string, value: Sort) => void
     sortIs: (key: string, value: Sort) => boolean
     sortToggle(key: string): void
@@ -38,13 +40,15 @@ export const CollectionListInfiniteProvider = <T extends RecordModel>(
     {
         collection,
         pageSize,
-        options: opts,
         initialSort,
+        filter = '',
+        expand = '',
+        fields = '',
+        skipTotal = false,
         children,
     }: CollectionListInfiniteProviderProps<T>
 ) => {
     const {sortSet, sortIs, sortBuild, sortToggle} = useSort({initial: initialSort});
-    const [options, setOptions] = useState(opts);
     const {
         fetchNextPage,
         isPending,
@@ -54,12 +58,22 @@ export const CollectionListInfiniteProvider = <T extends RecordModel>(
         data,
         error,
     } = useInfiniteQuery({
-        queryKey: [collection.collectionIdOrName, options, sortBuild],
+        queryKey: [
+            collection.collectionIdOrName,
+            sortBuild,
+            filter,
+            expand,
+            fields,
+            skipTotal,
+        ],
         placeholderData: keepPreviousData,
         queryFn: async ({pageParam}) => {
             return await collection.getList<T>(pageParam, pageSize, {
                 sort: sortBuild,
-                ...options
+                filter,
+                expand,
+                fields,
+                skipTotal,
             });
         },
         initialPageParam: 1,
@@ -90,7 +104,6 @@ export const CollectionListInfiniteProvider = <T extends RecordModel>(
         isFetching,
         hasNextPage,
         fetchNextPage,
-        setOptions,
         sortSet,
         sortIs,
         sortToggle,
