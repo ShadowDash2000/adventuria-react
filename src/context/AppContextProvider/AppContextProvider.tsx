@@ -1,14 +1,5 @@
-import {
-    useContext,
-    createContext,
-    useMemo,
-    useEffect,
-    useState,
-    Dispatch,
-    SetStateAction,
-    ReactNode,
-} from "react";
-import PocketBase from "pocketbase";
+import {createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useMemo, useState,} from "react";
+import PocketBase, {ClientResponseError} from "pocketbase";
 import type {UserRecord} from "@shared/types/user";
 import {type QueryObserverResult, useQuery} from "@tanstack/react-query";
 
@@ -42,7 +33,7 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
     const {
         refetch: refetchActions,
     } = useQuery({
-        queryKey: [],
+        queryKey: ['available-actions'],
         queryFn: async () => {
             const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/available-actions`, {
                 method: 'GET',
@@ -52,17 +43,23 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
             });
 
             if (!res.ok) {
-                const text = await res.text().catch(() => '');
-                throw new Error(text || 'Failed to fetch available actions');
+                throw await res.json().catch(() => {
+                    return new ClientResponseError({
+                        status: res.status,
+                    });
+                });
             }
 
             const data: string[] = await res.json();
             setAvailableActions(data);
             return data;
         },
-        retry: (failureCount) => {
+        retry: (failureCount, e) => {
+            const error = e as ClientResponseError;
+            if (error.status === 401) return false;
             return failureCount < 10;
         },
+        refetchOnWindowFocus: false,
     });
 
     useEffect(() => {

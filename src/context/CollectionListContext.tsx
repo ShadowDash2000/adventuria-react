@@ -1,9 +1,9 @@
-import type {Context, Dispatch, ReactNode, SetStateAction,} from "react";
-import {useContext, useState, createContext} from "react";
+import type {Context, ReactNode} from "react";
+import {useContext, createContext} from "react";
 import {useQuery} from "@tanstack/react-query";
 import {LuLoader} from "react-icons/lu";
 import {Text} from "@chakra-ui/react";
-import type {ListOptions, ListResult, RecordModel, RecordService, ClientResponseError} from "pocketbase";
+import type {ListResult, RecordModel, RecordService, ClientResponseError} from "pocketbase";
 import NotFound from "../components/pages/404";
 
 interface CollectionListProviderProps<T extends RecordModel> {

@@ -1,14 +1,24 @@
-import {Button, Flex, For, Grid, GridItem, Image, VisuallyHidden} from "@chakra-ui/react";
-import {useMemo, useRef} from "react";
+import {Button, Flex, Image, VisuallyHidden} from "@chakra-ui/react";
+import {createContext, useContext, useRef, useState} from "react";
 import {LuArrowBigDown, LuArrowBigUp} from "react-icons/lu";
-import {useCollectionListAll} from "@context/CollectionListAllContext";
-import {CellRecord} from "@shared/types/cell";
-import {Cell} from "./Cell";
-import {useCellsBoard} from "@shared/helpers/cells";
+import {Players} from "./Players";
+import type {CellRecord} from "@shared/types/cell";
+import type {UserRecord} from "@shared/types/user";
+import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
+import {useQuery} from "@tanstack/react-query";
+import {Cells} from "./Cells";
+
+type BoardContextType = {
+    cells: CellRecord[][]
+    users: UserRecord[]
+}
+
+export const BoardContext = createContext<BoardContextType>({} as BoardContextType);
 
 export const Board = () => {
-    const {data: cells} = useCollectionListAll<CellRecord>();
-    const cellsFormatted = useMemo(() => useCellsBoard(cells), []);
+    const {pb} = useAppContext();
+    const [cells, setCells] = useState<CellRecord[][]>([]);
+    const [users, setUsers] = useState<UserRecord[]>([]);
     const boardRef = useRef<HTMLDivElement>(null);
     const boardBottomRef = useRef<HTMLDivElement>(null);
 
@@ -18,6 +28,21 @@ export const Board = () => {
     const scrollToBottom = () => {
         boardBottomRef.current?.scrollIntoView();
     };
+
+    useQuery({
+        queryKey: ['board'],
+        queryFn: async () => {
+            const cells = await pb.collection('cells').getFullList<CellRecord>({
+                sort: 'sort',
+            });
+            setCells(buildCells(cells));
+            const users = await pb.collection('users').getFullList<UserRecord>();
+            setUsers(users);
+
+            return {cells, users};
+        },
+        refetchOnWindowFocus: false,
+    });
 
     return (
         <Flex
@@ -71,25 +96,42 @@ export const Board = () => {
                 mb="4.6%"
                 gap=".6vw"
             >
-                <For each={cellsFormatted}>
-                    {(lineElements, lineNum) => (
-                        <Grid key={lineNum} autoFlow="column">
-                            <For each={lineElements}>
-                                {(cell, cellNum) => (
-                                    <GridItem key={cellNum}>
-                                        <Cell
-                                            cell={cell}
-                                            width="9.45vw"
-                                            height="6.2vw"
-                                        />
-                                    </GridItem>
-                                )}
-                            </For>
-                        </Grid>
-                    )}
-                </For>
+                <BoardContext.Provider value={{cells, users}}>
+                    <Cells/>
+                    <Players/>
+                </BoardContext.Provider>
             </Flex>
             <VisuallyHidden ref={boardBottomRef}/>
         </Flex>
     )
+}
+
+export const useBoardContext: () => BoardContextType = () => useContext(BoardContext);
+
+/**
+ * Method expects that cells are already sorted
+ * from the smallest to the largest
+ */
+const buildCells = (cells: CellRecord[], lineSize = 7) => {
+    const lineElements = Math.min(cells.length, lineSize);
+    const result = [];
+    let line = 0;
+    let currentLine = [];
+    let elementIndex = 1;
+
+    for (const cell of cells.values()) {
+        currentLine[elementIndex] = cell;
+
+        if (elementIndex % lineElements === 0) {
+            if (line % 2 === 1) currentLine.reverse();
+
+            result.push(currentLine);
+            currentLine = [];
+            line++;
+        }
+
+        elementIndex++;
+    }
+
+    return result.reverse();
 }

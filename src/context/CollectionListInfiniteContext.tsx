@@ -1,5 +1,5 @@
-import type {Context,Dispatch, ReactNode, SetStateAction} from "react";
-import {createContext, useContext, useState} from "react";
+import type {Context, ReactNode} from "react";
+import {createContext, useContext} from "react";
 import type {
     FetchNextPageOptions,
     InfiniteData,
@@ -8,7 +8,7 @@ import type {
 import {keepPreviousData, useInfiniteQuery} from "@tanstack/react-query";
 import {LuLoader} from "react-icons/lu";
 import {Text} from "@chakra-ui/react";
-import type {ListOptions, ListResult, RecordModel, RecordService} from "pocketbase";
+import type {ListResult, RecordModel, RecordService} from "pocketbase";
 import {Sort, useSort} from "@shared/hook/useSort";
 import type {ClientResponseError} from "pocketbase";
 import NotFound from "../components/pages/404";
@@ -31,6 +31,7 @@ interface CollectionListInfiniteProviderType<T extends RecordModel> {
     fetchNextPage: (options?: FetchNextPageOptions | undefined) => Promise<InfiniteQueryObserverResult<InfiniteData<ListResult<T>, unknown>, Error>>,
     sortSet: (key: string, value: Sort) => void
     sortIs: (key: string, value: Sort) => boolean
+
     sortToggle(key: string): void
 }
 
