@@ -16,14 +16,15 @@
      },                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
      "types": [
        "vite/client",
-       "@types/node",
-       "node",
-       "@chakra-ui/react",
-       "@types/react"
-     ], /* Specify type package names to be included without being referenced in a source file. */
+       "react",
+       "react-dom"
+     ], /* Limit global types to essentials for editor: Vite env + React JSX. */
     "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
     "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
     "strict": true,                                      /* Enable all strict type-checking options. */
-    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
+    "skipLibCheck": true,                                /* Skip type checking all .d.ts files. */
+    "noEmit": true,                                      /* Editor doesn't need emit; speeds up language service. */
+    "incremental": true,                                 /* Enable TS cache for faster autocomplete. */
+    "tsBuildInfoFile": ".tsbuildinfo"                   /* Cache file for incremental mode. */
   }
 }

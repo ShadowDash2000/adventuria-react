@@ -1,4 +1,4 @@
-import {Center, Image} from "@chakra-ui/react";
+import {Center} from "@chakra-ui/react";
 
 const NotFound = () => {
     return (
