@@ -1,5 +1,5 @@
 import {Button, Flex, Image, VisuallyHidden} from "@chakra-ui/react";
-import {createContext, useContext, useEffect, useRef, useState, type RefObject} from "react";
+import {createContext, useContext, useEffect, useRef, useState, useMemo} from "react";
 import {LuArrowBigDown, LuArrowBigUp} from "react-icons/lu";
 import {Players} from "./Players";
 import type {CellRecord} from "@shared/types/cell";
@@ -7,25 +7,45 @@ import type {UserRecord} from "@shared/types/user";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {useQuery} from "@tanstack/react-query";
 import {Cells} from "./Cells";
+import type {RecordIdString} from "@shared/types/pocketbase";
+import {BoardHelper} from "./BoardHelper";
 
 type BoardContextType = {
-    cells: CellRecord[][]
+    cells: CellRecord[]
+    cellsOrdered: CellRecord[][]
+    cellsOrderedRev: CellRecord[][]
+    cellsUsers: Map<RecordIdString, RecordIdString[]>
     users: UserRecord[]
-    boardRef: RefObject<HTMLDivElement | null>
-    boardWidth: number
-    boardHeight: number
+    boardDimensions: Dimension
     rows: number
     cols: number
     cellWidth: number
     cellHeight: number
 }
 
+type Dimension = { width: number, height: number }
+
 export const BoardContext = createContext<BoardContextType>({} as BoardContextType);
 
 export const Board = () => {
     const {pb} = useAppContext();
-    const [cells, setCells] = useState<CellRecord[][]>([]);
+    const [cells, setCells] = useState<CellRecord[]>([]);
+    const [cellsOrdered, setCellsOrdered] = useState<CellRecord[][]>([]);
+    const [cellsOrderedRev, setCellsOrderedRev] = useState<CellRecord[][]>([]);
     const [users, setUsers] = useState<UserRecord[]>([]);
+    const [cellsUsers, setCellsUsers] = useState<Map<RecordIdString, RecordIdString[]>>(new Map());
+
+    useEffect(() => {
+        const c = BoardHelper.buildCells(cells);
+        setCellsOrdered(c);
+        setCellsOrderedRev(c.slice().reverse());
+    }, [cells]);
+
+    useEffect(() => {
+        if (!cells.length || !users.length) return;
+
+        setCellsUsers(BoardHelper.buildCellsUsers(users, cells));
+    }, [cells, users]);
 
     // board container refs
     const boardRef = useRef<HTMLDivElement>(null);
@@ -33,16 +53,21 @@ export const Board = () => {
     const boardInnerRef = useRef<HTMLDivElement>(null);
 
     // board geometry
-    const [boardWidth, setBoardWidth] = useState(0);
-    const [boardHeight, setBoardHeight] = useState(0);
+    const [boardDimensions, setBoardDimensions] = useState<Dimension>({
+        width: 0,
+        height: 0,
+    });
 
     // derived grid size
-    const rows = cells.length;
-    const cols = rows > 0 ? cells[cells.length - 1].length : 0;
+    const rows = cellsOrderedRev.length;
+    const cols = rows > 0 ? cellsOrderedRev[cellsOrderedRev.length - 1].length : 0;
 
     // derived cell size in px based on container size
-    const cellWidth = cols ? Math.floor(boardWidth / Math.max(cols, 1)) : 0;
-    const cellHeight = rows ? Math.floor(boardHeight / Math.max(rows, 1)) : 0;
+    const {width: cellWidth, height: cellHeight} = useMemo((): Dimension => {
+        const cellWidth = cols ? Math.floor(boardDimensions.width / Math.max(cols, 1)) : 0;
+        const cellHeight = rows ? Math.floor(boardDimensions.height / Math.max(rows, 1)) : 0;
+        return {width: cellWidth, height: cellHeight};
+    }, [boardDimensions.width, boardDimensions.height])
 
     const scrollToTop = () => {
         boardRef.current?.scrollIntoView();
@@ -58,8 +83,7 @@ export const Board = () => {
 
         const measure = () => {
             const rect = board.getBoundingClientRect();
-            setBoardWidth(Math.floor(rect.width));
-            setBoardHeight(Math.floor(rect.height));
+            setBoardDimensions({width: rect.width, height: rect.height});
         };
 
         // initial measure
@@ -81,7 +105,8 @@ export const Board = () => {
             const cells = await pb.collection('cells').getFullList<CellRecord>({
                 sort: 'sort',
             });
-            setCells(buildCells(cells));
+            setCells(cells);
+
             const users = await pb.collection('users').getFullList<UserRecord>();
             setUsers(users);
 
@@ -145,10 +170,11 @@ export const Board = () => {
             >
                 <BoardContext.Provider value={{
                     cells,
+                    cellsOrdered,
+                    cellsOrderedRev,
+                    cellsUsers,
                     users,
-                    boardRef,
-                    boardWidth,
-                    boardHeight,
+                    boardDimensions,
                     rows,
                     cols,
                     cellWidth,
@@ -164,25 +190,3 @@ export const Board = () => {
 }
 
 export const useBoardContext: () => BoardContextType = () => useContext(BoardContext);
-
-const buildCells = (cells: CellRecord[], lineSize = 7) => {
-    if (cells.length === 0) return [];
-
-    const lines: CellRecord[][] = [];
-    let currentLine: CellRecord[] = [];
-
-    for (let i = 0; i < cells.length; i++) {
-        currentLine.push(cells[i]);
-
-        const isLineFull = currentLine.length === Math.min(lineSize, cells.length);
-        const isLast = i === cells.length - 1;
-
-        if (isLineFull || isLast) {
-            if (lines.length % 2 === 1) currentLine.reverse();
-            lines.push(currentLine);
-            currentLine = [];
-        }
-    }
-
-    return lines.reverse();
-}

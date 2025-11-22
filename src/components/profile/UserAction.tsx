@@ -112,7 +112,7 @@ export const UserAction: FC<ActionProps> = ({action}) => {
                                 <DataList.ItemValue>{formatDateLocalized(action.created)}</DataList.ItemValue>
                             </DataList.Item>
                         </DataList.Root>
-                        <Card.Description>
+                        <Card.Description as="div">
                             {isEditing ? (
                                 <Box borderWidth="1px" borderColor="gray.200" rounded="md" p="2">
                                     <EditorContent editor={editor}/>

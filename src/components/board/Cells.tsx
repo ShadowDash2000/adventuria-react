@@ -3,10 +3,10 @@ import {Cell} from "./Cell";
 import {useBoardContext} from "./Board";
 
 export const Cells = () => {
-    const {cells} = useBoardContext();
+    const {cellsOrderedRev} = useBoardContext();
 
     return (
-        <For each={cells}>
+        <For each={cellsOrderedRev}>
             {(lineElements, lineNum) => (
                 <Grid key={lineNum} autoFlow="column">
                     <For each={lineElements}>

@@ -1,23 +1,71 @@
-import {FC, useMemo} from "react";
+import {FC, useEffect, useMemo, useState} from "react";
 import {UserRecord} from "@shared/types/user";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {Avatar as ChakraAvatar} from "@chakra-ui/react/avatar";
+import {useBoardContext} from "./Board";
+import {BoardHelper} from "./BoardHelper";
 
 interface PlayerProps {
-    x?: number;
-    y?: number;
     user: UserRecord;
 }
 
+type PlayerPosition = {
+    x: number;
+    y: number;
+    offsetX: number;
+    offsetY: number;
+}
+
+const moveTime = 1;
+
 export const Player: FC<PlayerProps> = (
     {
-        x = 0,
-        y = 0,
         user
     }
 ) => {
     const {pb} = useAppContext();
+    const {
+        rows,
+        cols,
+        cellWidth,
+        cellHeight,
+    } = useBoardContext();
     const avatar = useMemo(() => pb.files.getURL(user, user.avatar), [user.avatar]);
+    const [position, setPosition] = useState<PlayerPosition>({offsetX: 0, offsetY: 0, x: 0, y: 0});
+
+    const move = (row: number, col: number) => {
+        const x = cellWidth * col;
+        const y = -(cellHeight * row) - cellHeight;
+        const offsetX = 50;
+        const offsetY = 130;
+
+        setPosition({x, y, offsetX, offsetY});
+    }
+
+    useEffect(() => {
+        const abortController = new AbortController();
+
+        const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
+        move(pos.row, pos.col);
+
+        document.addEventListener(`player.move.${user.id}`, (e) => {
+            const {detail} = e as CustomEvent<number>;
+            const path = BoardHelper.createPath(rows, cols, user.cellsPassed, detail);
+
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i === path.length) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                move(path[i].row, path[i].col);
+                i++;
+            }, moveTime * 1000);
+        }, {signal: abortController.signal});
+
+        return () => abortController.abort();
+    }, []);
 
     return (
         <ChakraAvatar.Root
@@ -27,7 +75,8 @@ export const Player: FC<PlayerProps> = (
             outlineColor={user.color}
             outlineOffset="{spacing.0.5}"
             outlineStyle="solid"
-            transform={`translate(${x}, ${y})`}
+            transform={`translate(calc(${position.x}px + ${position.offsetX}%), calc(${position.y}px + ${position.offsetY}%))`}
+            transition={`transform ${moveTime}s ease`}
         >
             <ChakraAvatar.Image src={avatar}/>
         </ChakraAvatar.Root>
