@@ -5,10 +5,10 @@ import {Players} from "./Players";
 import type {CellRecord} from "@shared/types/cell";
 import type {UserRecord} from "@shared/types/user";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
-import {useQuery} from "@tanstack/react-query";
 import {Cells} from "./Cells";
 import type {RecordIdString} from "@shared/types/pocketbase";
 import {BoardHelper} from "./BoardHelper";
+import {useBoardDataContext} from "./BoardDataContext";
 
 type BoardContextType = {
     cells: CellRecord[]
@@ -34,23 +34,18 @@ export const BoardContext = createContext<BoardContextType>({} as BoardContextTy
 
 export const Board = () => {
     const {pb} = useAppContext();
-    const [cells, setCells] = useState<CellRecord[]>([]);
-    const [cellsOrdered, setCellsOrdered] = useState<CellRecord[][]>([]);
-    const [cellsOrderedRev, setCellsOrderedRev] = useState<CellRecord[][]>([]);
-    const [users, setUsers] = useState<Map<RecordIdString, UserRecord>>(new Map());
-    const [cellsUsers, setCellsUsers] = useState<Map<RecordIdString, RecordIdString[]>>(new Map());
+    const {users: usersRaw, cells: cellRaw} = useBoardDataContext();
 
-    useEffect(() => {
-        const c = BoardHelper.buildCells(cells);
-        setCellsOrdered(c);
-        setCellsOrderedRev(c.slice().reverse());
-    }, [cells]);
+    const [cells, setCells] = useState<CellRecord[]>(cellRaw);
+    const [users, setUsers] = useState<Map<RecordIdString, UserRecord>>(
+        new Map(usersRaw.map(u => [u.id, u]))
+    );
 
-    useEffect(() => {
-        if (!cells.length || !users.size) return;
-
-        setCellsUsers(BoardHelper.buildCellsUsers([...users.values()], cells));
-    }, [cells, users]);
+    const cellsOrdered = useMemo(() => BoardHelper.buildCells(cells), [cells]);
+    const cellsOrderedRev = useMemo(() => cellsOrdered.slice().reverse(), [cellsOrdered]);
+    const cellsUsers = useMemo(() => {
+        return BoardHelper.buildCellsUsers([...users.values()], cells)
+    }, [users, cells]);
 
     // board container refs
     const boardRef = useRef<HTMLDivElement>(null);
@@ -64,15 +59,15 @@ export const Board = () => {
     });
 
     // derived grid size
-    const rows = cellsOrderedRev.length;
-    const cols = rows > 0 ? cellsOrderedRev[cellsOrderedRev.length - 1].length : 0;
+    const rows = cellsOrdered.length;
+    const cols = rows > 0 ? cellsOrdered[0].length : 0;
 
     // derived cell size in px based on container size
     const {width: cellWidth, height: cellHeight} = useMemo((): Dimension => {
         const cellWidth = cols ? Math.floor(boardDimensions.width / Math.max(cols, 1)) : 0;
         const cellHeight = rows ? Math.floor(boardDimensions.height / Math.max(rows, 1)) : 0;
         return {width: cellWidth, height: cellHeight};
-    }, [boardDimensions.width, boardDimensions.height]);
+    }, [boardDimensions.width, boardDimensions.height, rows, cols]);
 
     const scrollToTop = () => {
         boardRef.current?.scrollIntoView();
@@ -104,27 +99,15 @@ export const Board = () => {
         };
     }, []);
 
-    useQuery({
-        queryKey: ['board'],
-        queryFn: async () => {
-            const cells = await pb.collection('cells').getFullList<CellRecord>({
-                sort: 'sort',
-            });
-            setCells(cells);
-
-            const users = await pb.collection('users').getFullList<UserRecord>();
-            setUsers(new Map(users.map(u => [u.id, u])));
-
-            return {cells, users};
-        },
-        refetchOnWindowFocus: false,
-    });
-
     useEffect(() => {
         pb.collection('users').subscribe<UserRecord>('*', (e) => {
             switch (e.action) {
                 case 'create':
-                    setUsers(prev => new Map(prev.set(e.record.id, e.record)));
+                    setUsers(prev => {
+                        const next = new Map(prev);
+                        next.set(e.record.id, e.record);
+                        return next;
+                    });
                     break;
                 case 'update':
                     setUsers(prev => {
@@ -135,13 +118,16 @@ export const Board = () => {
                             },
                         }));
 
-                        return new Map(prev.set(e.record.id, e.record));
+                        const next = new Map(prev);
+                        next.set(e.record.id, e.record);
+                        return next;
                     });
                     break;
                 case 'delete':
                     setUsers(prev => {
-                        prev.delete(e.record.id);
-                        return new Map(prev);
+                        const next = new Map(prev);
+                        next.delete(e.record.id);
+                        return next;
                     })
                     break;
             }
@@ -150,7 +136,7 @@ export const Board = () => {
         return () => {
             pb.collection('users').unsubscribe();
         }
-    }, []);
+    }, [pb]);
 
     return (
         <Flex

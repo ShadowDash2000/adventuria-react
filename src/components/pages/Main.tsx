@@ -5,6 +5,7 @@ import {Box, Spacer} from "@chakra-ui/react";
 import {LatestActions} from "../LatestActions";
 import {CollectionListInfiniteProvider} from "@context/CollectionListInfiniteContext";
 import {Sort} from "@shared/hook/useSort";
+import {BoardDataProvider} from "../board/BoardDataContext";
 
 export const Main = () => {
     const {pb, isAuth} = useAppContext();
@@ -12,7 +13,9 @@ export const Main = () => {
     return (
         <>
             <Box position="relative">
-                <Board/>
+                <BoardDataProvider>
+                    <Board/>
+                </BoardDataProvider>
                 <Spacer h={10}/>
                 <CollectionListInfiniteProvider
                     collection={pb.collection('actions')}

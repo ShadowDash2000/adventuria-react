@@ -64,7 +64,7 @@ export const Player: FC<PlayerProps> = (
         }, {signal: abortController.signal});
 
         return () => abortController.abort();
-    }, []);
+    }, [rows, cols, cellWidth, cellHeight]);
 
     return (
         <ChakraAvatar.Root
