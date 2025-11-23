@@ -1,8 +1,8 @@
 import {FC, useEffect, useMemo, useState} from "react";
-import {UserRecord} from "@shared/types/user";
+import type {UserRecord} from "@shared/types/user";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {Avatar as ChakraAvatar} from "@chakra-ui/react/avatar";
-import {useBoardContext} from "./Board";
+import {type PlayerMoveEvent, useBoardContext} from "./Board";
 import {BoardHelper} from "./BoardHelper";
 
 interface PlayerProps {
@@ -49,9 +49,8 @@ export const Player: FC<PlayerProps> = (
         move(pos.row, pos.col);
 
         document.addEventListener(`player.move.${user.id}`, (e) => {
-            const {detail} = e as CustomEvent<number>;
-            const path = BoardHelper.createPath(rows, cols, user.cellsPassed, detail);
-
+            const {detail} = e as CustomEvent<PlayerMoveEvent>;
+            const path = BoardHelper.createPath(rows, cols, detail.prevCellsPassed, detail.cellsPassed);
             let i = 0;
             const interval = setInterval(() => {
                 if (i === path.length) {

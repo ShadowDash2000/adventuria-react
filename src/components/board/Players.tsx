@@ -6,9 +6,9 @@ export const Players = () => {
     const {users} = useBoardContext();
 
     return (
-        <For each={users}>
-            {(user, index) => (
-                <Player user={user} key={index}/>
+        <For each={[...users.entries()]}>
+            {([id, user]) => (
+                <Player user={user} key={id}/>
             )}
         </For>
     )

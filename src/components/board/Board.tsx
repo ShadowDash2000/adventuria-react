@@ -15,12 +15,17 @@ type BoardContextType = {
     cellsOrdered: CellRecord[][]
     cellsOrderedRev: CellRecord[][]
     cellsUsers: Map<RecordIdString, RecordIdString[]>
-    users: UserRecord[]
+    users: Map<RecordIdString, UserRecord>
     boardDimensions: Dimension
     rows: number
     cols: number
     cellWidth: number
     cellHeight: number
+}
+
+export type PlayerMoveEvent = {
+    prevCellsPassed: number
+    cellsPassed: number
 }
 
 type Dimension = { width: number, height: number }
@@ -32,7 +37,7 @@ export const Board = () => {
     const [cells, setCells] = useState<CellRecord[]>([]);
     const [cellsOrdered, setCellsOrdered] = useState<CellRecord[][]>([]);
     const [cellsOrderedRev, setCellsOrderedRev] = useState<CellRecord[][]>([]);
-    const [users, setUsers] = useState<UserRecord[]>([]);
+    const [users, setUsers] = useState<Map<RecordIdString, UserRecord>>(new Map());
     const [cellsUsers, setCellsUsers] = useState<Map<RecordIdString, RecordIdString[]>>(new Map());
 
     useEffect(() => {
@@ -42,9 +47,9 @@ export const Board = () => {
     }, [cells]);
 
     useEffect(() => {
-        if (!cells.length || !users.length) return;
+        if (!cells.length || !users.size) return;
 
-        setCellsUsers(BoardHelper.buildCellsUsers(users, cells));
+        setCellsUsers(BoardHelper.buildCellsUsers([...users.values()], cells));
     }, [cells, users]);
 
     // board container refs
@@ -67,7 +72,7 @@ export const Board = () => {
         const cellWidth = cols ? Math.floor(boardDimensions.width / Math.max(cols, 1)) : 0;
         const cellHeight = rows ? Math.floor(boardDimensions.height / Math.max(rows, 1)) : 0;
         return {width: cellWidth, height: cellHeight};
-    }, [boardDimensions.width, boardDimensions.height])
+    }, [boardDimensions.width, boardDimensions.height]);
 
     const scrollToTop = () => {
         boardRef.current?.scrollIntoView();
@@ -108,12 +113,44 @@ export const Board = () => {
             setCells(cells);
 
             const users = await pb.collection('users').getFullList<UserRecord>();
-            setUsers(users);
+            setUsers(new Map(users.map(u => [u.id, u])));
 
             return {cells, users};
         },
         refetchOnWindowFocus: false,
     });
+
+    useEffect(() => {
+        pb.collection('users').subscribe<UserRecord>('*', (e) => {
+            switch (e.action) {
+                case 'create':
+                    setUsers(prev => new Map(prev.set(e.record.id, e.record)));
+                    break;
+                case 'update':
+                    setUsers(prev => {
+                        document.dispatchEvent(new CustomEvent(`player.move.${e.record.id}`, {
+                            detail: {
+                                prevCellsPassed: prev.get(e.record.id)!.cellsPassed,
+                                cellsPassed: e.record.cellsPassed,
+                            },
+                        }));
+
+                        return new Map(prev.set(e.record.id, e.record));
+                    });
+                    break;
+                case 'delete':
+                    setUsers(prev => {
+                        prev.delete(e.record.id);
+                        return new Map(prev);
+                    })
+                    break;
+            }
+        });
+
+        return () => {
+            pb.collection('users').unsubscribe();
+        }
+    }, []);
 
     return (
         <Flex
