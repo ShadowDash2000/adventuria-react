@@ -33,7 +33,7 @@ type Dimension = { width: number, height: number }
 export const BoardContext = createContext<BoardContextType>({} as BoardContextType);
 
 export const Board = () => {
-    const {pb} = useAppContext();
+    const {pb, isAuth} = useAppContext();
     const {users: usersRaw, cells: cellRaw} = useBoardDataContext();
 
     const [cells, setCells] = useState<CellRecord[]>(cellRaw);
@@ -100,6 +100,8 @@ export const Board = () => {
     }, []);
 
     useEffect(() => {
+        if (!isAuth) return;
+
         pb.collection('users').subscribe<UserRecord>('*', (e) => {
             switch (e.action) {
                 case 'create':
@@ -136,7 +138,7 @@ export const Board = () => {
         return () => {
             pb.collection('users').unsubscribe();
         }
-    }, [pb]);
+    }, [pb, isAuth]);
 
     return (
         <Flex

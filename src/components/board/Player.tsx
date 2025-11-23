@@ -23,7 +23,7 @@ export const Player: FC<PlayerProps> = (
         user
     }
 ) => {
-    const {pb} = useAppContext();
+    const {pb, isAuth} = useAppContext();
     const {
         rows,
         cols,
@@ -43,10 +43,12 @@ export const Player: FC<PlayerProps> = (
     }
 
     useEffect(() => {
-        const abortController = new AbortController();
-
         const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
         move(pos.row, pos.col);
+
+        if (!isAuth) return;
+
+        const abortController = new AbortController();
 
         document.addEventListener(`player.move.${user.id}`, (e) => {
             const {detail} = e as CustomEvent<PlayerMoveEvent>;
@@ -64,7 +66,7 @@ export const Player: FC<PlayerProps> = (
         }, {signal: abortController.signal});
 
         return () => abortController.abort();
-    }, [rows, cols, cellWidth, cellHeight]);
+    }, [rows, cols, cellWidth, cellHeight, isAuth]);
 
     return (
         <ChakraAvatar.Root
