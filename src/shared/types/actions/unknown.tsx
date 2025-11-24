@@ -1,19 +1,18 @@
 import {Status} from "@chakra-ui/react";
-import {type ReactElement} from "react";
+import type {ReactNode} from "react";
 import {ActionController} from "@shared/types/actions/action-base";
-import {RollDiceModal} from "../../../components/board/actions/RollDiceModal";
 
-export class RollDice extends ActionController {
-    buttonNode(): ReactElement {
-        return <RollDiceModal/>
+export class Unknown extends ActionController {
+    buttonNode(): ReactNode {
+        return 'Ой, ошибочка...';
     }
 
     color() {
-        return 'purple'
+        return 'red'
     }
 
     name() {
-        return 'Бросил кубики'
+        return '[ДАННЫЕ УДАЛЕНЫ]'
     }
 
     statusNode() {

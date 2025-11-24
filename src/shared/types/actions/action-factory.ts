@@ -1,7 +1,7 @@
 import {Done} from "@shared/types/actions/done";
 import {ActionController} from "@shared/types/actions/action-base";
-import {ReactNode} from "react";
 import {RollDice} from "@shared/types/actions/roll-dice";
+import {Unknown} from "@shared/types/actions/unknown";
 
 export class ActionFactory {
     private static actions: Record<string, ActionController> = {
@@ -10,22 +10,19 @@ export class ActionFactory {
     }
 
     static get(actionType: string): ActionController {
-        return this.actions[actionType]
+        return this.actions[actionType] || new Unknown();
     }
 
-    static getFirstAvailableActionButton(actionsTypes: string[]): ReactNode | null {
+    static getFirstAvailableAction(actionsTypes: string[]): ActionController | null {
         for (let actionType of actionsTypes) {
             const action = this.actions[actionType];
             if (!action) {
                 continue;
             }
 
-            const buttonNode = action.buttonNode();
-            if (buttonNode) {
-                return buttonNode;
-            }
+            return action;
         }
 
-        return null;
+        return new Unknown();
     }
 }

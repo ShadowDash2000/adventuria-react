@@ -15,7 +15,7 @@ export const UserMenu: FC = () => {
             w="80vw"
             justify="center"
         >
-            {ActionFactory.getFirstAvailableActionButton(availableActions)}
+            {ActionFactory.getFirstAvailableAction(availableActions)?.buttonNode()}
         </Flex>
     )
 }
