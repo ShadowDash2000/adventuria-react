@@ -1,13 +1,14 @@
 import {Button, Card, HStack, Box, Text, Image, VStack, DataList, Stack} from "@chakra-ui/react";
 import {LuPencil} from "react-icons/lu";
 import HTMLReactParser from "html-react-parser";
-import {FC, useEffect, useState} from "react";
-import {ActionRecord} from "@shared/types/action";
+import {type FC, useEffect, useState} from "react";
+import {type ActionRecord} from "@shared/types/action";
 import {EditorContent, useEditor} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {formatDateLocalized} from "@shared/helpers/helper";
 import {ActionFactory} from "@shared/types/actions/action-factory";
+import {Avatar} from "../Avatar";
 
 type ActionProps = {
     action: ActionRecord;
@@ -46,7 +47,7 @@ export const UserAction: FC<ActionProps> = ({action}) => {
 
         try {
             const formData = new FormData();
-            formData.append('actionId', action.id);
+            formData.append('action_id', action.id);
             formData.append('comment', draft);
 
             const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/update-action`, {
@@ -126,6 +127,13 @@ export const UserAction: FC<ActionProps> = ({action}) => {
                                 </Text>
                             )}
                         </Card.Description>
+                    </VStack>
+                    <VStack
+                        position="absolute"
+                        right="5%"
+                    >
+                        <Avatar user={action.expand?.user!}/>
+                        <Text>{action.expand?.user.name}</Text>
                     </VStack>
                 </Stack>
             </Card.Body>

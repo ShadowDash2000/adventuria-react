@@ -19,7 +19,7 @@ export const Main = () => {
                 <Spacer h={10}/>
                 <CollectionListInfiniteProvider
                     collection={pb.collection('actions')}
-                    expand='game,cell'
+                    expand='game,cell,user'
                     pageSize={10}
                     initialSort={new Map([['created', Sort.DESC]])}
                 >

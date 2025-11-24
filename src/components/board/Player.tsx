@@ -1,9 +1,9 @@
-import {FC, useEffect, useMemo, useState} from "react";
+import {FC, useEffect, useState} from "react";
 import type {UserRecord} from "@shared/types/user";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
-import {Avatar as ChakraAvatar} from "@chakra-ui/react/avatar";
 import {type PlayerMoveEvent, useBoardContext} from "./Board";
 import {BoardHelper} from "./BoardHelper";
+import {Avatar} from "../Avatar";
 
 interface PlayerProps {
     user: UserRecord;
@@ -30,7 +30,6 @@ export const Player: FC<PlayerProps> = (
         cellWidth,
         cellHeight,
     } = useBoardContext();
-    const avatar = useMemo(() => pb.files.getURL(user, user.avatar), [user.avatar]);
     const [position, setPosition] = useState<PlayerPosition>({offsetX: 0, offsetY: 0, x: 0, y: 0});
 
     const move = (row: number, col: number) => {
@@ -69,17 +68,12 @@ export const Player: FC<PlayerProps> = (
     }, [rows, cols, cellWidth, cellHeight, isAuth]);
 
     return (
-        <ChakraAvatar.Root
+        <Avatar
+            user={user}
             position="absolute"
             zIndex={10}
-            outlineWidth="{spacing.1}"
-            outlineColor={user.color}
-            outlineOffset="{spacing.0.5}"
-            outlineStyle="solid"
             transform={`translate(calc(${position.x}px + ${position.offsetX}%), calc(${position.y}px + ${position.offsetY}%))`}
             transition={`transform ${moveTime}s ease`}
-        >
-            <ChakraAvatar.Image src={avatar}/>
-        </ChakraAvatar.Root>
+        />
     )
 }

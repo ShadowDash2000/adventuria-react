@@ -25,7 +25,7 @@ export const Profile = () => {
                     pageSize={24}
                     initialSort={new Map([['created', Sort.DESC]])}
                     filter={`user.name = "${login}"`}
-                    expand='game,cell'
+                    expand='game,cell,user'
                 >
                     <UserActionsList/>
                 </CollectionListInfiniteProvider>
