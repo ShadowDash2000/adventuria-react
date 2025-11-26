@@ -1,10 +1,11 @@
-import {FC, useMemo} from "react";
+import {type FC, useMemo} from "react";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {ActionFactory} from "@shared/types/actions/action-factory";
 import {Flex} from "@chakra-ui/react";
+import {PlayerInventory} from "./inventory/PlayerInventory";
 
 export const UserMenu: FC = () => {
-    const {availableActions} = useAppContext();
+    const {availableActions, user} = useAppContext();
     const actionButton = useMemo(() => {
         return ActionFactory.getFirstAvailableAction(availableActions)?.buttonNode();
     }, [availableActions]);
@@ -18,6 +19,7 @@ export const UserMenu: FC = () => {
             justify="center"
         >
             {actionButton}
+            <PlayerInventory userId={user?.id!}/>
         </Flex>
     )
 }

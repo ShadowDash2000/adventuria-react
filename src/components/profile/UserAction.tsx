@@ -3,12 +3,12 @@ import {LuPencil} from "react-icons/lu";
 import HTMLReactParser from "html-react-parser";
 import {type FC, useEffect, useState} from "react";
 import {type ActionRecord} from "@shared/types/action";
-import {EditorContent, useEditor} from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {formatDateLocalized} from "@shared/helpers/helper";
 import {ActionFactory} from "@shared/types/actions/action-factory";
 import {Avatar} from "../Avatar";
+import {ActionTextEditor} from "./ActionTextEditor";
+import {type Content} from "@tiptap/react";
 
 type ActionProps = {
     action: ActionRecord;
@@ -21,8 +21,8 @@ export const UserAction: FC<ActionProps> = ({action}) => {
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [comment, setComment] = useState<string>(action.comment);
-    const [draft, setDraft] = useState<string>(comment);
+    const [comment, setComment] = useState<Content>(action.comment);
+    const [draft, setDraft] = useState<Content>(comment);
 
     const canEdit = Boolean(isAuth && authUser?.id && (action.user === authUser.id));
 
@@ -31,15 +31,6 @@ export const UserAction: FC<ActionProps> = ({action}) => {
             setDraft(comment ?? "");
         }
     }, [isEditing, comment]);
-
-    const editor = useEditor({
-        extensions: [StarterKit],
-        content: draft,
-        editable: isEditing,
-        onUpdate: ({editor}) => {
-            setDraft(editor.getHTML());
-        },
-    }, [isEditing]);
 
     const handleSave = async () => {
         setSaving(true);
@@ -58,8 +49,9 @@ export const UserAction: FC<ActionProps> = ({action}) => {
                 body: formData,
             });
             if (!res.ok) {
+                const error = await res.json().then(e => e.error).catch(() => '');
                 const text = await res.text().catch(() => "");
-                throw new Error(text || `Failed to update action`);
+                throw new Error(error || text || `Failed to update action`);
             }
             setComment(draft);
             setIsEditing(false);
@@ -97,26 +89,38 @@ export const UserAction: FC<ActionProps> = ({action}) => {
                         />
                         <Text>{action.expand?.game?.name}</Text>
                     </VStack>
-                    <VStack>
-                        {actionController.statusNode()}
-                        <DataList.Root orientation="horizontal">
-                            <DataList.Item key="cell">
-                                <DataList.ItemLabel>Клетка</DataList.ItemLabel>
-                                <DataList.ItemValue>{action.expand?.cell.name}</DataList.ItemValue>
-                            </DataList.Item>
-                            <DataList.Item key="dice-roll">
-                                <DataList.ItemLabel>Бросок кубика</DataList.ItemLabel>
-                                <DataList.ItemValue>{action.diceRoll}</DataList.ItemValue>
-                            </DataList.Item>
-                            <DataList.Item key="created">
-                                <DataList.ItemLabel>Начало действия</DataList.ItemLabel>
-                                <DataList.ItemValue>{formatDateLocalized(action.created)}</DataList.ItemValue>
-                            </DataList.Item>
-                        </DataList.Root>
-                        <Card.Description as="div">
+                    <VStack w="100%" align="start">
+                        <VStack>
+                            {actionController.statusNode()}
+                            <DataList.Root orientation="horizontal">
+                                <DataList.Item key="cell">
+                                    <DataList.ItemLabel>Клетка</DataList.ItemLabel>
+                                    <DataList.ItemValue>{action.expand?.cell.name}</DataList.ItemValue>
+                                </DataList.Item>
+                                <DataList.Item key="dice-roll">
+                                    <DataList.ItemLabel>Бросок кубика</DataList.ItemLabel>
+                                    <DataList.ItemValue>{action.diceRoll}</DataList.ItemValue>
+                                </DataList.Item>
+                                <DataList.Item key="created">
+                                    <DataList.ItemLabel>Начало действия</DataList.ItemLabel>
+                                    <DataList.ItemValue>{formatDateLocalized(action.created)}</DataList.ItemValue>
+                                </DataList.Item>
+                            </DataList.Root>
+                        </VStack>
+                        <Card.Description as="div" w="100%">
                             {isEditing ? (
-                                <Box borderWidth="1px" borderColor="gray.200" rounded="md" p="2">
-                                    <EditorContent editor={editor}/>
+                                <Box
+                                    borderWidth={2}
+                                    borderColor="gray.200"
+                                    rounded="md"
+                                    p={2}
+                                    w="100%"
+                                >
+                                    <ActionTextEditor
+                                        content={draft}
+                                        setContent={(content) => setDraft(content)}
+                                        editable={isEditing}
+                                    />
                                 </Box>
                             ) : (
                                 HTMLReactParser(comment)
@@ -137,7 +141,7 @@ export const UserAction: FC<ActionProps> = ({action}) => {
                     </VStack>
                 </Stack>
             </Card.Body>
-            <Card.Footer>
+            <Card.Footer pt={5}>
                 {isEditing ? (
                     <HStack gap="3">
                         <Button onClick={handleSave} variant="solid" loading={saving} disabled={saving}>

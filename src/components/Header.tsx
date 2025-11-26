@@ -1,32 +1,39 @@
-import {ButtonGroup, Flex} from "@chakra-ui/react";
+import {Flex} from "@chakra-ui/react";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {LoginModalButton} from "./LoginModalButton";
-import {HeaderTabs} from "./HeaderTabs";
-import {CollectionListAllProvider} from "@context/CollectionListAllContext";
 import {RulesModalButton} from "./RulesModalButton";
 import {Button} from "@ui/button";
+import {Link} from "react-router-dom";
+import {CollectionListAllProvider} from "@context/CollectionListAllContext";
+import {PlayersFloatingList} from "./board/PlayersFloatingList";
 
 export const Header = () => {
-    const {pb, isAuth, logout} = useAppContext();
+    const {pb} = useAppContext();
+    const {isAuth, logout} = useAppContext();
 
     return (
-        <Flex
-            py={4}
-            px={28}
-            justify="center"
-            gap={5}
-        >
-            <CollectionListAllProvider collection={pb.collection('users')}>
-                <HeaderTabs/>
-            </CollectionListAllProvider>
-            <ButtonGroup size={'md'}>
+        <>
+            <Flex
+                py={4}
+                justify="center"
+                gap={5}
+                wrap="wrap"
+            >
+                <Button asChild>
+                    <Link to="/">
+                        Главная
+                    </Link>
+                </Button>
                 {isAuth ? null : <LoginModalButton/>}
                 <RulesModalButton/>
                 {isAuth
                     ? <Button colorPalette="red" onClick={() => logout()}>Выйти</Button>
                     : null
                 }
-            </ButtonGroup>
-        </Flex>
+            </Flex>
+            <CollectionListAllProvider collection={pb.collection('users')}>
+                <PlayersFloatingList/>
+            </CollectionListAllProvider>
+        </>
     )
 }
