@@ -1,11 +1,10 @@
-import {type FC, type Key, type ReactNode, useMemo} from "react";
+import {type FC, useMemo} from "react";
 import type {ItemRecord} from "@shared/types/item";
 import {Card, Flex, Image} from "@chakra-ui/react";
 import {Button} from "@ui/button";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {Modal} from "@ui/modal";
-import {EffectFactory} from "@shared/types/effects/effect-factory";
-import {useForm} from "react-hook-form";
+import {EffectFactory, Type_Effect_Creator} from "@shared/types/effects/effect-factory";
 
 interface InventoryItemProps {
     item: ItemRecord
@@ -15,31 +14,20 @@ export const InventoryItem: FC<InventoryItemProps> = ({item}) => {
     const {pb} = useAppContext();
     const icon = useMemo(() => pb.files.getURL(item, item.icon), [item.icon]);
 
-    const {
-        register,
-        handleSubmit,
-        formState: {errors}
-    } = useForm();
-
-    const effects = useMemo(() => {
-        const e = [] as ReactNode[];
-        for (const [i, effect] of item.expand?.effects.entries()!) {
-            e.push(
-                EffectFactory.get(effect.type).buildInputs(i, register)
-            );
-        }
-        return e;
-    }, []);
-    const needModal = useMemo(() => {
-        for (const effect of effects) {
-            if (effect != null) return true;
-        }
-        return false;
-    }, [effects]);
-
-    const onSubmit = (values: any) => {
-        console.log(values)
+    const handleSubmit = (formData: FormData) => {
+        console.log(Object.fromEntries(formData));
     }
+
+    let needModal = false;
+
+    const effects = useMemo(() => (
+        item.expand?.effects.entries()!.reduce((prev, [_, effect]) => {
+            const effectFactory = EffectFactory.get(effect.type);
+            if (effectFactory === null) return prev;
+            needModal = true;
+            return [...prev, effectFactory]
+        }, [] as Type_Effect_Creator[]) || []
+    ), []);
 
     return (
         <Card.Root>
@@ -65,8 +53,8 @@ export const InventoryItem: FC<InventoryItemProps> = ({item}) => {
                                 <Button colorPalette="green">Использовать</Button>
                             }
                         >
-                            <form onSubmit={handleSubmit(onSubmit)}>
-                                {effects}
+                            <form action={handleSubmit}>
+                                {effects.map((effect, i) => effect(i))}
                                 <Flex justifyContent="center" pt={5}>
                                     <Button
                                         type="submit"

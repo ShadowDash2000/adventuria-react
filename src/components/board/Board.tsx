@@ -1,4 +1,4 @@
-import {Button, Flex, Image, VisuallyHidden} from "@chakra-ui/react";
+import {Button, Flex, Image} from "@chakra-ui/react";
 import {createContext, useContext, useEffect, useRef, useState, useMemo} from "react";
 import {LuArrowBigDown, LuArrowBigUp} from "react-icons/lu";
 import {Players} from "./Players";
@@ -49,7 +49,6 @@ export const Board = () => {
 
     // board container refs
     const boardRef = useRef<HTMLDivElement>(null);
-    const boardBottomRef = useRef<HTMLDivElement>(null);
     const boardInnerRef = useRef<HTMLDivElement>(null);
 
     // board geometry
@@ -69,11 +68,8 @@ export const Board = () => {
         return {width: cellWidth, height: cellHeight};
     }, [boardDimensions.width, boardDimensions.height, rows, cols]);
 
-    const scrollToTop = () => {
-        boardRef.current?.scrollIntoView();
-    };
-    const scrollToBottom = () => {
-        boardBottomRef.current?.scrollIntoView();
+    const scrollTo = (to: 'start' | 'end') => {
+        boardRef.current?.scrollIntoView({block: to});
     };
 
     // observe board container size and update boardWidth/boardHeight
@@ -151,7 +147,7 @@ export const Board = () => {
             overflow="hidden"
         >
             <Button
-                onClick={scrollToBottom}
+                onClick={() => scrollTo('end')}
                 position="absolute"
                 zIndex={2}
                 top="0"
@@ -160,7 +156,7 @@ export const Board = () => {
                 <LuArrowBigDown/>
             </Button>
             <Button
-                onClick={scrollToTop}
+                onClick={() => scrollTo('start')}
                 position="absolute"
                 zIndex={2}
                 bottom="0"
@@ -209,7 +205,6 @@ export const Board = () => {
                     <Players/>
                 </BoardContext.Provider>
             </Flex>
-            <VisuallyHidden ref={boardBottomRef}/>
         </Flex>
     )
 }
