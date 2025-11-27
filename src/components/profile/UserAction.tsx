@@ -8,7 +8,7 @@ import {formatDateLocalized} from "@shared/helpers/helper";
 import {ActionFactory} from "@shared/types/actions/action-factory";
 import {Avatar} from "../Avatar";
 import {ActionTextEditor} from "./ActionTextEditor";
-import {type Content} from "@tiptap/react";
+import {type HTMLContent} from "@tiptap/react";
 
 type ActionProps = {
     action: ActionRecord;
@@ -21,8 +21,8 @@ export const UserAction: FC<ActionProps> = ({action}) => {
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [comment, setComment] = useState<Content>(action.comment);
-    const [draft, setDraft] = useState<Content>(comment);
+    const [comment, setComment] = useState<string>(action.comment);
+    const [draft, setDraft] = useState<string>(comment);
 
     const canEdit = Boolean(isAuth && authUser?.id && (action.user === authUser.id));
 
@@ -118,7 +118,7 @@ export const UserAction: FC<ActionProps> = ({action}) => {
                                 >
                                     <ActionTextEditor
                                         content={draft}
-                                        setContent={(content) => setDraft(content)}
+                                        setContent={(content) => setDraft(content as HTMLContent)}
                                         editable={isEditing}
                                     />
                                 </Box>
