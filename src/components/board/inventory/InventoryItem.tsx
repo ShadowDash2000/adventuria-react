@@ -1,10 +1,10 @@
-import {type FC, type ReactNode, useMemo} from "react";
+import {type FC, useMemo} from "react";
 import type {ItemRecord} from "@shared/types/item";
 import {Card, Flex, Image} from "@chakra-ui/react";
 import {Button} from "@ui/button";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {Modal} from "@ui/modal";
-import {EffectFactory} from "@shared/types/effects/effect-factory";
+import {EffectFactory, Type_Effect_Creator} from "@shared/types/effects/effect-factory";
 
 interface InventoryItemProps {
     item: ItemRecord
@@ -18,15 +18,16 @@ export const InventoryItem: FC<InventoryItemProps> = ({item}) => {
         console.log(Object.fromEntries(formData));
     }
 
-    const effects = useMemo(() => (
-        item.expand?.effects.entries()!.reduce((prev, [i, effect]) => (
-            [...prev, EffectFactory.get(effect.type).buildInputs(i)]
-        ), [] as ReactNode[]) || []
-    ), []);
+    let needModal = false;
 
-    const needModal = useMemo(() => (
-        effects.some((value) => value !== null)
-    ), [effects]);
+    const effects = useMemo(() => (
+        item.expand?.effects.entries()!.reduce((prev, [_, effect]) => {
+            const effectFactory = EffectFactory.get(effect.type);
+            if (effectFactory === null) return prev;
+            needModal = true;
+            return [...prev, effectFactory]
+        }, [] as Type_Effect_Creator[]) || []
+    ), []);
 
     return (
         <Card.Root>
@@ -53,7 +54,7 @@ export const InventoryItem: FC<InventoryItemProps> = ({item}) => {
                             }
                         >
                             <form action={handleSubmit}>
-                                {effects}
+                                {effects.map((effect, i) => effect(i))}
                                 <Flex justifyContent="center" pt={5}>
                                     <Button
                                         type="submit"
