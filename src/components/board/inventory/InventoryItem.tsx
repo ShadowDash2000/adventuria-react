@@ -8,9 +8,10 @@ import {EffectFactory, Type_Effect_Creator} from "@shared/types/effects/effect-f
 
 interface InventoryItemProps {
     item: ItemRecord
+    showControlButtons?: boolean
 }
 
-export const InventoryItem: FC<InventoryItemProps> = ({item}) => {
+export const InventoryItem: FC<InventoryItemProps> = ({item, showControlButtons = false}) => {
     const {pb} = useAppContext();
     const icon = useMemo(() => pb.files.getURL(item, item.icon), [item.icon]);
 
@@ -18,16 +19,15 @@ export const InventoryItem: FC<InventoryItemProps> = ({item}) => {
         console.log(Object.fromEntries(formData));
     }
 
-    let needModal = false;
-
     const effects = useMemo(() => (
         item.expand?.effects.entries()!.reduce((prev, [_, effect]) => {
             const effectFactory = EffectFactory.get(effect.type);
             if (effectFactory === null) return prev;
-            needModal = true;
             return [...prev, effectFactory]
         }, [] as Type_Effect_Creator[]) || []
     ), []);
+
+    const needModal = effects.length > 0;
 
     return (
         <Card.Root>
@@ -44,27 +44,30 @@ export const InventoryItem: FC<InventoryItemProps> = ({item}) => {
                 />
             </Card.Body>
             <Card.Footer flexDirection="column">
-                <Button colorPalette="red">Выбросить</Button>
-                {
-                    needModal ?
-                        <Modal
-                            title=""
-                            trigger={
-                                <Button colorPalette="green">Использовать</Button>
-                            }
-                        >
-                            <form action={handleSubmit}>
-                                {effects.map((effect, i) => effect(i))}
-                                <Flex justifyContent="center" pt={5}>
-                                    <Button
-                                        type="submit"
-                                        colorPalette="green"
-                                    >Сохранить</Button>
-                                </Flex>
-                            </form>
-                        </Modal>
-                        : <Button colorPalette="green">Использовать</Button>
-                }
+                {showControlButtons && (
+                    <>
+                        <Button colorPalette="red">Выбросить</Button>
+                        {needModal ?
+                            <Modal
+                                title=""
+                                trigger={
+                                    <Button colorPalette="green">Использовать</Button>
+                                }
+                            >
+                                <form action={handleSubmit}>
+                                    {effects.map((effect, i) => effect(i))}
+                                    <Flex justifyContent="center" pt={5}>
+                                        <Button
+                                            type="submit"
+                                            colorPalette="green"
+                                        >Сохранить</Button>
+                                    </Flex>
+                                </form>
+                            </Modal>
+                            : <Button colorPalette="green">Использовать</Button>
+                        }
+                    </>
+                )}
             </Card.Footer>
         </Card.Root>
     );

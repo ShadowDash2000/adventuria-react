@@ -12,7 +12,7 @@ interface InventoryProps {
 }
 
 export const Inventory: FC<InventoryProps> = ({userId}) => {
-    const {pb} = useAppContext();
+    const {pb, isAuth, user} = useAppContext();
     const inventory = useQuery({
         queryFn: () => {
             return pb.collection('inventory').getFullList<InventoryItemRecord>({
@@ -30,7 +30,11 @@ export const Inventory: FC<InventoryProps> = ({userId}) => {
         <Grid templateColumns="repeat(2, 1fr)">
             <For each={inventory.data}>
                 {((inv, index) => (
-                    <InventoryItem item={inv.expand?.item!} key={index}/>
+                    <InventoryItem
+                        key={index}
+                        item={inv.expand?.item!}
+                        showControlButtons={isAuth && user?.id === userId}
+                    />
                 ))}
             </For>
         </Grid>

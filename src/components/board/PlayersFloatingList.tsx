@@ -27,7 +27,7 @@ export const PlayersFloatingList: FC = () => {
                     display="flex"
                     gap={2}
                     alignItems="center"
-                    justifyContent="end"
+                    justifyContent="start"
                 >
                     Игроки
                     <Collapsible.Indicator
