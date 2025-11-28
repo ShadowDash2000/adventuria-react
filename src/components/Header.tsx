@@ -1,11 +1,12 @@
 import {Flex} from "@chakra-ui/react";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {LoginModalButton} from "./LoginModalButton";
-import {RulesModalButton} from "./RulesModalButton";
 import {Button} from "@ui/button";
 import {Link} from "react-router-dom";
 import {CollectionListAllProvider} from "@context/CollectionListAllContext";
 import {PlayersFloatingList} from "./board/PlayersFloatingList";
+import {Modal} from "@ui/modal";
+import {Rules} from "./Rules";
 
 export const Header = () => {
     const {pb} = useAppContext();
@@ -25,7 +26,14 @@ export const Header = () => {
                     </Link>
                 </Button>
                 {isAuth ? null : <LoginModalButton/>}
-                <RulesModalButton/>
+                <Modal
+                    title="Правила"
+                    trigger={
+                        <Button rounded={'lg'} colorPalette={'green'}>Правила</Button>
+                    }
+                >
+                    <Rules/>
+                </Modal>
                 {isAuth
                     ? <Button colorPalette="red" onClick={() => logout()}>Выйти</Button>
                     : null

@@ -1,7 +1,7 @@
 import {type FC} from "react";
 import {useCollectionListAll} from "@context/CollectionListAllContext";
 import {UserRecord} from "@shared/types/user";
-import {Box, Flex as ChakraFlex, Collapsible, For, Separator, HStack} from "@chakra-ui/react";
+import {Flex as ChakraFlex, Collapsible, For, Separator, HStack} from "@chakra-ui/react";
 import {Flex} from "@ui/flex";
 import {LuChevronUp} from "react-icons/lu";
 import {Link} from "react-router-dom";
@@ -15,8 +15,12 @@ export const PlayersFloatingList: FC = () => {
             zIndex={60}
             position="fixed"
             left={0}
+            visibility={{base: 'visible', lgDown: 'hidden'}}
         >
-            <Collapsible.Root defaultOpen>
+            <Collapsible.Root
+                defaultOpen
+                minW="18rem"
+            >
                 <Collapsible.Trigger
                     w="100%"
                     py={3}
@@ -42,7 +46,7 @@ export const PlayersFloatingList: FC = () => {
                                         <Avatar user={user}/>
                                         {user.name}
                                     </HStack>
-                                    <Separator size="md" borderColor="{colors.blue.fg}"/>
+                                    <Separator size="md" borderColor="white" variant="dashed"/>
                                 </Link>
                             )}
                         </For>

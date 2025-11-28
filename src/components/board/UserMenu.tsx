@@ -17,6 +17,7 @@ export const UserMenu: FC = () => {
             zIndex={100}
             py={10}
             justify="center"
+            align="center"
         >
             {actionButton}
             <PlayerInventory userId={user?.id!}/>

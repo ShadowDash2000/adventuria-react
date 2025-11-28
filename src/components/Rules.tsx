@@ -1,14 +1,25 @@
-import {SettingsRecord} from "@shared/types/settings";
-import {useCollectionOneFilter} from "@context/CollectionOneFilterContext";
-import {Flex} from "@chakra-ui/react";
+import {type SettingsRecord} from "@shared/types/settings";
+import {Flex, Text} from "@chakra-ui/react";
+import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
+import {useQuery} from "@tanstack/react-query";
+import {LuLoader} from "react-icons/lu";
 
 export const Rules = () => {
-    const {data: settings} = useCollectionOneFilter<SettingsRecord>();
+    const {pb} = useAppContext();
+    const settings = useQuery({
+        queryFn: () => {
+            return pb.collection('settings').getFirstListItem<SettingsRecord>('');
+        },
+        queryKey: ['rules'],
+    });
+
+    if (settings.isPending) return <LuLoader/>;
+    if (settings.isError) return <Text>Error: {settings.error?.message}</Text>;
 
     return (
         <Flex
             direction="column"
-            dangerouslySetInnerHTML={{__html: settings.rules || ''}}
+            dangerouslySetInnerHTML={{__html: settings.data.rules || ''}}
         />
     )
 }
