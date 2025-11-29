@@ -1,6 +1,6 @@
 import type {ReactNode} from "react";
 
-export abstract class ActionController {
+export abstract class ActionDispenser {
     abstract buttonNode(): ReactNode
 
     abstract color(): string

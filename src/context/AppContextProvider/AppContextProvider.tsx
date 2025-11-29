@@ -2,6 +2,8 @@ import {createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffec
 import PocketBase, {ClientResponseError} from "pocketbase";
 import type {UserRecord} from "@shared/types/user";
 import {type QueryObserverResult, useQuery} from "@tanstack/react-query";
+import type {AudioPresetRecord} from "@shared/types/audio-preset";
+import {type AudioPlayer, useAudio} from "@shared/hook/useAudio";
 
 export type AppProviderType = {
     pb: PocketBase
@@ -9,8 +11,10 @@ export type AppProviderType = {
     user: UserRecord | null
     setUser: Dispatch<SetStateAction<UserRecord>>
     availableActions: string[]
+    rollDiceAudioPreset: AudioPresetRecord | undefined
     logout: () => void
     refetchActions: () => Promise<QueryObserverResult<string[], Error>>
+    audioActions: AudioPlayer
 }
 
 export type AppContextProviderProps = {
@@ -23,7 +27,6 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
     const pb = useMemo(() => new PocketBase(import.meta.env.VITE_PB_URL), []);
     const [user, setUser] = useState(pb.authStore.record as UserRecord);
     const [isAuth, setIsAuth] = useState<boolean>(pb.authStore.isValid);
-    const [availableActions, setAvailableActions] = useState<string[]>([]);
     const logout = () => {
         pb.authStore.clear();
         setUser(pb.authStore.record as UserRecord);
@@ -31,35 +34,24 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
     }
 
     const {
+        data: availableActions = [],
         refetch: refetchActions,
     } = useQuery({
-        queryKey: ['available-actions'],
-        queryFn: async () => {
-            const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/available-actions`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${pb.authStore.token}`,
-                },
-            });
-
-            if (!res.ok) {
-                throw await res.json().catch(() => {
-                    return new ClientResponseError({
-                        status: res.status,
-                    });
-                });
-            }
-
-            const data: string[] = await res.json();
-            setAvailableActions(data);
-            return data;
-        },
-        retry: (failureCount, e) => {
-            const error = e as ClientResponseError;
-            if (error.status === 401) return false;
-            return failureCount < 10;
-        },
+        queryFn: async () => await fetchAvailableActions(pb.authStore.token),
+        enabled: isAuth,
+        queryKey: ['available-actions', isAuth],
         refetchOnWindowFocus: false,
+    });
+
+    const {data: rollDiceAudioPreset} = useQuery({
+        queryFn: async () => {
+            return pb.collection('audio_presets').getFirstListItem<AudioPresetRecord>(
+                'slug = "roll-dice"',
+                {expand: 'audio'},
+            );
+        },
+        enabled: isAuth,
+        queryKey: ['roll-dice-audio-preset', isAuth],
     });
 
     useEffect(() => {
@@ -76,6 +68,8 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
         setIsAuth(pb.authStore.isValid);
     }, [user]);
 
+    const audioActions = useAudio('volume-actions', 0.1);
+
     return <AppContext.Provider value={{
         pb,
         user,
@@ -83,10 +77,31 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
         logout,
         isAuth,
         availableActions,
+        rollDiceAudioPreset,
         refetchActions,
+        audioActions,
     }}>
         {children}
     </AppContext.Provider>;
 }
 
 export const useAppContext: () => AppProviderType = () => useContext(AppContext);
+
+const fetchAvailableActions = async (authToken: string): Promise<string[]> => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/available-actions`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${authToken}`,
+        },
+    });
+
+    if (!res.ok) {
+        throw await res.json().catch(() => {
+            return new ClientResponseError({
+                status: res.status,
+            });
+        });
+    }
+
+    return await res.json() as string[];
+}

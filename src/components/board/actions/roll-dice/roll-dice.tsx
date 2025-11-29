@@ -1,11 +1,11 @@
 import {Status} from "@chakra-ui/react";
 import {type ReactElement} from "react";
-import {ActionController} from "@shared/types/actions/action-base";
-import {RollDiceModal} from "../../../components/board/actions/RollDiceModal";
+import {ActionDispenser} from "../action-base";
+import {RollDiceButton} from "./RollDiceButton";
 
-export class RollDice extends ActionController {
+export class RollDice extends ActionDispenser {
     buttonNode(): ReactElement {
-        return <RollDiceModal/>
+        return <RollDiceButton/>
     }
 
     color() {

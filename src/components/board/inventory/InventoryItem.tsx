@@ -4,7 +4,7 @@ import {Card, Flex, Image} from "@chakra-ui/react";
 import {Button} from "@ui/button";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {Modal} from "@ui/modal";
-import {EffectFactory, Type_Effect_Creator} from "@shared/types/effects/effect-factory";
+import {EffectFactory, Type_Effect_Creator} from "./effects/effect-factory";
 
 interface InventoryItemProps {
     item: ItemRecord

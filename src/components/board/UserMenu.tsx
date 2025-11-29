@@ -1,6 +1,6 @@
 import {type FC, useMemo} from "react";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
-import {ActionFactory} from "@shared/types/actions/action-factory";
+import {ActionFactory} from "./actions/action-factory";
 import {Flex} from "@chakra-ui/react";
 import {PlayerInventory} from "./inventory/PlayerInventory";
 

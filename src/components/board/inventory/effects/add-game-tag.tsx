@@ -1,4 +1,4 @@
-import {GameTagSelect} from "@shared/types/effects/GameTagSelect";
+import {GameTagSelect} from "./GameTagSelect";
 import type {Key} from "react";
 
 export const createAddGameTag = (key?: Key) => {

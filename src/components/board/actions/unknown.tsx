@@ -1,18 +1,18 @@
 import {Status} from "@chakra-ui/react";
 import type {ReactNode} from "react";
-import {ActionController} from "@shared/types/actions/action-base";
+import {ActionDispenser} from "./action-base";
 
-export class Done extends ActionController {
+export class Unknown extends ActionDispenser {
     buttonNode(): ReactNode {
-        return undefined;
+        return 'Ой, ошибочка...';
     }
 
     color() {
-        return 'green'
+        return 'red'
     }
 
     name() {
-        return 'Завершено'
+        return '[ДАННЫЕ УДАЛЕНЫ]'
     }
 
     statusNode() {

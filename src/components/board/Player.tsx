@@ -79,7 +79,10 @@ export const Player: FC<PlayerProps> = (
             move(next.row, next.col);
         }
 
-        return () => abortController.abort();
+        return () => {
+            abortController.abort();
+            if (intervalId) clearInterval(intervalId);
+        }
     }, [rows, cols, cellWidth, cellHeight, isAuth]);
 
     return (
