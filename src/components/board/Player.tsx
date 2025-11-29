@@ -23,7 +23,7 @@ export const Player: FC<PlayerProps> = (
         user
     }
 ) => {
-    const {pb, isAuth} = useAppContext();
+    const {isAuth} = useAppContext();
     const {
         rows,
         cols,
@@ -49,20 +49,35 @@ export const Player: FC<PlayerProps> = (
 
         const abortController = new AbortController();
 
+        const stepsQueue: Array<{ row: number; col: number }> = [];
+        let intervalId: number | null = null;
         document.addEventListener(`player.move.${user.id}`, (e) => {
             const {detail} = e as CustomEvent<PlayerMoveEvent>;
-            const path = BoardHelper.createPath(rows, cols, detail.prevCellsPassed, detail.cellsPassed);
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i === path.length) {
-                    clearInterval(interval);
-                    return;
-                }
 
-                move(path[i].row, path[i].col);
-                i++;
-            }, moveTime * 1000);
+            if (stepsQueue.length > 0) {
+                stepsQueue.push(BoardHelper.getCoords(rows, cols, detail.cellsPassed));
+            } else {
+                stepsQueue.push(...BoardHelper.createPath(rows, cols, detail.prevCellsPassed, detail.cellsPassed));
+            }
+
+            if (intervalId) return;
+
+            intervalId = setInterval(moveInterval, moveTime * 1000);
         }, {signal: abortController.signal});
+
+        const moveInterval = () => {
+            const next = stepsQueue.shift();
+
+            if (!next) {
+                if (intervalId) {
+                    clearInterval(intervalId);
+                    intervalId = null;
+                }
+                return;
+            }
+
+            move(next.row, next.col);
+        }
 
         return () => abortController.abort();
     }, [rows, cols, cellWidth, cellHeight, isAuth]);
