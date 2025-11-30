@@ -11,7 +11,8 @@ export class BoardHelper {
         for (const user of users) {
             const cellNumber = BoardHelper.getUserCellNumber(user.cellsPassed, cells.length);
             const cellId = cells[cellNumber].id;
-            cellsUsers.set(cellId, [user.id]);
+            const prevUsers = cellsUsers.get(cellId) || [];
+            cellsUsers.set(cellId, [...prevUsers, user.id]);
         }
 
         return cellsUsers;

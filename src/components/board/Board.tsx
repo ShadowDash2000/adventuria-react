@@ -1,5 +1,5 @@
 import {Button, Flex, Image} from "@chakra-ui/react";
-import {createContext, useContext, useEffect, useRef, useState, useMemo} from "react";
+import {createContext, useContext, useEffect, useRef, useState, useMemo, useCallback} from "react";
 import {LuArrowBigDown, LuArrowBigUp} from "react-icons/lu";
 import {Players} from "./Players";
 import type {CellRecord} from "@shared/types/cell";
@@ -21,11 +21,7 @@ type BoardContextType = {
     cols: number
     cellWidth: number
     cellHeight: number
-}
-
-export type PlayerMoveEvent = {
-    prevCellsPassed: number
-    cellsPassed: number
+    cellsUsersRebuild: () => void
 }
 
 type Dimension = { width: number, height: number }
@@ -33,7 +29,7 @@ type Dimension = { width: number, height: number }
 export const BoardContext = createContext<BoardContextType>({} as BoardContextType);
 
 export const Board = () => {
-    const {pb, isAuth} = useAppContext();
+    const {pb, isAuth, user} = useAppContext();
     const {users: usersRaw, cells: cellRaw} = useBoardDataContext();
 
     const [cells, setCells] = useState<CellRecord[]>(cellRaw);
@@ -43,9 +39,14 @@ export const Board = () => {
 
     const cellsOrdered = useMemo(() => BoardHelper.buildCells(cells), [cells]);
     const cellsOrderedRev = useMemo(() => cellsOrdered.slice().reverse(), [cellsOrdered]);
+    const [cellsUsersRef, setCellsUsersRef] = useState({});
     const cellsUsers = useMemo(() => {
-        return BoardHelper.buildCellsUsers([...users.values()], cells)
-    }, [users, cells]);
+        return BoardHelper.buildCellsUsers([...users.values()], cells);
+    }, [users, cells, cellsUsersRef]);
+
+    const cellsUsersRebuild = useCallback(() => {
+        setCellsUsersRef({});
+    }, []);
 
     // board container refs
     const boardRef = useRef<HTMLDivElement>(null);
@@ -109,12 +110,14 @@ export const Board = () => {
                     break;
                 case 'update':
                     setUsers(prev => {
-                        document.dispatchEvent(new CustomEvent(`player.move.${e.record.id}`, {
-                            detail: {
-                                prevCellsPassed: prev.get(e.record.id)!.cellsPassed,
-                                cellsPassed: e.record.cellsPassed,
-                            },
-                        }));
+                        if (e.record.id !== user!.id) {
+                            document.dispatchEvent(new CustomEvent(`player.move.${e.record.id}`, {
+                                detail: {
+                                    prevCellsPassed: prev.get(e.record.id)!.cellsPassed,
+                                    cellsPassed: e.record.cellsPassed,
+                                },
+                            }));
+                        }
 
                         const next = new Map(prev);
                         next.set(e.record.id, e.record);
@@ -200,6 +203,7 @@ export const Board = () => {
                     cols,
                     cellWidth,
                     cellHeight,
+                    cellsUsersRebuild,
                 }}>
                     <Cells/>
                     <Players/>

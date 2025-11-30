@@ -1,6 +1,6 @@
-import {forwardRef, useImperativeHandle, useRef, type CSSProperties} from 'react';
-import {type DiceRef} from './types';
-import {performRoll} from './roll';
+import {forwardRef, useImperativeHandle, useRef, type CSSProperties, useState, useEffect} from 'react';
+import {type DiceRef, RollResult} from './types';
+import {performRoll, performRotation} from './roll';
 
 type D6DiceProps = {
     sizePx?: number;
@@ -9,13 +9,19 @@ type D6DiceProps = {
 export const D6Dice = forwardRef<DiceRef, D6DiceProps>(
     ({sizePx = 200}, ref) => {
         const rotateRef = useRef<HTMLDivElement | null>(null);
+        const [rollRes, setRollRes] = useState<RollResult | null>(null);
 
         useImperativeHandle(ref, () => ({
             roll: (value: number, durationSec: number = 4) => {
                 const el = rotateRef.current;
-                if (el) performRoll(el, 'd6', value, durationSec);
+                if (!el) return;
+                setRollRes(performRoll(el, 'd6', value, durationSec));
             }
         }), []);
+
+        if (rollRes && rotateRef.current) {
+            performRotation(rotateRef.current, {x: rollRes.x, y: rollRes.y});
+        }
 
         const sizeStyle: CSSProperties = {width: sizePx, height: sizePx};
 

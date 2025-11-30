@@ -1,6 +1,6 @@
-import {forwardRef, useImperativeHandle, useRef} from 'react';
-import {type DiceRef} from './types';
-import {performRoll} from './roll';
+import {forwardRef, useImperativeHandle, useRef, useState} from 'react';
+import {type DiceRef, RollResult} from './types';
+import {performRoll, performRotation} from './roll';
 
 type D4DiceProps = {
     sizePx?: number
@@ -9,13 +9,19 @@ type D4DiceProps = {
 export const D4Dice = forwardRef<DiceRef, D4DiceProps>(
     (_props, ref) => {
         const rotateRef = useRef<HTMLDivElement | null>(null);
+        const [rollRes, setRollRes] = useState<RollResult | null>(null);
 
         useImperativeHandle(ref, () => ({
             roll: (value: number, durationSec: number = 4) => {
                 const el = rotateRef.current;
-                if (el) performRoll(el, 'd4', value, durationSec);
+                if (!el) return;
+                setRollRes(performRoll(el, 'd4', value, durationSec));
             }
         }), []);
+
+        if (rollRes && rotateRef.current) {
+            performRotation(rotateRef.current, {x: rollRes.x, y: rollRes.y});
+        }
 
         return (
             <div className="d4-container">

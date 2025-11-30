@@ -1,18 +1,20 @@
-import {type FC, useMemo} from "react";
+import {type FC, type RefObject, useMemo} from "react";
 import {Avatar as ChakraAvatar, type AvatarRootProps} from "@chakra-ui/react/avatar";
 import type {UserRecord} from "@shared/types/user";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 
 interface AvatarProps extends AvatarRootProps {
+    ref?: RefObject<HTMLDivElement | null>;
     user: UserRecord;
 }
 
-export const Avatar: FC<AvatarProps> = ({user, ...props}) => {
+export const Avatar: FC<AvatarProps> = ({user, ref, ...props}) => {
     const {pb} = useAppContext();
     const avatar = useMemo(() => pb.files.getURL(user, user.avatar), [user.avatar]);
 
     return (
         <ChakraAvatar.Root
+            ref={ref}
             outlineWidth="{spacing.1}"
             outlineColor={user.color}
             outlineOffset="{spacing.0.5}"

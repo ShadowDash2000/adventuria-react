@@ -1,13 +1,20 @@
-import {type FC, useCallback, useEffect, useState} from "react";
+import {type FC, useCallback, useEffect, useRef, useState} from "react";
 import {DiceFactory, type DiceFactoryItem, DiceType} from "./dices";
 import {Flex, For, Portal} from "@chakra-ui/react";
 import {Button} from "@ui/button";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
+import type {CellRecord} from "@shared/types/cell";
+import {performFadeOut} from "./dices/roll";
+
+const FADEOUT_DURATION = 3;
 
 export const RollDiceButton: FC = () => {
-    const {pb, rollDiceAudioPreset, audioActions, refetchActions} = useAppContext();
+    const {pb, rollDiceAudioPreset, audioActions, refetchActions, user} = useAppContext();
     const [dices, setDices] = useState<DiceFactoryItem[] | null>(null);
     const [rolls, setRolls] = useState<number[] | null>(null);
+    const [path, setPath] = useState<Array<MoveEvent> | null>(null);
+    const [isRolling, setIsRolling] = useState<boolean>(false);
+    const diceSceneRef = useRef<HTMLDivElement>(null);
 
     const roll = useCallback(async () => {
         const res = await diceRollRequest(pb.authStore.token);
@@ -25,10 +32,11 @@ export const RollDiceButton: FC = () => {
 
         setDices(dices);
         setRolls(rolls);
+        setPath(res.data.path);
     }, []);
 
     useEffect(() => {
-        if (!dices || !rolls) return;
+        if (!dices || !rolls || !path) return;
 
         let duration = 10;
         if (rollDiceAudioPreset) {
@@ -47,24 +55,41 @@ export const RollDiceButton: FC = () => {
             curDuration += durationDifference;
         }
 
-        // TODO: add dices fadeout on animation end
-        setTimeout(() => refetchActions(), duration * 1000);
-    }, [dices, rolls]);
+        for (const move of path) {
+            document.dispatchEvent(new CustomEvent(`player.move.${user!.id}`, {
+                detail: {
+                    prevCellsPassed: move.prev_total_steps,
+                    cellsPassed: move.total_steps,
+                    pathTime: duration,
+                },
+            }));
+        }
+
+        setTimeout(() => {
+            if (diceSceneRef.current) {
+                performFadeOut(diceSceneRef.current, FADEOUT_DURATION);
+            }
+            setTimeout(() => refetchActions(), FADEOUT_DURATION * 1000);
+        }, duration * 1000);
+    }, [dices, rolls, path]);
 
     return (
         <>
-            <Button onClick={async () => {
-                if (dices) return;
-                try {
-                    await roll();
-                } catch (e: any) {
-                    console.log(e?.message ?? "Unknown error");
-                }
-            }}>
+            <Button
+                disabled={isRolling}
+                onClick={async () => {
+                    try {
+                        await roll();
+                        setIsRolling(true);
+                    } catch (e: any) {
+                        console.log(e?.message ?? "Unknown error");
+                    }
+                }}>
                 Бросить кубик
             </Button>
             <Portal>
                 <Flex
+                    ref={diceSceneRef}
                     position="fixed"
                     gap="{spacing.40}"
                     top={0}
@@ -102,6 +127,15 @@ type RollDiceResult = RollDiceSuccess | RollDiceError;
 type RollDiceResultData = {
     roll: number
     dice_rolls: Array<{ type: DiceType; roll: number }>
+    path: Array<MoveEvent>
+}
+
+type MoveEvent = {
+    steps: number
+    total_steps: number
+    prev_total_steps: number
+    current_cell: CellRecord
+    laps: number
 }
 
 const diceRollRequest = async (authToken: string) => {

@@ -1,7 +1,7 @@
-import {FC, useEffect, useState} from "react";
+import {FC, useCallback, useEffect, useRef, useState} from "react";
 import type {UserRecord} from "@shared/types/user";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
-import {type PlayerMoveEvent, useBoardContext} from "./Board";
+import {useBoardContext} from "./Board";
 import {BoardHelper} from "./BoardHelper";
 import {Avatar} from "../Avatar";
 
@@ -16,36 +16,66 @@ type PlayerPosition = {
     offsetY: number;
 }
 
-const moveTime = 1;
+export type PlayerMoveEvent = {
+    prevCellsPassed: number
+    cellsPassed: number
+    pathTime?: number
+}
+
+const CELL_MAX_USERS_LINE = 3;
+const MOVE_TIME_DEFAULT = 1;
 
 export const Player: FC<PlayerProps> = (
     {
         user
     }
 ) => {
-    const {isAuth} = useAppContext();
+    const {isAuth, user: userAuth} = useAppContext();
     const {
         rows,
         cols,
         cellWidth,
         cellHeight,
+        cellsOrdered,
+        cellsUsers,
+        cellsUsersRebuild,
     } = useBoardContext();
+    const avatarRef = useRef<HTMLDivElement | null>(null);
     const [position, setPosition] = useState<PlayerPosition>({offsetX: 0, offsetY: 0, x: 0, y: 0});
 
-    const move = (row: number, col: number) => {
+    const move = useCallback((row: number, col: number) => {
+        const cell = cellsOrdered[row][col];
+        let userCol = 0;
+        let userRow = 0;
+        if (cell) {
+            const cellUsers = cellsUsers.get(cell.id);
+            if (cellUsers) {
+                const index = cellUsers.findIndex((value) => value === user.id);
+                if (index !== -1) {
+                    userCol = index % CELL_MAX_USERS_LINE;
+                    userRow = Math.floor(index / CELL_MAX_USERS_LINE);
+                }
+            }
+        }
         const x = cellWidth * col;
         const y = -(cellHeight * row) - cellHeight;
-        const offsetX = 50;
-        const offsetY = 130;
+        const offsetX = 50 + (100 * userCol);
+        const offsetY = 130 + (100 * userRow);
 
         setPosition({x, y, offsetX, offsetY});
-    }
+    }, [cellWidth, cellHeight, cellsOrdered, cellsUsers]);
 
     useEffect(() => {
+        if (user.id === userAuth?.id) return;
         const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
         move(pos.row, pos.col);
+    }, [rows, cols, cellWidth, cellHeight, cellsUsers]);
 
+    useEffect(() => {
         if (!isAuth) return;
+
+        const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
+        move(pos.row, pos.col);
 
         const abortController = new AbortController();
 
@@ -62,7 +92,18 @@ export const Player: FC<PlayerProps> = (
 
             if (intervalId) return;
 
-            intervalId = setInterval(moveInterval, moveTime * 1000);
+            let stepTime = MOVE_TIME_DEFAULT;
+            if (detail.pathTime) {
+                stepTime = detail.pathTime / stepsQueue.length;
+
+                const avatarEl = avatarRef.current;
+                if (avatarEl) {
+                    avatarEl.style.transition = `transform ${stepTime}s ease`;
+                }
+            }
+
+            moveInterval();
+            intervalId = setInterval(moveInterval, stepTime * 1000);
         }, {signal: abortController.signal});
 
         const moveInterval = () => {
@@ -72,6 +113,11 @@ export const Player: FC<PlayerProps> = (
                 if (intervalId) {
                     clearInterval(intervalId);
                     intervalId = null;
+                    const avatarEl = avatarRef.current;
+                    if (avatarEl) {
+                        avatarEl.style.transition = '';
+                    }
+                    cellsUsersRebuild();
                 }
                 return;
             }
@@ -87,11 +133,12 @@ export const Player: FC<PlayerProps> = (
 
     return (
         <Avatar
+            ref={avatarRef}
             user={user}
             position="absolute"
             zIndex={10}
             transform={`translate(calc(${position.x}px + ${position.offsetX}%), calc(${position.y}px + ${position.offsetY}%))`}
-            transition={`transform ${moveTime}s ease`}
+            transition={`transform ${MOVE_TIME_DEFAULT}s ease`}
         />
     )
 }

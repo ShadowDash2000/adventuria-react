@@ -3,8 +3,6 @@ import type {RefObject, ReactElement} from 'react';
 export type DiceType = 'd4' | 'd6';
 
 export type DiceRef = {
-    // Бросить кубик. Если value не указан — выпадет случайное допустимое значение.
-    // Возвращает значение, которое оказалось сверху.
     roll: (value: number, durationSec: number) => void;
 };
 
@@ -14,6 +12,8 @@ export type DiceFactoryItem = {
 };
 
 export type RollConfig = { x: number; y: number; value: number };
+
+export type RollResult = { roll: number; x: number; y: number };
 
 export const rolls: Record<DiceType, RollConfig[]> = {
     d4: [
