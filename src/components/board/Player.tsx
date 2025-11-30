@@ -65,6 +65,14 @@ export const Player: FC<PlayerProps> = (
         setPosition({x, y, offsetX, offsetY});
     }, [cellWidth, cellHeight, cellsOrdered, cellsUsers]);
 
+    const scrollToUser = useCallback(() => {
+        avatarRef.current?.scrollIntoView({
+            behavior: 'instant',
+            block: 'center',
+            inline: 'center',
+        });
+    }, [avatarRef]);
+
     useEffect(() => {
         if (user.id === userAuth?.id) return;
         const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
@@ -80,7 +88,8 @@ export const Player: FC<PlayerProps> = (
         const abortController = new AbortController();
 
         const stepsQueue: Array<{ row: number; col: number }> = [];
-        let intervalId: number | null = null;
+        let moveIntervalId: number | null = null;
+        let scrollIntervalId: number | null = null;
         document.addEventListener(`player.move.${user.id}`, (e) => {
             const {detail} = e as CustomEvent<PlayerMoveEvent>;
 
@@ -90,7 +99,7 @@ export const Player: FC<PlayerProps> = (
                 stepsQueue.push(...BoardHelper.createPath(rows, cols, detail.prevCellsPassed, detail.cellsPassed));
             }
 
-            if (intervalId) return;
+            if (moveIntervalId) return;
 
             let stepTime = MOVE_TIME_DEFAULT;
             if (detail.pathTime) {
@@ -103,21 +112,28 @@ export const Player: FC<PlayerProps> = (
             }
 
             moveInterval();
-            intervalId = setInterval(moveInterval, stepTime * 1000);
+            moveIntervalId = setInterval(moveInterval, stepTime * 1000);
+            scrollIntervalId = setInterval(scrollToUser, 100);
+            document.body.style.overflow = 'hidden';
         }, {signal: abortController.signal});
 
         const moveInterval = () => {
             const next = stepsQueue.shift();
 
             if (!next) {
-                if (intervalId) {
-                    clearInterval(intervalId);
-                    intervalId = null;
+                if (moveIntervalId) {
+                    clearInterval(moveIntervalId);
+                    moveIntervalId = null;
                     const avatarEl = avatarRef.current;
                     if (avatarEl) {
                         avatarEl.style.transition = '';
                     }
                     cellsUsersRebuild();
+                }
+                if (scrollIntervalId) {
+                    clearInterval(scrollIntervalId);
+                    scrollIntervalId = null;
+                    document.body.style.overflow = 'auto';
                 }
                 return;
             }
@@ -127,7 +143,11 @@ export const Player: FC<PlayerProps> = (
 
         return () => {
             abortController.abort();
-            if (intervalId) clearInterval(intervalId);
+            if (moveIntervalId) clearInterval(moveIntervalId);
+            if (scrollIntervalId) {
+                clearInterval(scrollIntervalId);
+                document.body.style.overflow = 'auto';
+            }
         }
     }, [rows, cols, cellWidth, cellHeight, isAuth]);
 
