@@ -47,7 +47,11 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
         queryFn: async () => {
             return pb.collection('audio_presets').getFirstListItem<AudioPresetRecord>(
                 'slug = "roll-dice"',
-                {expand: 'audio'},
+                {
+                    expand: 'audio',
+                    fields: 'audio,' +
+                        'expand.audio.id,expand.audio.collectionName,expand.audio.audio,expand.audio.duration',
+                },
             );
         },
         enabled: isAuth,
