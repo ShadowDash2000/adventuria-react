@@ -1,6 +1,6 @@
 import {CloseButton, Dialog, Portal, Text} from "@chakra-ui/react"
 import {Button} from "@ui/button";
-import {type WheelItem, WheelOFortune} from "./WheelOFortune";
+import {WheelOFortune} from "./WheelOFortune";
 import {useQuery} from "@tanstack/react-query";
 import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
 import {LuLoader} from "react-icons/lu";
@@ -14,6 +14,7 @@ export const WheelOFortuneModal = () => {
             `user = "${user!.id}"`,
             {
                 sort: '-created',
+                fields: 'items_list',
             },
         ),
         refetchOnWindowFocus: false,
@@ -22,6 +23,7 @@ export const WheelOFortuneModal = () => {
     const games = useQuery({
         queryFn: () => pb.collection('games').getFullList<GameRecord>({
             filter: action.data!.items_list.map((id) => `id="${id}"`).join('||'),
+            fields: 'id,cover,name',
         }),
         refetchOnWindowFocus: false,
         enabled: action.isSuccess,

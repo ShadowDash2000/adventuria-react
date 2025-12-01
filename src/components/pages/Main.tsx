@@ -19,7 +19,14 @@ export const Main = () => {
                 <Spacer h={10}/>
                 <CollectionListInfiniteProvider
                     collection={pb.collection('actions')}
-                    expand='game,cell,user'
+                    expand="game,cell,user"
+                    fields={
+                        "id,type,diceRoll,comment,created," +
+                        "expand.user.id,expand.user.collectionName,expand.user.name," +
+                        "expand.user.avatar,expand.user.color," +
+                        "expand.cell.name," +
+                        "expand.game.name,expand.game.cover"
+                    }
                     pageSize={10}
                     initialSort={new Map([['created', Sort.DESC]])}
                 >

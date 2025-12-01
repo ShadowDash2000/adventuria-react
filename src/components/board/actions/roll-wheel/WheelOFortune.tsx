@@ -1,6 +1,6 @@
 import {Box, Flex, Text, VStack} from "@chakra-ui/react";
 import {Button} from "@ui/button";
-import {forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState} from "react";
+import {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
 
 export type WheelItem = {
     key: string;

@@ -27,6 +27,8 @@ export const Header = () => {
                 </Button>
                 {isAuth ? null : <LoginModalButton/>}
                 <Modal
+                    lazyMount
+                    unmountOnExit
                     title="Правила"
                     trigger={
                         <Button rounded={'lg'} colorPalette={'green'}>Правила</Button>
@@ -39,7 +41,10 @@ export const Header = () => {
                     : null
                 }
             </Flex>
-            <CollectionListAllProvider collection={pb.collection('users')}>
+            <CollectionListAllProvider
+                collection={pb.collection('users')}
+                fields={"id,collectionName,name,avatar,color"}
+            >
                 <PlayersFloatingList/>
             </CollectionListAllProvider>
         </>

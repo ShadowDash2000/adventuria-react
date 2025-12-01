@@ -8,7 +8,9 @@ export const Rules = () => {
     const {pb} = useAppContext();
     const settings = useQuery({
         queryFn: () => {
-            return pb.collection('settings').getFirstListItem<SettingsRecord>('');
+            return pb.collection('settings').getFirstListItem<SettingsRecord>('', {
+                fields: 'rules',
+            });
         },
         queryKey: ['rules'],
     });

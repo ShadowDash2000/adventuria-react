@@ -1,10 +1,10 @@
-import {type FC, type ReactNode, useState} from "react";
-import {CloseButton, Dialog, Portal} from "@chakra-ui/react";
+import {type FC, type ReactNode} from "react";
+import {CloseButton, Dialog, type DialogRootProps, Portal} from "@chakra-ui/react";
 
-interface ModalProps {
+interface ModalProps extends DialogRootProps {
     title: string;
     trigger: ReactNode;
-    children?: ReactNode;
+    children: ReactNode;
 }
 
 export const Modal: FC<ModalProps> = (
@@ -12,16 +12,11 @@ export const Modal: FC<ModalProps> = (
         title,
         trigger,
         children,
+        ...props
     }
 ) => {
-    const [open, setOpen] = useState(false);
-
     return (
-        <Dialog.Root
-            lazyMount
-            open={open}
-            onOpenChange={(e) => setOpen(e.open)}
-        >
+        <Dialog.Root {...props}>
             <Dialog.Trigger asChild>
                 {trigger}
             </Dialog.Trigger>
