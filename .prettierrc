@@ -1,0 +1,10 @@
+{
+  "semi": true,
+  "objectWrap" : "collapse",
+  "printWidth": 100,
+  "tabWidth": 4,
+  "singleQuote": true,
+  "jsxSingleQuote": false,
+  "bracketSpacing": true,
+  "arrowParens": "avoid"
+}
