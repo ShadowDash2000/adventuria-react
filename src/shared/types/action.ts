@@ -13,6 +13,9 @@ export type ActionRecord = {
     game: RecordIdString
     comment: string
     diceRoll: number
+    items_list: string[]
+    can_move: boolean
+    game_filter: unknown
     expand?: ActionRecordExpand
 } & RecordModel
 

@@ -16,10 +16,10 @@ export type GameRecord = {
     publishers: RecordIdString[]
     genres: RecordIdString[]
     tags: RecordIdString[]
-    steam_app_id?: number
-    steam_app_price?: number
-    campaign_time?: number
-    cover?: string
+    steam_app_id: number
+    steam_app_price: number
+    campaign_time: number
+    cover: string
     checksum: string
     expand?: GameRecordExpand
 } & RecordModel

@@ -1,11 +1,11 @@
 import {Status} from "@chakra-ui/react";
 import {type ReactElement} from "react";
 import {ActionDispenser} from "../action-base";
-import {RollWheelModal} from "./RollWheelModal";
+import {WheelOFortuneModal} from "./WheelOFortuneModal";
 
 export class RollWheel extends ActionDispenser {
     buttonNode(): ReactElement {
-        return <RollWheelModal/>
+        return <WheelOFortuneModal/>
     }
 
     color() {
