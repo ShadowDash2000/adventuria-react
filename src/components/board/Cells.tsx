@@ -1,9 +1,9 @@
-import {For, Grid, GridItem} from "@chakra-ui/react";
-import {Cell} from "./Cell";
-import {useBoardContext} from "./Board";
+import { For, Grid, GridItem } from '@chakra-ui/react';
+import { Cell } from './Cell';
+import { useBoardInnerContext } from './BoardInner';
 
 export const Cells = () => {
-    const {cellsOrderedRev} = useBoardContext();
+    const { cellsOrderedRev } = useBoardInnerContext();
 
     return (
         <For each={cellsOrderedRev}>
@@ -12,16 +12,12 @@ export const Cells = () => {
                     <For each={lineElements}>
                         {(cell, cellNum) => (
                             <GridItem key={cellNum}>
-                                <Cell
-                                    cell={cell}
-                                    width="9.45vw"
-                                    height="6.2vw"
-                                />
+                                <Cell cell={cell} width="9.45vw" height="6.2vw" />
                             </GridItem>
                         )}
                     </For>
                 </Grid>
             )}
         </For>
-    )
-}
+    );
+};
