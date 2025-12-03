@@ -3,6 +3,7 @@ import {
     Dispatch,
     ReactNode,
     SetStateAction,
+    useCallback,
     useContext,
     useEffect,
     useMemo,
@@ -10,7 +11,7 @@ import {
 } from 'react';
 import PocketBase, { ClientResponseError } from 'pocketbase';
 import type { UserRecord } from '@shared/types/user';
-import { type QueryObserverResult, useQuery } from '@tanstack/react-query';
+import { type QueryObserverResult, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type AudioPlayer, useAudio } from '@shared/hook/useAudio';
 
 export type AppProviderType = {
@@ -30,6 +31,7 @@ const AppContext = createContext<AppProviderType>({} as AppProviderType);
 
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     const pb = useMemo(() => new PocketBase(import.meta.env.VITE_PB_URL), []);
+    const queryClient = useQueryClient();
     const [user, setUser] = useState(pb.authStore.record as UserRecord);
     const [isAuth, setIsAuth] = useState<boolean>(pb.authStore.isValid);
     const logout = () => {
@@ -38,12 +40,17 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         setIsAuth(false);
     };
 
-    const { data: availableActions = [], refetch: refetchActions } = useQuery({
+    const { data: availableActions = [], refetch: refetchActionsRaw } = useQuery({
         queryFn: async () => await fetchAvailableActions(pb.authStore.token),
         enabled: isAuth,
         queryKey: ['available-actions', isAuth],
         refetchOnWindowFocus: false,
     });
+
+    const refetchActions = useCallback(async () => {
+        await queryClient.invalidateQueries({ queryKey: ['actions'] });
+        return refetchActionsRaw();
+    }, [queryClient, refetchActionsRaw]);
 
     useEffect(() => {
         if (pb.authStore.isValid) {

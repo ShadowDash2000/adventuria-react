@@ -26,6 +26,7 @@ export const Main = () => {
                     }
                     pageSize={10}
                     initialSort={new Map([['created', Sort.DESC]])}
+                    refetchOnWindowFocus={false}
                 >
                     <LatestActions />
                 </CollectionListInfiniteProvider>

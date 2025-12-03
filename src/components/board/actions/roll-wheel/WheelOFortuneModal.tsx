@@ -11,10 +11,11 @@ import { type RecordIdString } from '@shared/types/pocketbase';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 
 export const WheelOFortuneModal = () => {
-    const { pb, user, audioActions } = useAppContext();
+    const { pb, user, audioActions, refetchActions } = useAppContext();
     const wheelOFortuneRef = useRef<WheelOFortuneHandle>(null);
     const [open, setOpen] = useState(false);
     const [spinning, setSpinning] = useState(false);
+    const [wasSpinned, setWasSpinned] = useState(false);
 
     const action = useQuery({
         queryFn: () =>
@@ -76,6 +77,7 @@ export const WheelOFortuneModal = () => {
             setSpinning(false),
         );
         setSpinning(true);
+        setWasSpinned(true);
     }, [wheelOFortuneRef, audioPreset, audioActions]);
 
     if (action.isPending || games.isPending || audioPreset.isPending) return <LuLoader />;
@@ -94,8 +96,9 @@ export const WheelOFortuneModal = () => {
             lazyMount
             unmountOnExit
             open={open}
-            onOpenChange={e => {
+            onOpenChange={async e => {
                 if (!spinning) setOpen(e.open);
+                if (!e.open && wasSpinned) await refetchActions();
             }}
             size="full"
         >
@@ -109,7 +112,7 @@ export const WheelOFortuneModal = () => {
                         <Dialog.Body>
                             <WheelOFortune ref={wheelOFortuneRef} items={wheelItems} />
                             <Flex gap={3} justify="center">
-                                <Button disabled={spinning} onClick={handleSpin}>
+                                <Button disabled={spinning || wasSpinned} onClick={handleSpin}>
                                     Крутить
                                 </Button>
                             </Flex>
