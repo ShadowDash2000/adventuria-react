@@ -1,6 +1,5 @@
-import {Box, Flex, Text, VStack} from "@chakra-ui/react";
-import {Button} from "@ui/button";
-import {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
+import { Box, Flex, Text, VStack } from '@chakra-ui/react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 export type WheelItem = {
     key: string;
@@ -9,11 +8,7 @@ export type WheelItem = {
 };
 
 export type WheelOFortuneHandle = {
-    spin: (opts?: {
-        targetKey?: string;
-        durationMs?: number;
-        spins?: number;
-    }) => Promise<number>;
+    spin: (opts?: { targetKey?: string; durationMs?: number; spins?: number }) => Promise<number>;
     replaceItems: (items: WheelItem[]) => void;
     getItems: () => WheelItem[];
     getCurrentIndex: () => number;
@@ -25,18 +20,15 @@ type WheelOFortuneProps = {
 };
 
 export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>(
-    (
-        {items: initialItems, onFinish},
-        ref,
-    ) => {
+    ({ items: initialItems, onFinish }, ref) => {
         const [items, setItems] = useState<WheelItem[]>(
             initialItems && initialItems.length > 1
                 ? initialItems
-                : Array.from({length: 8}, (_, i) => ({
-                    key: String(i + 1),
-                    title: String(i + 1),
-                    image: '',
-                }))
+                : Array.from({ length: 8 }, (_, i) => ({
+                      key: String(i + 1),
+                      title: String(i + 1),
+                      image: '',
+                  })),
         );
 
         // Canvas and drawing
@@ -48,7 +40,16 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
         const [hover, setHover] = useState<{ index: number; x: number; y: number } | null>(null);
 
         // Colors for fallback fills
-        const colors = ["#fbd38d", "#fc8181", "#90cdf4", "#9ae6b4", "#fbb6ce", "#b2f5ea", "#c3dafe", "#f6ad55"];
+        const colors = [
+            '#fbd38d',
+            '#fc8181',
+            '#90cdf4',
+            '#9ae6b4',
+            '#fbb6ce',
+            '#b2f5ea',
+            '#c3dafe',
+            '#f6ad55',
+        ];
 
         // Geometry helpers
         const segAngle = items.length > 0 ? (Math.PI * 2) / items.length : Math.PI * 2;
@@ -59,7 +60,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                 const rel = normalize(-rot); // see derivation in analysis
                 return Math.floor(rel / segAngle) % items.length;
             },
-            [items.length, segAngle]
+            [items.length, segAngle],
         );
 
         // Simple image cache
@@ -69,7 +70,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
         const draw = useCallback(() => {
             const canvas = canvasRef.current;
             if (!canvas) return;
-            const ctx = canvas.getContext("2d");
+            const ctx = canvas.getContext('2d');
             if (!ctx) return;
 
             const w = canvas.width;
@@ -101,7 +102,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                     img = imageCache.current.get(imgUrl);
                     if (!img) {
                         img = new Image();
-                        img.crossOrigin = "anonymous";
+                        img.crossOrigin = 'anonymous';
                         img.onload = () => {
                             // redraw when loaded
                             const raf = requestAnimationFrame(() => draw());
@@ -132,7 +133,10 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                     const rectWidth = Math.max(1, 2 * r * Math.sin(segAngle / 2)); // tangential width at outer edge
 
                     // Cover strategy within this rectangle to preserve aspect ratio
-                    const scale = Math.max(rectWidth / img.naturalWidth, rectHeight / img.naturalHeight);
+                    const scale = Math.max(
+                        rectWidth / img.naturalWidth,
+                        rectHeight / img.naturalHeight,
+                    );
                     const dw = img.naturalWidth * scale;
                     const dh = img.naturalHeight * scale;
 
@@ -145,7 +149,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                 }
 
                 // Separator line
-                ctx.strokeStyle = "rgba(0,0,0,0.15)";
+                ctx.strokeStyle = 'rgba(0,0,0,0.15)';
                 ctx.lineWidth = Math.max(1, r * 0.008);
                 ctx.beginPath();
                 ctx.moveTo(cx, cy);
@@ -156,7 +160,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
             // Outer ring
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, Math.PI * 2);
-            ctx.strokeStyle = "rgba(0,0,0,0.25)";
+            ctx.strokeStyle = 'rgba(0,0,0,0.25)';
             ctx.lineWidth = Math.max(2, r * 0.02);
             ctx.stroke();
         }, [items, rotation, segAngle]);
@@ -204,7 +208,6 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
             return () => ro.disconnect();
         }, [updateCanvasSize, draw]);
 
-
         useEffect(() => {
             setCurrentIndex(computeCurrentIndex(rotation));
         }, [rotation, computeCurrentIndex]);
@@ -242,7 +245,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                 const startRot = rotation;
                 let targetIdx: number | undefined;
                 if (opts?.targetKey != null) {
-                    const byKey = items.findIndex((it) => it.key === opts.targetKey);
+                    const byKey = items.findIndex(it => it.key === opts.targetKey);
                     if (byKey >= 0) targetIdx = byKey;
                 }
                 if (targetIdx == null) {
@@ -259,7 +262,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
 
                 setSpinning(true);
 
-                return new Promise<number>((resolve) => {
+                return new Promise<number>(resolve => {
                     const tick = (now: number) => {
                         const t = Math.min(1, (now - start) / duration);
                         const eased = easeOutCubic(t);
@@ -279,7 +282,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                     rafRef.current = requestAnimationFrame(tick);
                 });
             },
-            [items, rotation, segAngle, computeCurrentIndex, onFinish]
+            [items, rotation, segAngle, computeCurrentIndex, onFinish],
         );
 
         // Expose imperative API
@@ -295,7 +298,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                 getItems: () => items.slice(),
                 getCurrentIndex: () => currentIndex,
             }),
-            [spin, items, currentIndex]
+            [spin, items, currentIndex],
         );
 
         // Sync with prop changes
@@ -305,7 +308,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
             }
         }, [JSON.stringify(initialItems)]);
 
-        const headerText = items.length > 0 ? items[currentIndex]?.title ?? "" : "—";
+        const headerText = items.length > 0 ? (items[currentIndex]?.title ?? '') : '—';
 
         return (
             <Flex align="center" justify="center">
@@ -316,13 +319,13 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                     <Box
                         ref={containerRef}
                         position="relative"
-                        w={{base: "90vw", md: "70vh"}}
-                        h={{base: "90vw", md: "70vh"}}
+                        w={{ base: '90vw', md: '70vh' }}
+                        h={{ base: '90vw', md: '70vh' }}
                         maxW="min(90vw, 80vh)"
                         maxH="min(90vw, 80vh)"
                         rounded="full"
                         overflow="visible"
-                        onMouseMove={(e) => {
+                        onMouseMove={e => {
                             if (!containerRef.current || items.length === 0 || spinning) return;
                             const rect = containerRef.current.getBoundingClientRect();
                             const localX = e.clientX - rect.left;
@@ -343,7 +346,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                             let idx = Math.floor(rel / segAngle);
                             if (idx < 0) idx = 0;
                             if (idx >= items.length) idx = items.length - 1;
-                            setHover({index: idx, x: localX, y: localY});
+                            setHover({ index: idx, x: localX, y: localY });
                         }}
                         onMouseLeave={() => setHover(null)}
                     >
@@ -394,19 +397,10 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                             </Box>
                         )}
                     </Box>
-
-                    <Flex gap="3">
-                        <Button disabled={spinning} onClick={() => spin()}>
-                            Крутить
-                        </Button>
-                        <Button variant="subtle" onClick={() => setRotation(0)} disabled={spinning}>
-                            Сбросить
-                        </Button>
-                    </Flex>
                 </VStack>
             </Flex>
         );
-    }
+    },
 );
 
 const normalize = (a: number) => {
@@ -414,4 +408,4 @@ const normalize = (a: number) => {
     a = a % twoPi;
     if (a < 0) a += twoPi;
     return a;
-}
+};
