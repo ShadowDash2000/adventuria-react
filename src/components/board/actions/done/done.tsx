@@ -5,7 +5,7 @@ import { DoneModal } from './DoneModal';
 
 export class Done extends ActionDispenser {
     buttonNode(): ReactNode {
-        return <DoneModal />;
+        return <DoneModal key={this.key()} />;
     }
 
     color() {
@@ -14,6 +14,10 @@ export class Done extends ActionDispenser {
 
     name() {
         return 'Завершено';
+    }
+
+    key() {
+        return 'done';
     }
 
     statusNode() {

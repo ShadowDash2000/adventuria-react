@@ -1,11 +1,13 @@
-import type {ReactNode} from "react";
+import type { ReactNode } from 'react';
 
 export abstract class ActionDispenser {
-    abstract buttonNode(): ReactNode
+    abstract buttonNode(): ReactNode;
 
-    abstract color(): string
+    abstract color(): string;
 
-    abstract name(): string
+    abstract name(): string;
 
-    abstract statusNode(): ReactNode
+    abstract key(): string;
+
+    abstract statusNode(): ReactNode;
 }

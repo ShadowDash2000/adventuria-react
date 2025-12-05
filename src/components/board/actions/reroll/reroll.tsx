@@ -1,23 +1,22 @@
 import { Status } from '@chakra-ui/react';
-import { type ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { ActionDispenser } from '../action-base';
-import { WheelOFortuneModal } from './WheelOFortuneModal';
 
-export class RollWheel extends ActionDispenser {
-    buttonNode(): ReactElement {
-        return <WheelOFortuneModal key={this.key()} />;
+export class Reroll extends ActionDispenser {
+    buttonNode(): ReactNode {
+        return null;
     }
 
     color() {
-        return 'purple';
+        return 'blue';
     }
 
     name() {
-        return 'Выролял';
+        return 'Реролл';
     }
 
     key() {
-        return 'roll-wheel';
+        return 'reroll';
     }
 
     statusNode() {

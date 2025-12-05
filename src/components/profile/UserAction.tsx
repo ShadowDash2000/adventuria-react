@@ -1,21 +1,20 @@
-import {Button, Card, HStack, Box, Text, Image, VStack, DataList, Stack} from "@chakra-ui/react";
-import {LuPencil} from "react-icons/lu";
-import HTMLReactParser from "html-react-parser";
-import {type FC, useEffect, useState} from "react";
-import {type ActionRecord} from "@shared/types/action";
-import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
-import {formatDateLocalized} from "@shared/helpers/helper";
-import {ActionFactory} from "../board/actions/action-factory";
-import {Avatar} from "../Avatar";
-import {ActionTextEditor} from "./ActionTextEditor";
-import {type HTMLContent} from "@tiptap/react";
+import { Button, Card, HStack, Box, Text, Image, VStack, DataList, Stack } from '@chakra-ui/react';
+import { LuPencil } from 'react-icons/lu';
+import HTMLReactParser from 'html-react-parser';
+import { type FC, useEffect, useState } from 'react';
+import { type ActionRecord } from '@shared/types/action';
+import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { formatDateLocalized } from '@shared/helpers/helper';
+import { ActionFactory } from '../board/actions/action-factory';
+import { Avatar } from '../Avatar';
+import { ActionTextEditor } from './ActionTextEditor';
+import { type HTMLContent } from '@tiptap/react';
+import { InfoTip } from '@ui/toggle-tip';
 
-type ActionProps = {
-    action: ActionRecord;
-}
+type ActionProps = { action: ActionRecord };
 
-export const UserAction: FC<ActionProps> = ({action}) => {
-    const {pb, user: authUser, isAuth} = useAppContext();
+export const UserAction: FC<ActionProps> = ({ action }) => {
+    const { pb, user: authUser, isAuth } = useAppContext();
     const actionController = ActionFactory.get(action.type);
 
     const [isEditing, setIsEditing] = useState(false);
@@ -24,11 +23,11 @@ export const UserAction: FC<ActionProps> = ({action}) => {
     const [comment, setComment] = useState<string>(action.comment);
     const [draft, setDraft] = useState<string>(comment);
 
-    const canEdit = Boolean(isAuth && authUser?.id && (action.user === authUser.id));
+    const canEdit = Boolean(isAuth && authUser?.id && action.user === authUser.id);
 
     useEffect(() => {
         if (isEditing) {
-            setDraft(comment ?? "");
+            setDraft(comment ?? '');
         }
     }, [isEditing, comment]);
 
@@ -42,21 +41,22 @@ export const UserAction: FC<ActionProps> = ({action}) => {
             formData.append('comment', draft);
 
             const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/update-action`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${pb.authStore.token}`,
-                },
+                method: 'POST',
+                headers: { Authorization: `Bearer ${pb.authStore.token}` },
                 body: formData,
             });
             if (!res.ok) {
-                const error = await res.json().then(e => e.error).catch(() => '');
-                const text = await res.text().catch(() => "");
+                const error = await res
+                    .json()
+                    .then(e => e.error)
+                    .catch(() => '');
+                const text = await res.text().catch(() => '');
                 throw new Error(error || text || `Failed to update action`);
             }
             setComment(draft);
             setIsEditing(false);
         } catch (e: any) {
-            setError(e?.message ?? "Unknown error");
+            setError(e?.message ?? 'Unknown error');
         } finally {
             setSaving(false);
         }
@@ -80,13 +80,11 @@ export const UserAction: FC<ActionProps> = ({action}) => {
         >
             <Card.Body pb={0}>
                 <Stack
-                    align={{base: 'flex-start"', mdDown: 'center'}}
-                    direction={{base: 'row', mdDown: 'column'}}
+                    align={{ base: 'flex-start"', mdDown: 'center' }}
+                    direction={{ base: 'row', mdDown: 'column' }}
                 >
                     <VStack>
-                        <Image
-                            src={action.expand?.game?.cover}
-                        />
+                        <Image src={action.expand?.game?.cover} />
                         <Text>{action.expand?.game?.name}</Text>
                     </VStack>
                     <VStack w="100%" align="start">
@@ -95,15 +93,22 @@ export const UserAction: FC<ActionProps> = ({action}) => {
                             <DataList.Root orientation="horizontal">
                                 <DataList.Item key="cell">
                                     <DataList.ItemLabel>Клетка</DataList.ItemLabel>
-                                    <DataList.ItemValue>{action.expand?.cell.name}</DataList.ItemValue>
+                                    <DataList.ItemValue>
+                                        {action.expand?.cell.name}
+                                    </DataList.ItemValue>
                                 </DataList.Item>
                                 <DataList.Item key="dice-roll">
                                     <DataList.ItemLabel>Бросок кубика</DataList.ItemLabel>
                                     <DataList.ItemValue>{action.diceRoll}</DataList.ItemValue>
                                 </DataList.Item>
                                 <DataList.Item key="created">
-                                    <DataList.ItemLabel>Начало действия</DataList.ItemLabel>
-                                    <DataList.ItemValue>{formatDateLocalized(action.created)}</DataList.ItemValue>
+                                    <DataList.ItemLabel>
+                                        Начало действия
+                                        <InfoTip>Локальное время</InfoTip>
+                                    </DataList.ItemLabel>
+                                    <DataList.ItemValue>
+                                        {formatDateLocalized(action.created)}
+                                    </DataList.ItemValue>
                                 </DataList.Item>
                             </DataList.Root>
                         </VStack>
@@ -118,7 +123,7 @@ export const UserAction: FC<ActionProps> = ({action}) => {
                                 >
                                     <ActionTextEditor
                                         content={draft}
-                                        setContent={(content) => setDraft(content as HTMLContent)}
+                                        setContent={content => setDraft(content as HTMLContent)}
                                         editable={isEditing}
                                     />
                                 </Box>
@@ -132,11 +137,8 @@ export const UserAction: FC<ActionProps> = ({action}) => {
                             )}
                         </Card.Description>
                     </VStack>
-                    <VStack
-                        position="absolute"
-                        right="5%"
-                    >
-                        <Avatar user={action.expand?.user!}/>
+                    <VStack position="absolute" right="5%">
+                        <Avatar user={action.expand?.user!} />
                         <Text>{action.expand?.user.name}</Text>
                     </VStack>
                 </Stack>
@@ -144,22 +146,29 @@ export const UserAction: FC<ActionProps> = ({action}) => {
             <Card.Footer pt={5}>
                 {isEditing ? (
                     <HStack gap="3">
-                        <Button onClick={handleSave} variant="solid" loading={saving} disabled={saving}>
+                        <Button
+                            onClick={handleSave}
+                            variant="solid"
+                            loading={saving}
+                            disabled={saving}
+                        >
                             Сохранить
                         </Button>
-                        <Button variant="subtle" onClick={() => setIsEditing(false)} disabled={saving}>
+                        <Button
+                            variant="subtle"
+                            onClick={() => setIsEditing(false)}
+                            disabled={saving}
+                        >
                             Отмена
                         </Button>
                     </HStack>
-                ) : (
-                    canEdit ? (
-                        <Button variant="subtle" onClick={() => setIsEditing(true)}>
-                            <LuPencil/>
-                            Изменить
-                        </Button>
-                    ) : null
-                )}
+                ) : canEdit ? (
+                    <Button variant="subtle" onClick={() => setIsEditing(true)}>
+                        <LuPencil />
+                        Изменить
+                    </Button>
+                ) : null}
             </Card.Footer>
         </Card.Root>
-    )
-}
+    );
+};

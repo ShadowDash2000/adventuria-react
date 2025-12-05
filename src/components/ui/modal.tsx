@@ -1,25 +1,16 @@
-import {type FC, type ReactNode} from "react";
-import {CloseButton, Dialog, type DialogRootProps, Portal} from "@chakra-ui/react";
+import { type FC, type ReactNode } from 'react';
+import { CloseButton, Dialog, type DialogRootProps, Portal } from '@chakra-ui/react';
 
 interface ModalProps extends DialogRootProps {
     title: string;
-    trigger: ReactNode;
+    trigger?: ReactNode;
     children: ReactNode;
 }
 
-export const Modal: FC<ModalProps> = (
-    {
-        title,
-        trigger,
-        children,
-        ...props
-    }
-) => {
+export const Modal: FC<ModalProps> = ({ title, trigger, children, ...props }) => {
     return (
         <Dialog.Root {...props}>
-            <Dialog.Trigger asChild>
-                {trigger}
-            </Dialog.Trigger>
+            <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
             <Portal>
                 <Dialog.Backdrop></Dialog.Backdrop>
                 <Dialog.Positioner>
@@ -40,15 +31,13 @@ export const Modal: FC<ModalProps> = (
                         <Dialog.Header>
                             <Dialog.Title>{title}</Dialog.Title>
                         </Dialog.Header>
-                        <Dialog.Body>
-                            {children}
-                        </Dialog.Body>
+                        <Dialog.Body>{children}</Dialog.Body>
                         <Dialog.CloseTrigger asChild>
-                            <CloseButton size="sm"/>
+                            <CloseButton size="sm" />
                         </Dialog.CloseTrigger>
                     </Dialog.Content>
                 </Dialog.Positioner>
             </Portal>
         </Dialog.Root>
-    )
-}
+    );
+};

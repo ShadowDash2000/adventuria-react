@@ -104,12 +104,9 @@
         height: 0;
         pointer-events: none;
     }
-
-    p {
-        height: 100%;
-    }
 }
 
 .tiptap-editor {
     height: 100%;
+    width: 100%;
 }

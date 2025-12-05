@@ -18,7 +18,7 @@ export const Main = () => {
                     collection={pb.collection('actions')}
                     expand="game,cell,user"
                     fields={
-                        'id,type,diceRoll,comment,created,' +
+                        'id,type,diceRoll,comment,created,user,' +
                         'expand.user.id,expand.user.collectionName,expand.user.name,' +
                         'expand.user.avatar,expand.user.color,' +
                         'expand.cell.name,' +
