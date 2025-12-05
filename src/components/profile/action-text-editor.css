@@ -1,4 +1,7 @@
 .tiptap {
+    height: 100%;
+    overflow: auto;
+
     :first-child {
         margin-top: 0;
     }
@@ -93,4 +96,20 @@
         outline: 1px solid rgba(0, 0, 0, 0.25);
         border-radius: 0.125rem;
     }
+
+    p.is-editor-empty:first-child::before {
+        color: #adb5bd;
+        content: attr(data-placeholder);
+        float: left;
+        height: 0;
+        pointer-events: none;
+    }
+
+    p {
+        height: 100%;
+    }
+}
+
+.tiptap-editor {
+    height: 100%;
 }

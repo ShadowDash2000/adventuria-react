@@ -1,26 +1,27 @@
-import {Status} from "@chakra-ui/react";
-import type {ReactNode} from "react";
-import {ActionDispenser} from "../action-base";
+import { Status } from '@chakra-ui/react';
+import type { ReactNode } from 'react';
+import { ActionDispenser } from '../action-base';
+import { DoneModal } from './DoneModal';
 
 export class Done extends ActionDispenser {
     buttonNode(): ReactNode {
-        return undefined;
+        return <DoneModal />;
     }
 
     color() {
-        return 'green'
+        return 'green';
     }
 
     name() {
-        return 'Завершено'
+        return 'Завершено';
     }
 
     statusNode() {
         return (
             <Status.Root colorPalette={this.color()}>
-                <Status.Indicator/>
+                <Status.Indicator />
                 {this.name()}
             </Status.Root>
-        )
+        );
     }
 }

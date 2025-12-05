@@ -1,4 +1,12 @@
-import { CloseButton, Dialog, Flex, Portal, Text } from '@chakra-ui/react';
+import {
+    CloseButton,
+    Dialog,
+    Flex as ChakraFlex,
+    For,
+    Image,
+    Portal,
+    Text,
+} from '@chakra-ui/react';
 import { Button } from '@ui/button';
 import { WheelOFortune, type WheelOFortuneHandle } from './WheelOFortune';
 import { useQuery } from '@tanstack/react-query';
@@ -6,9 +14,11 @@ import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 import { LuLoader } from 'react-icons/lu';
 import type { ActionRecord } from '@shared/types/action';
 import type { GameRecord } from '@shared/types/game';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { type RecordIdString } from '@shared/types/pocketbase';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
+import { Flex } from '@ui/flex';
+import { WheelItemInfo } from './WheelItemInfo';
 
 export const WheelOFortuneModal = () => {
     const { pb, user, audioActions, refetchActions } = useAppContext();
@@ -16,6 +26,7 @@ export const WheelOFortuneModal = () => {
     const [open, setOpen] = useState(false);
     const [spinning, setSpinning] = useState(false);
     const [wasSpinned, setWasSpinned] = useState(false);
+    const [currentItemIndex, setCurrentItemIndex] = useState(0);
 
     const action = useQuery({
         queryFn: () =>
@@ -34,7 +45,7 @@ export const WheelOFortuneModal = () => {
                 .collection('games')
                 .getFullList<GameRecord>({
                     filter: action.data!.items_list.map(id => `id="${id}"`).join('||'),
-                    fields: 'id,cover,name',
+                    expand: 'platforms,developers,publishers,genres,tags',
                 }),
         refetchOnWindowFocus: false,
         enabled: action.isSuccess,
@@ -73,23 +84,28 @@ export const WheelOFortuneModal = () => {
             await audioActions.play(audioUrl);
         }
 
-        ref.spin({ targetKey: res.data.winnerId, durationMs: duration * 1000 }).then(() =>
-            setSpinning(false),
+        ref.spin({ targetKey: res.data.winnerId, durationMs: duration * 1000 }).then(
+            currentIndex => {
+                setSpinning(false);
+                setCurrentItemIndex(currentIndex);
+            },
         );
         setSpinning(true);
         setWasSpinned(true);
     }, [wheelOFortuneRef, audioPreset, audioActions]);
 
+    const wheelItems = useMemo(
+        () =>
+            games.data
+                ? games.data.map(game => ({ key: game.id, image: game.cover, title: game.name }))
+                : [],
+        [games.data],
+    );
+
     if (action.isPending || games.isPending || audioPreset.isPending) return <LuLoader />;
     if (action.isError) return <Text>Error: {action.error?.message}</Text>;
     if (games.isError) return <Text>Error: {games.error?.message}</Text>;
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
-
-    const wheelItems = games.data.map(game => ({
-        key: game.id,
-        image: game.cover,
-        title: game.name,
-    }));
 
     return (
         <Dialog.Root
@@ -108,14 +124,50 @@ export const WheelOFortuneModal = () => {
             <Portal>
                 <Dialog.Backdrop bg="blackAlpha.300" backdropFilter="blur(0.2vw)" />
                 <Dialog.Positioner>
-                    <Dialog.Content bg="none" boxShadow="none" mt={0} display="flex">
-                        <Dialog.Body>
-                            <WheelOFortune ref={wheelOFortuneRef} items={wheelItems} />
-                            <Flex gap={3} justify="center">
-                                <Button disabled={spinning || wasSpinned} onClick={handleSpin}>
-                                    Крутить
-                                </Button>
+                    <Dialog.Content bg="none" boxShadow="none" mt={0}>
+                        <Dialog.Body display="flex" justifyContent="space-around" p={0}>
+                            <Flex h="vh" minW={450} justify="center">
+                                <WheelItemInfo
+                                    game={games.data[currentItemIndex]}
+                                    direction="column"
+                                    justifyContent="space-around"
+                                    px={4}
+                                />
                             </Flex>
+                            <ChakraFlex gap={3} direction="column" justify="center">
+                                <WheelOFortune ref={wheelOFortuneRef} items={wheelItems} />
+                                <ChakraFlex gap={3} justify="center">
+                                    <Button disabled={spinning || wasSpinned} onClick={handleSpin}>
+                                        Крутить
+                                    </Button>
+                                </ChakraFlex>
+                            </ChakraFlex>
+                            <ChakraFlex h="vh" maxW={450} flexDir="column" overflowY="scroll">
+                                <Flex flexDir="column" gap={2} py={4}>
+                                    <For each={wheelItems}>
+                                        {(item, index) => (
+                                            <ChakraFlex
+                                                key={item.key}
+                                                h={20}
+                                                align="center"
+                                                gap={4}
+                                                cursor="pointer"
+                                                px={4}
+                                                onClick={() => setCurrentItemIndex(index)}
+                                                _hover={{ bg: 'grey' }}
+                                                bg={currentItemIndex === index ? 'black' : ''}
+                                            >
+                                                <Image
+                                                    src={item.image}
+                                                    h="100%"
+                                                    pointerEvents="none"
+                                                />
+                                                <Text pointerEvents="none">{item.title}</Text>
+                                            </ChakraFlex>
+                                        )}
+                                    </For>
+                                </Flex>
+                            </ChakraFlex>
                         </Dialog.Body>
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />

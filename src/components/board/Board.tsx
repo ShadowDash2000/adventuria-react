@@ -60,7 +60,7 @@ export const Board = () => {
                 src="/src/assets/walls.png"
                 position="absolute"
                 width="80vw"
-                zIndex={1}
+                zIndex={20}
                 pointerEvents="none"
                 userSelect="none"
             />
