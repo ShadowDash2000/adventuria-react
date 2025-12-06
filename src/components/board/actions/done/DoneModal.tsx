@@ -5,6 +5,7 @@ import { ActionTextEditor } from '../../../profile/ActionTextEditor';
 import { useCallback, useState } from 'react';
 import { Content } from '@tiptap/react';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { LuNotebookPen } from 'react-icons/lu';
 
 export const DoneModal = () => {
     const { pb, availableActions, refetchActions } = useAppContext();
@@ -28,7 +29,12 @@ export const DoneModal = () => {
         <Modal
             lazyMount
             title="I tried so hard... И дропнул кал!"
-            trigger={<Button>Завершить</Button>}
+            trigger={
+                <Button colorPalette="{colors.green}" hoverColorPalette="{colors.green.hover}">
+                    <LuNotebookPen />
+                    Завершить
+                </Button>
+            }
             size="xl"
         >
             <Flex direction="column" w="100%" h="15vw" align="center" gap={4}>
@@ -40,7 +46,8 @@ export const DoneModal = () => {
                 <ButtonGroup>
                     {availableActions.includes('drop') && (
                         <Button
-                            colorPalette="red"
+                            colorPalette="{colors.red}"
+                            hoverColorPalette="{colors.red.hover}"
                             onClick={() => {
                                 setActionType('drop');
                                 setTitleConfirm('Вы уверены, что хотите дропнуть?');
@@ -52,7 +59,8 @@ export const DoneModal = () => {
                     )}
                     {availableActions.includes('reroll') && (
                         <Button
-                            colorPalette="blue"
+                            colorPalette="{colors.blue}"
+                            hoverColorPalette="{colors.blue.hover}"
                             onClick={() => {
                                 setActionType('reroll');
                                 setTitleConfirm('Вы уверены, что хотите рерольнуть?');
@@ -64,7 +72,8 @@ export const DoneModal = () => {
                     )}
                     {availableActions.includes('done') && (
                         <Button
-                            colorPalette="green"
+                            colorPalette="{colors.green}"
+                            hoverColorPalette="{colors.green.hover}"
                             onClick={() => {
                                 setActionType('done');
                                 setTitleConfirm('Вы уверены, что хотите завершить?');
@@ -84,10 +93,18 @@ export const DoneModal = () => {
                 title={titleConfirm}
             >
                 <ButtonGroup>
-                    <Button colorPalette="red" onClick={() => setOpenConfirm(false)}>
+                    <Button
+                        colorPalette="{colors.red}"
+                        hoverColorPalette="{colors.red.hover}"
+                        onClick={() => setOpenConfirm(false)}
+                    >
                         Отмена
                     </Button>
-                    <Button colorPalette="green" onClick={() => handleDone(actionType)}>
+                    <Button
+                        colorPalette="{colors.green}"
+                        hoverColorPalette="{colors.green.hover}"
+                        onClick={() => handleDone(actionType)}
+                    >
                         Подтвердить
                     </Button>
                 </ButtonGroup>
@@ -106,7 +123,7 @@ const doneRequest = async (authToken: string, actionType: string, comment?: Cont
     const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/${actionType}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ comment: comment }),
+        body: JSON.stringify({ comment: comment || '' }),
     });
     if (!res.ok) {
         const error = await res

@@ -11,7 +11,7 @@ import { Button } from '@ui/button';
 import { WheelOFortune, type WheelOFortuneHandle } from './WheelOFortune';
 import { useQuery } from '@tanstack/react-query';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
-import { LuLoader } from 'react-icons/lu';
+import { LuFerrisWheel, LuLoader } from 'react-icons/lu';
 import type { ActionRecord } from '@shared/types/action';
 import type { GameRecord } from '@shared/types/game';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -19,6 +19,7 @@ import { type RecordIdString } from '@shared/types/pocketbase';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { Flex } from '@ui/flex';
 import { WheelItemInfo } from './WheelItemInfo';
+import { VolumeSlider } from '../../VolumeSlider';
 
 export const WheelOFortuneModal = () => {
     const { pb, user, audioActions, refetchActions } = useAppContext();
@@ -119,7 +120,10 @@ export const WheelOFortuneModal = () => {
             size="full"
         >
             <Dialog.Trigger asChild>
-                <Button>Колесо</Button>
+                <Button colorPalette="{colors.purple}" hoverColorPalette="{colors.purple.hover}">
+                    <LuFerrisWheel />
+                    Колесо
+                </Button>
             </Dialog.Trigger>
             <Portal>
                 <Dialog.Backdrop bg="blackAlpha.300" backdropFilter="blur(0.2vw)" />
@@ -136,10 +140,14 @@ export const WheelOFortuneModal = () => {
                             </Flex>
                             <ChakraFlex gap={3} direction="column" justify="center">
                                 <WheelOFortune ref={wheelOFortuneRef} items={wheelItems} />
-                                <ChakraFlex gap={3} justify="center">
+                                <ChakraFlex gap={3} justify="center" direction="column">
                                     <Button disabled={spinning || wasSpinned} onClick={handleSpin}>
                                         Крутить
                                     </Button>
+                                    <VolumeSlider
+                                        volume={audioActions.volume}
+                                        setVolume={val => audioActions.setVolume(val)}
+                                    />
                                 </ChakraFlex>
                             </ChakraFlex>
                             <ChakraFlex h="vh" maxW={450} flexDir="column" overflowY="scroll">

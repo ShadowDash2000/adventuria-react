@@ -1,6 +1,8 @@
 .tiptap {
     height: 100%;
     overflow: auto;
+    padding: 1.5rem;
+    outline: 1px solid grey;
 
     :first-child {
         margin-top: 0;
@@ -104,6 +106,10 @@
         height: 0;
         pointer-events: none;
     }
+}
+
+.tiptap:focus-visible {
+    outline: -webkit-focus-ring-color auto 1px;
 }
 
 .tiptap-editor {

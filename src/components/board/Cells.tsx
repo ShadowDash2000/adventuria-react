@@ -12,7 +12,7 @@ export const Cells = () => {
                     <For each={lineElements}>
                         {(cell, cellNum) => (
                             <GridItem key={cellNum}>
-                                <Cell cell={cell} width="9.45vw" height="6.2vw" />
+                                <Cell cell={cell} width="9.45vw" height="6.2vw" zIndex={10} />
                             </GridItem>
                         )}
                     </For>

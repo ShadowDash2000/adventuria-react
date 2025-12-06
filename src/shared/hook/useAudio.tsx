@@ -1,15 +1,13 @@
-import {useCallback} from "react";
-import {useLocalStorage} from "@uidotdev/usehooks";
+import { useCallback } from 'react';
+import { useLocalStorage } from '@uidotdev/usehooks';
 
 export type AudioPlayer = {
-    play: (url: string) => Promise<void>
-    setVolume: (volume: number) => void
-}
+    play: (url: string) => Promise<void>;
+    setVolume: (volume: number) => void;
+    volume: number;
+};
 
-export const useAudio = (
-    volumeStorageKey: string,
-    defaultVolume = 0.3,
-): AudioPlayer => {
+export const useAudio = (volumeStorageKey: string, defaultVolume = 0.3): AudioPlayer => {
     const audio = new Audio();
     const [volume, setVolumeStorage] = useLocalStorage(volumeStorageKey, defaultVolume);
     audio.volume = volume;
@@ -24,8 +22,5 @@ export const useAudio = (
         audio.volume = volume;
     }, []);
 
-    return {
-        play,
-        setVolume,
-    }
-}
+    return { play, setVolume, volume };
+};

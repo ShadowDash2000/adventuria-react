@@ -1,4 +1,4 @@
-import { Button, Card, HStack, Box, Text, Image, VStack, DataList, Stack } from '@chakra-ui/react';
+import { Card, HStack, Box, Text, Image, VStack, DataList, Stack } from '@chakra-ui/react';
 import { LuPencil } from 'react-icons/lu';
 import HTMLReactParser from 'html-react-parser';
 import { type FC, useEffect, useState } from 'react';
@@ -10,6 +10,7 @@ import { Avatar } from '../Avatar';
 import { ActionTextEditor } from './ActionTextEditor';
 import { type HTMLContent } from '@tiptap/react';
 import { InfoTip } from '@ui/toggle-tip';
+import { Button } from '@ui/button';
 
 type ActionProps = { action: ActionRecord };
 
@@ -114,13 +115,7 @@ export const UserAction: FC<ActionProps> = ({ action }) => {
                         </VStack>
                         <Card.Description as="div" w="100%">
                             {isEditing ? (
-                                <Box
-                                    borderWidth={2}
-                                    borderColor="gray.200"
-                                    rounded="md"
-                                    p={2}
-                                    w="100%"
-                                >
+                                <Box p={2} w="100%">
                                     <ActionTextEditor
                                         content={draft}
                                         setContent={content => setDraft(content as HTMLContent)}

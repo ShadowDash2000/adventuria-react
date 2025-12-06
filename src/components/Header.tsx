@@ -7,6 +7,7 @@ import { CollectionListAllProvider } from '@context/CollectionListAllContext';
 import { PlayersFloatingList } from './board/PlayersFloatingList';
 import { Modal } from '@ui/modal';
 import { Rules } from './Rules';
+import { Settings } from './board/Settings';
 
 export const Header = () => {
     const { pb } = useAppContext();
@@ -18,13 +19,16 @@ export const Header = () => {
                 <Button asChild>
                     <Link to="/">Главная</Link>
                 </Button>
-                {isAuth ? null : <LoginModalButton />}
                 <Modal
                     lazyMount
                     unmountOnExit
                     title="Правила"
                     trigger={
-                        <Button rounded={'lg'} colorPalette={'green'}>
+                        <Button
+                            rounded={'lg'}
+                            colorPalette="{colors.green}"
+                            hoverColorPalette="{colors.green.hover}"
+                        >
                             Правила
                         </Button>
                     }
@@ -32,10 +36,16 @@ export const Header = () => {
                     <Rules />
                 </Modal>
                 {isAuth ? (
-                    <Button colorPalette="red" onClick={() => logout()}>
+                    <Button
+                        colorPalette="{colors.red}"
+                        hoverColorPalette="{colors.red.hover}"
+                        onClick={() => logout()}
+                    >
                         Выйти
                     </Button>
-                ) : null}
+                ) : (
+                    <LoginModalButton />
+                )}
             </Flex>
             <CollectionListAllProvider
                 collection={pb.collection('users')}
@@ -43,6 +53,7 @@ export const Header = () => {
                 refetchOnWindowFocus={false}
             >
                 <PlayersFloatingList />
+                <Settings />
             </CollectionListAllProvider>
         </>
     );

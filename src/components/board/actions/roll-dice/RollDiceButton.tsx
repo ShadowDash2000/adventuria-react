@@ -7,6 +7,7 @@ import type { CellRecord } from '@shared/types/cell';
 import { performFadeOut } from './dices/roll';
 import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
+import { LuDices } from 'react-icons/lu';
 
 const FADEOUT_DURATION = 3;
 
@@ -93,6 +94,8 @@ export const RollDiceButton: FC = () => {
     return (
         <>
             <Button
+                colorPalette="{colors.purple}"
+                hoverColorPalette="{colors.purple.hover}"
                 disabled={!audioPreset.isSuccess || isRolling}
                 onClick={async () => {
                     try {
@@ -103,7 +106,8 @@ export const RollDiceButton: FC = () => {
                     }
                 }}
             >
-                Бросить кубик
+                <LuDices />
+                Бросить кубики
             </Button>
             <Portal>
                 <Flex ref={diceSceneRef} position="fixed" gap="{spacing.40}" top={0} zIndex={100}>

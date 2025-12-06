@@ -4,8 +4,9 @@ import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 import { useBoardInnerContext } from './BoardInner';
 import { BoardHelper } from './BoardHelper';
 import { Avatar } from '../Avatar';
+import { type AvatarRootProps } from '@chakra-ui/react/avatar';
 
-interface PlayerProps {
+interface PlayerProps extends AvatarRootProps {
     user: UserRecord;
 }
 
@@ -16,7 +17,7 @@ export type PlayerMoveEvent = { prevCellsPassed: number; cellsPassed: number; pa
 const CELL_MAX_USERS_LINE = 3;
 const MOVE_TIME_DEFAULT = 1;
 
-export const Player: FC<PlayerProps> = ({ user }) => {
+export const Player: FC<PlayerProps> = ({ user, ...rest }) => {
     const { isAuth, user: userAuth } = useAppContext();
     const { rows, cols, cellWidth, cellHeight, cellsOrdered, cellsUsers, cellsUsersRebuild } =
         useBoardInnerContext();
@@ -152,10 +153,10 @@ export const Player: FC<PlayerProps> = ({ user }) => {
 
     return (
         <Avatar
+            {...rest}
             ref={avatarRef}
             user={user}
             position="absolute"
-            zIndex={10}
             transform={`translate(calc(${position.x}px + ${position.offsetX}%), calc(${position.y}px + ${position.offsetY}%))`}
             transition={`transform ${MOVE_TIME_DEFAULT}s ease`}
         />
