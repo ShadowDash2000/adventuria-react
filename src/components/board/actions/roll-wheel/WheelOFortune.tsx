@@ -242,7 +242,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                 const duration = Math.max(600, opts?.durationMs ?? 4000);
                 const fullSpins = Math.max(2, opts?.spins ?? 6);
                 const start = performance.now();
-                const startRot = rotation;
+                const startRot = 0;
                 let targetIdx: number | undefined;
                 if (opts?.targetKey != null) {
                     const byKey = items.findIndex(it => it.key === opts.targetKey);

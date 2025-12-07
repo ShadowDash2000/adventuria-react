@@ -9,7 +9,7 @@ import { Button } from '@ui/button';
 type LoginFormValues = { login: string; password: string };
 
 export const LoginModalButton = () => {
-    const { pb, setUser } = useAppContext();
+    const { pb, refetchUser } = useAppContext();
     const {
         register,
         handleSubmit,
@@ -22,7 +22,7 @@ export const LoginModalButton = () => {
             .authWithPassword(values['login'], values['password']);
 
         if (authResult.token) {
-            setUser(authResult.record as UserRecord);
+            await refetchUser();
         }
     };
 

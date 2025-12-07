@@ -12,7 +12,7 @@ export type UserRecord = {
     isInJail: boolean;
     dropsInARow: number;
     maxInventorySlots: number;
-    itemWheelCount: number;
+    itemWheelsCount: number;
     description: string;
     stats?: UserStats;
     balance: number;

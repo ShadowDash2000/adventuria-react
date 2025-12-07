@@ -1,8 +1,6 @@
 import {
     createContext,
-    Dispatch,
-    ReactNode,
-    SetStateAction,
+    type ReactNode,
     useCallback,
     useContext,
     useEffect,
@@ -17,8 +15,8 @@ import { type AudioPlayer, useAudio } from '@shared/hook/useAudio';
 export type AppProviderType = {
     pb: PocketBase;
     isAuth: boolean;
-    user: UserRecord | null;
-    setUser: Dispatch<SetStateAction<UserRecord>>;
+    user: UserRecord;
+    refetchUser: () => Promise<QueryObserverResult<UserRecord, Error>>;
     availableActions: string[];
     logout: () => void;
     refetchActions: () => Promise<QueryObserverResult<string[], Error>>;
@@ -32,13 +30,18 @@ const AppContext = createContext<AppProviderType>({} as AppProviderType);
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     const pb = useMemo(() => new PocketBase(import.meta.env.VITE_PB_URL), []);
     const queryClient = useQueryClient();
-    const [user, setUser] = useState(pb.authStore.record as UserRecord);
     const [isAuth, setIsAuth] = useState<boolean>(pb.authStore.isValid);
     const logout = () => {
         pb.authStore.clear();
-        setUser(pb.authStore.record as UserRecord);
         setIsAuth(false);
     };
+
+    const { data: user = pb.authStore.record as UserRecord, ...userQuery } = useQuery({
+        queryFn: () => pb.collection('users').getOne<UserRecord>(pb.authStore.record!.id),
+        enabled: isAuth,
+        queryKey: ['user'],
+        refetchOnWindowFocus: false,
+    });
 
     const { data: availableActions = [], refetch: refetchActionsRaw } = useQuery({
         queryFn: async () => await fetchAvailableActions(pb.authStore.token),
@@ -55,8 +58,6 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     useEffect(() => {
         if (pb.authStore.isValid) {
             pb.collection('users').authRefresh();
-
-            setUser(pb.authStore.record as UserRecord);
         } else {
             pb.authStore.clear();
         }
@@ -73,7 +74,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
             value={{
                 pb,
                 user,
-                setUser,
+                refetchUser: userQuery.refetch,
                 logout,
                 isAuth,
                 availableActions,

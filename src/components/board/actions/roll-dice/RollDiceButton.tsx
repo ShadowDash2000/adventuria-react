@@ -12,7 +12,7 @@ import { LuDices } from 'react-icons/lu';
 const FADEOUT_DURATION = 3;
 
 export const RollDiceButton: FC = () => {
-    const { pb, audioActions, refetchActions, user } = useAppContext();
+    const { pb, audioActions, refetchActions, user, refetchUser } = useAppContext();
     const [dices, setDices] = useState<DiceFactoryItem[] | null>(null);
     const [rolls, setRolls] = useState<number[] | null>(null);
     const [path, setPath] = useState<Array<MoveEvent> | null>(null);
@@ -87,7 +87,10 @@ export const RollDiceButton: FC = () => {
             if (diceSceneRef.current) {
                 performFadeOut(diceSceneRef.current, FADEOUT_DURATION);
             }
-            setTimeout(() => refetchActions(), FADEOUT_DURATION * 1000);
+            setTimeout(async () => {
+                await refetchActions();
+                await refetchUser();
+            }, FADEOUT_DURATION * 1000);
         }, duration * 1000);
     }, [dices, rolls, path]);
 
