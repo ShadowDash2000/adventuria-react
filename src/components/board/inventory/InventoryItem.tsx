@@ -1,74 +1,108 @@
-import {type FC, useMemo} from "react";
-import type {ItemRecord} from "@shared/types/item";
-import {Card, Flex, Image} from "@chakra-ui/react";
-import {Button} from "@ui/button";
-import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
-import {Modal} from "@ui/modal";
-import {EffectFactory, Type_Effect_Creator} from "./effects/effect-factory";
+import { type FC, useEffect, useMemo, useState } from 'react';
+import { Card, Flex, Image } from '@chakra-ui/react';
+import { Button } from '@ui/button';
+import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { Modal } from '@ui/modal';
+import { EffectFactory, Type_Effect_Creator } from './effects/effect-factory';
+import type { InventoryItemRecord } from '@shared/types/inventory-item';
+import { RecordIdString } from '@shared/types/pocketbase';
 
 interface InventoryItemProps {
-    item: ItemRecord
-    showControlButtons?: boolean
+    invItem: InventoryItemRecord;
+    showControlButtons?: boolean;
 }
 
-export const InventoryItem: FC<InventoryItemProps> = ({item, showControlButtons = false}) => {
-    const {pb} = useAppContext();
+export const InventoryItem: FC<InventoryItemProps> = ({ invItem, showControlButtons = false }) => {
+    const { pb } = useAppContext();
+    const item = useMemo(() => invItem.expand!.item, [invItem.expand!.item]);
     const icon = useMemo(() => pb.files.getURL(item, item.icon), [item.icon]);
+    const [isActive, setIsActive] = useState<boolean>(invItem.isActive);
 
-    const handleSubmit = (formData: FormData) => {
-        console.log(Object.fromEntries(formData));
-    }
+    useEffect(() => {
+        setIsActive(invItem.isActive);
+    }, [invItem.isActive]);
 
-    const effects = useMemo(() => (
-        item.expand?.effects.entries()!.reduce((prev, [_, effect]) => {
-            const effectFactory = EffectFactory.get(effect.type);
-            if (effectFactory === null) return prev;
-            return [...prev, effectFactory]
-        }, [] as Type_Effect_Creator[]) || []
-    ), []);
+    const handleSubmit = async (formData: FormData) => {
+        try {
+            await useItemRequest(pb.authStore.token, invItem.id, Object.fromEntries(formData));
+            setIsActive(true);
+        } catch (_) {}
+    };
+
+    const effects = useMemo(
+        () =>
+            item.expand?.effects.entries()!.reduce((prev, [_, effect]) => {
+                const effectFactory = EffectFactory.get(effect.type);
+                if (effectFactory === null) return prev;
+                return [...prev, effectFactory];
+            }, [] as Type_Effect_Creator[]) || [],
+        [],
+    );
 
     const needModal = effects.length > 0;
 
     return (
         <Card.Root>
             <Card.Body gap="2">
-                <Image
-                    src={icon}
-                    width="100%"
-                    height="100%"
-                />
+                <Image src={icon} width="100%" height="100%" />
                 <Card.Title mt="2">{item.name}</Card.Title>
-                <Card.Description
-                    dangerouslySetInnerHTML={{__html: item.description}}
-                    minH={5}
-                />
+                <Card.Description dangerouslySetInnerHTML={{ __html: item.description }} minH={5} />
             </Card.Body>
             <Card.Footer flexDirection="column">
                 {showControlButtons && (
                     <>
                         <Button colorPalette="red">Выбросить</Button>
-                        {needModal ?
+                        {needModal && !isActive ? (
                             <Modal
                                 title=""
-                                trigger={
-                                    <Button colorPalette="green">Использовать</Button>
-                                }
+                                trigger={<Button colorPalette="green">Использовать</Button>}
                             >
                                 <form action={handleSubmit}>
                                     {effects.map((effect, i) => effect(i))}
                                     <Flex justifyContent="center" pt={5}>
-                                        <Button
-                                            type="submit"
-                                            colorPalette="green"
-                                        >Сохранить</Button>
+                                        <Button type="submit" colorPalette="green">
+                                            Сохранить
+                                        </Button>
                                     </Flex>
                                 </form>
                             </Modal>
-                            : <Button colorPalette="green">Использовать</Button>
-                        }
+                        ) : (
+                            <Button
+                                disabled={isActive}
+                                colorPalette="green"
+                                onClick={async () => {
+                                    try {
+                                        await useItemRequest(pb.authStore.token, invItem.id);
+                                        setIsActive(true);
+                                    } catch (_) {}
+                                }}
+                            >
+                                Использовать
+                            </Button>
+                        )}
                     </>
                 )}
             </Card.Footer>
         </Card.Root>
     );
-}
+};
+
+const useItemRequest = async (
+    authToken: string,
+    itemId: RecordIdString,
+    data?: Record<string, any>,
+) => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/use-item`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId: itemId, data: data }),
+    });
+    if (!res.ok) {
+        const error = await res
+            .json()
+            .then(res => res.error)
+            .catch(() => '');
+        const text = await res.text().catch(() => '');
+        throw new Error(error || text || `Failed to use item`);
+    }
+};
