@@ -52,30 +52,38 @@ export const UserProfile: FC = () => {
                 </DataList.Root>
             )}
             <ButtonGroup>
-                <Button
-                    colorPalette="{colors.purple}"
-                    hoverColorPalette="{colors.purple.hover}"
-                    asChild
-                >
-                    <Link
-                        href={`https://www.twitch.tv/${user.twitch}`}
-                        target="_blank"
-                        _hover={{ textDecoration: 'none' }}
+                {user.twitch && (
+                    <Button
+                        colorPalette="{colors.purple}"
+                        hoverColorPalette="{colors.purple.hover}"
+                        asChild
                     >
-                        <LuTwitch />
-                        Twitch
-                    </Link>
-                </Button>
-                <Button colorPalette="{colors.red}" hoverColorPalette="{colors.purple.red}" asChild>
-                    <Link
-                        href={`https://www.twitch.tv/${user.twitch}`}
-                        target="_blank"
-                        _hover={{ textDecoration: 'none' }}
+                        <Link
+                            href={`https://www.twitch.tv/${user.twitch}`}
+                            target="_blank"
+                            _hover={{ textDecoration: 'none' }}
+                        >
+                            <LuTwitch />
+                            Twitch
+                        </Link>
+                    </Button>
+                )}
+                {user.twitch && (
+                    <Button
+                        colorPalette="{colors.red}"
+                        hoverColorPalette="{colors.purple.red}"
+                        asChild
                     >
-                        <LuYoutube />
-                        YouTube
-                    </Link>
-                </Button>
+                        <Link
+                            href={`https://www.twitch.tv/${user.twitch}`}
+                            target="_blank"
+                            _hover={{ textDecoration: 'none' }}
+                        >
+                            <LuYoutube />
+                            YouTube
+                        </Link>
+                    </Button>
+                )}
             </ButtonGroup>
         </Flex>
     );

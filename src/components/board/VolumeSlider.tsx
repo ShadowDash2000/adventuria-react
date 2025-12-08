@@ -1,13 +1,13 @@
-import { Slider } from '@chakra-ui/react';
+import { Slider, SliderRootProps } from '@chakra-ui/react';
 import { type FC, useEffect, useState } from 'react';
 import { useDebounce } from '@uidotdev/usehooks';
 
-interface VolumeSliderProps {
+interface VolumeSliderProps extends SliderRootProps {
     volume: number;
     setVolume: (volume: number) => void;
 }
 
-export const VolumeSlider: FC<VolumeSliderProps> = ({ volume, setVolume }) => {
+export const VolumeSlider: FC<VolumeSliderProps> = ({ volume, setVolume, ...rest }) => {
     const [volumeInner, setVolumeInner] = useState<number>(volume);
     const debouncedVolume = useDebounce(volumeInner, 500);
 
@@ -21,6 +21,7 @@ export const VolumeSlider: FC<VolumeSliderProps> = ({ volume, setVolume }) => {
 
     return (
         <Slider.Root
+            {...rest}
             defaultValue={[volumeInner]}
             value={[volumeInner]}
             onValueChange={e => setVolumeInner(e.value[0])}

@@ -96,7 +96,7 @@ export const ItemsWheelModal = () => {
                     hoverColorPalette="{colors.purple.hover}"
                 >
                     <LuFerrisWheel />
-                    Колесо предметов
+                    Колесо предметов (x{user.itemWheelsCount})
                 </Button>
             }
             open={open}
@@ -120,7 +120,7 @@ export const ItemsWheelModal = () => {
             controlsMenu={
                 <ChakraFlex gap={3} justify="center" direction="column">
                     <Button disabled={spinning || user.itemWheelsCount === 0} onClick={handleSpin}>
-                        Крутить
+                        Крутить (x{user.itemWheelsCount})
                     </Button>
                     <VolumeSlider
                         volume={audioActions.volume}

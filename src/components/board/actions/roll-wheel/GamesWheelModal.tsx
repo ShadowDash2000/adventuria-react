@@ -133,11 +133,12 @@ export const GamesWheelModal = () => {
                 </Flex>
             }
             controlsMenu={
-                <ChakraFlex gap={3} justify="center" direction="column">
-                    <Button disabled={spinning || wasSpinned} onClick={handleSpin}>
+                <ChakraFlex gap={3} justify="center" align="center" direction="column">
+                    <Button disabled={spinning || wasSpinned} onClick={handleSpin} w="full">
                         Крутить
                     </Button>
                     <VolumeSlider
+                        w="full"
                         volume={audioActions.volume}
                         setVolume={val => audioActions.setVolume(val)}
                     />
