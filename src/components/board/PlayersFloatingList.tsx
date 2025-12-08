@@ -1,11 +1,26 @@
-import { type FC } from 'react';
+import { type FC, useState } from 'react';
 import { useCollectionListAll } from '@context/CollectionListAllContext';
 import { UserRecord } from '@shared/types/user';
-import { Flex as ChakraFlex, Collapsible, For, Separator, HStack } from '@chakra-ui/react';
+import {
+    Flex as ChakraFlex,
+    Collapsible,
+    For,
+    Separator,
+    HStack,
+    IconButton,
+    Box,
+    Link as ChakraLink,
+    Float,
+    Circle,
+} from '@chakra-ui/react';
 import { Flex } from '@ui/flex';
 import { LuChevronUp } from 'react-icons/lu';
-import { Link } from 'react-router-dom';
 import { Avatar } from '../Avatar';
+import { GiSwapBag } from 'react-icons/gi';
+import { PlayerInventory } from './inventory/PlayerInventory';
+import { Link } from 'react-router-dom';
+import { TfiTarget } from 'react-icons/tfi';
+import { Tooltip } from '@ui/tooltip';
 
 export const PlayersFloatingList: FC = () => {
     const { data: users } = useCollectionListAll<UserRecord>();
@@ -38,14 +53,52 @@ export const PlayersFloatingList: FC = () => {
                 <Collapsible.Content>
                     <Flex flexDir="column" p={5}>
                         <For each={users}>
-                            {(user, index) => (
-                                <Link to={`/profile/${user.name}`} key={index}>
+                            {user => (
+                                <Box key={user.id}>
                                     <HStack minH={16}>
-                                        <Avatar user={user} />
-                                        {user.name}
+                                        <ChakraLink w="full" asChild>
+                                            <Link to={`/profile/${user.name}`}>
+                                                <HStack gap={4}>
+                                                    <Box pos="relative">
+                                                        <Avatar user={user} />
+                                                        {user.is_stream_live && (
+                                                            <Float placement="bottom-end">
+                                                                <Circle
+                                                                    bg="red.solid"
+                                                                    w={4}
+                                                                    h={4}
+                                                                />
+                                                            </Float>
+                                                        )}
+                                                    </Box>
+                                                    {user.name}
+                                                </HStack>
+                                            </Link>
+                                        </ChakraLink>
+                                        <PlayerInventory
+                                            userId={user.id}
+                                            trigger={
+                                                <Tooltip content="Инвентарь">
+                                                    <IconButton>
+                                                        <GiSwapBag />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            }
+                                        />
+                                        <Tooltip content="Показать игрока">
+                                            <IconButton
+                                                onClick={() =>
+                                                    document.dispatchEvent(
+                                                        new Event(`player.scroll.${user.id}`),
+                                                    )
+                                                }
+                                            >
+                                                <TfiTarget />
+                                            </IconButton>
+                                        </Tooltip>
                                     </HStack>
                                     <Separator size="md" borderColor="white" variant="dashed" />
-                                </Link>
+                                </Box>
                             )}
                         </For>
                     </Flex>

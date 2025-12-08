@@ -45,7 +45,7 @@ export const WheelOFortuneModal: FC<WheelOFortuneModalProps> = ({
             }}
             size="full"
         >
-            <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
+            <Dialog.Trigger>{trigger}</Dialog.Trigger>
             <Portal>
                 <Dialog.Backdrop bg="blackAlpha.300" backdropFilter="blur(0.2vw)" />
                 <Dialog.Positioner>

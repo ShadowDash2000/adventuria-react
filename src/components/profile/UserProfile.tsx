@@ -3,7 +3,7 @@ import type { UserRecord } from '@shared/types/user';
 import { Flex } from '@ui/flex';
 import { Avatar } from '../Avatar';
 import { useCollectionOneFilter } from '@context/CollectionOneFilterContext';
-import { Box, ButtonGroup, Text, Link, DataList } from '@chakra-ui/react';
+import { Box, ButtonGroup, Text, Link, DataList, Float, Circle } from '@chakra-ui/react';
 import { Button } from '@ui/button';
 import { LuTwitch, LuYoutube } from 'react-icons/lu';
 
@@ -12,7 +12,14 @@ export const UserProfile: FC = () => {
 
     return (
         <Flex align="center" flexDir="column" py={4} gap={2}>
-            <Avatar user={user} />
+            <Box pos="relative">
+                <Avatar user={user} />
+                {user.is_stream_live && (
+                    <Float placement="bottom-end">
+                        <Circle bg="red.solid" w={4} h={4} />
+                    </Float>
+                )}
+            </Box>
             <Text>{user.name}</Text>
             <Box dangerouslySetInnerHTML={{ __html: user.description }} />
             {user.stats && (

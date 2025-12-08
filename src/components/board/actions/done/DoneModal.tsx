@@ -8,7 +8,7 @@ import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 import { LuNotebookPen } from 'react-icons/lu';
 
 export const DoneModal = () => {
-    const { pb, availableActions, refetchActions } = useAppContext();
+    const { pb, availableActions, refetchActions, refetchUser } = useAppContext();
     const [content, setContent] = useState<Content | undefined>(null);
     const [actionType, setActionType] = useState<string>('');
     const [openConfirm, setOpenConfirm] = useState(false);
@@ -21,6 +21,7 @@ export const DoneModal = () => {
             if (!res.success) return;
 
             await refetchActions();
+            await refetchUser();
         },
         [pb, content],
     );

@@ -69,12 +69,24 @@ export const Player: FC<PlayerProps> = ({ user, ...rest }) => {
     }, [rows, cols, cellWidth, cellHeight, cellsUsers]);
 
     useEffect(() => {
-        if (!isAuth) return;
+        const abortController = new AbortController();
+
+        document.addEventListener(
+            `player.scroll.${user.id}`,
+            () => {
+                scrollToUser();
+            },
+            { signal: abortController.signal },
+        );
+
+        if (!isAuth) {
+            return () => {
+                abortController.abort();
+            };
+        }
 
         const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
         move(pos.row, pos.col);
-
-        const abortController = new AbortController();
 
         const stepsQueue: Array<{ row: number; col: number }> = [];
         let moveIntervalId: number | null = null;

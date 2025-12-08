@@ -27,6 +27,7 @@ export const Inventory: FC<InventoryProps> = ({ userId }) => {
 
     if (inventory.isPending) return <LuLoader />;
     if (inventory.isError) return <Text>Error: {inventory.error?.message}</Text>;
+    if (inventory.data.length === 0) return <Text>Пусто</Text>;
 
     return (
         <Grid templateColumns="repeat(2, 1fr)">

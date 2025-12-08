@@ -4,7 +4,7 @@ import type { WheelOFortuneHandle } from './WheelOFortune';
 import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { LuFerrisWheel, LuLoader } from 'react-icons/lu';
-import { Text, Flex as ChakraFlex } from '@chakra-ui/react';
+import { Text, Flex as ChakraFlex, IconButton } from '@chakra-ui/react';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { WheelOFortuneModal } from './WheelOFortuneModal';
 import { Button } from '@ui/button';
@@ -12,6 +12,7 @@ import { VolumeSlider } from '../../VolumeSlider';
 import type { ItemRecord } from '@shared/types/item';
 import { Flex } from '@ui/flex';
 import { WheelItemInfo } from './WheeItemInfo';
+import { Tooltip } from '@ui/tooltip';
 
 export const ItemsWheelModal = () => {
     const { pb, user, audioActions, refetchUser } = useAppContext();
@@ -90,14 +91,15 @@ export const ItemsWheelModal = () => {
     return (
         <WheelOFortuneModal
             trigger={
-                <Button
-                    disabled={user.itemWheelsCount === 0}
-                    colorPalette="{colors.purple}"
-                    hoverColorPalette="{colors.purple.hover}"
-                >
-                    <LuFerrisWheel />
-                    Колесо предметов (x{user.itemWheelsCount})
-                </Button>
+                <Tooltip content="Колесо предметов">
+                    <IconButton
+                        disabled={user.itemWheelsCount === 0}
+                        colorPalette="{colors.purple}"
+                        _hover={{ bg: '{colors.purple.hover}' }}
+                    >
+                        <LuFerrisWheel />x{user.itemWheelsCount}
+                    </IconButton>
+                </Tooltip>
             }
             open={open}
             onOpenChange={async e => {

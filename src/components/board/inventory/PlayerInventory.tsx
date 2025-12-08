@@ -1,22 +1,17 @@
-import {type FC} from "react";
-import type {RecordIdString} from "@shared/types/pocketbase";
-import {Inventory} from "./Inventory";
-import {Drawer} from "@ui/drawer";
-import {Button} from "@ui/button";
+import { type FC, type JSX } from 'react';
+import type { RecordIdString } from '@shared/types/pocketbase';
+import { Inventory } from './Inventory';
+import { Drawer } from '@ui/drawer';
 
 interface PlayerInventoryProps {
-    userId: RecordIdString
+    userId: RecordIdString;
+    trigger: JSX.Element;
 }
 
-export const PlayerInventory: FC<PlayerInventoryProps> = ({userId}) => {
+export const PlayerInventory: FC<PlayerInventoryProps> = ({ userId, trigger }) => {
     return (
-        <Drawer
-            lazyMount
-            unmountOnExit
-            trigger={<Button>Инвентарь</Button>}
-            size="lg"
-        >
-            <Inventory userId={userId}/>
+        <Drawer lazyMount unmountOnExit trigger={trigger} size="lg">
+            <Inventory userId={userId} />
         </Drawer>
-    )
-}
+    );
+};
