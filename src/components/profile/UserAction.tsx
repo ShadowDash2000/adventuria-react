@@ -1,4 +1,15 @@
-import { Card, HStack, Box, Text, Image, VStack, DataList, Stack } from '@chakra-ui/react';
+import {
+    Card,
+    HStack,
+    Box,
+    Text,
+    Image,
+    VStack,
+    DataList,
+    Stack,
+    Link,
+    IconButton,
+} from '@chakra-ui/react';
 import { LuPencil } from 'react-icons/lu';
 import HTMLReactParser from 'html-react-parser';
 import { type FC, useEffect, useState } from 'react';
@@ -11,6 +22,8 @@ import { ActionTextEditor } from './ActionTextEditor';
 import { type HTMLContent } from '@tiptap/react';
 import { InfoTip } from '@ui/toggle-tip';
 import { Button } from '@ui/button';
+import { CellInfo } from '../board/CellInfoModal';
+import { HiOutlineInformationCircle } from 'react-icons/hi';
 
 type ActionProps = { action: ActionRecord };
 
@@ -94,8 +107,18 @@ export const UserAction: FC<ActionProps> = ({ action }) => {
                             <DataList.Root orientation="horizontal">
                                 <DataList.Item key="cell">
                                     <DataList.ItemLabel>Клетка</DataList.ItemLabel>
-                                    <DataList.ItemValue>
+                                    <DataList.ItemValue alignItems="center">
                                         {action.expand?.cell.name}
+                                        <IconButton
+                                            variant="ghost"
+                                            aria-label="info"
+                                            size="2xs"
+                                            colorPalette="gray"
+                                        >
+                                            <CellInfo cell={action.expand!.cell}>
+                                                <HiOutlineInformationCircle />
+                                            </CellInfo>
+                                        </IconButton>
                                     </DataList.ItemValue>
                                 </DataList.Item>
                                 <DataList.Item key="dice-roll">
@@ -103,12 +126,12 @@ export const UserAction: FC<ActionProps> = ({ action }) => {
                                     <DataList.ItemValue>{action.diceRoll}</DataList.ItemValue>
                                 </DataList.Item>
                                 <DataList.Item key="created">
-                                    <DataList.ItemLabel>
-                                        Начало действия
-                                        <InfoTip>Локальное время</InfoTip>
-                                    </DataList.ItemLabel>
-                                    <DataList.ItemValue>
+                                    <DataList.ItemLabel>Начало действия</DataList.ItemLabel>
+                                    <DataList.ItemValue alignItems="center">
                                         {formatDateLocalized(action.created)}
+                                        <InfoTip lazyMount unmountOnExit>
+                                            Локальное время
+                                        </InfoTip>
                                     </DataList.ItemValue>
                                 </DataList.Item>
                             </DataList.Root>

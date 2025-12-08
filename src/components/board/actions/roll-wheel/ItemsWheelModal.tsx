@@ -4,9 +4,16 @@ import type { WheelOFortuneHandle } from './WheelOFortune';
 import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { LuFerrisWheel, LuLoader } from 'react-icons/lu';
-import { Text, Flex as ChakraFlex, IconButton } from '@chakra-ui/react';
+import {
+    Text,
+    Flex as ChakraFlex,
+    IconButton,
+    Dialog,
+    Portal,
+    CloseButton,
+} from '@chakra-ui/react';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { WheelOFortuneModal } from './WheelOFortuneModal';
+import { WheelOFortuneContent } from './WheelOFortuneContent';
 import { Button } from '@ui/button';
 import { VolumeSlider } from '../../VolumeSlider';
 import type { ItemRecord } from '@shared/types/item';
@@ -89,9 +96,17 @@ export const ItemsWheelModal = () => {
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
 
     return (
-        <WheelOFortuneModal
-            trigger={
-                <Tooltip content="Колесо предметов">
+        <Dialog.Root
+            lazyMount
+            unmountOnExit
+            open={open}
+            onOpenChange={async e => {
+                if (!spinning) setOpen(e.open);
+            }}
+            size="full"
+        >
+            <Tooltip content="Колесо предметов">
+                <Dialog.Trigger asChild>
                     <IconButton
                         disabled={user.itemWheelsCount === 0}
                         colorPalette="{colors.purple}"
@@ -99,38 +114,51 @@ export const ItemsWheelModal = () => {
                     >
                         <LuFerrisWheel />x{user.itemWheelsCount}
                     </IconButton>
-                </Tooltip>
-            }
-            open={open}
-            onOpenChange={async e => {
-                if (!spinning) setOpen(e.open);
-            }}
-            wheelRef={wheelOFortuneRef}
-            wheelItems={wheelItems}
-            currentItemIndex={currentItemIndex}
-            setCurrentItemIndex={setCurrentItemIndex}
-            leftMenu={
-                <Flex h="vh" minW={450} justify="center">
-                    <WheelItemInfo
-                        item={items.data[currentItemIndex]}
-                        direction="column"
-                        justifyContent="space-around"
-                        px={4}
-                    />
-                </Flex>
-            }
-            controlsMenu={
-                <ChakraFlex gap={3} justify="center" direction="column">
-                    <Button disabled={spinning || user.itemWheelsCount === 0} onClick={handleSpin}>
-                        Крутить (x{user.itemWheelsCount})
-                    </Button>
-                    <VolumeSlider
-                        volume={audioActions.volume}
-                        setVolume={val => audioActions.setVolume(val)}
-                    />
-                </ChakraFlex>
-            }
-        />
+                </Dialog.Trigger>
+            </Tooltip>
+            <Portal>
+                <Dialog.Backdrop bg="blackAlpha.300" backdropFilter="blur(0.2vw)" />
+                <Dialog.Positioner>
+                    <Dialog.Content bg="none" boxShadow="none" mt={0}>
+                        <Dialog.Body display="flex" justifyContent="space-around" p={0}>
+                            <WheelOFortuneContent
+                                wheelRef={wheelOFortuneRef}
+                                wheelItems={wheelItems}
+                                currentItemIndex={currentItemIndex}
+                                setCurrentItemIndex={setCurrentItemIndex}
+                                leftMenu={
+                                    <Flex h="vh" minW={450} justify="center">
+                                        <WheelItemInfo
+                                            item={items.data[currentItemIndex]}
+                                            direction="column"
+                                            justifyContent="space-around"
+                                            px={4}
+                                        />
+                                    </Flex>
+                                }
+                                controlsMenu={
+                                    <ChakraFlex gap={3} justify="center" direction="column">
+                                        <Button
+                                            disabled={spinning || user.itemWheelsCount === 0}
+                                            onClick={handleSpin}
+                                        >
+                                            Крутить (x{user.itemWheelsCount})
+                                        </Button>
+                                        <VolumeSlider
+                                            volume={audioActions.volume}
+                                            setVolume={val => audioActions.setVolume(val)}
+                                        />
+                                    </ChakraFlex>
+                                }
+                            />
+                        </Dialog.Body>
+                        <Dialog.CloseTrigger asChild>
+                            <CloseButton size="sm" />
+                        </Dialog.CloseTrigger>
+                    </Dialog.Content>
+                </Dialog.Positioner>
+            </Portal>
+        </Dialog.Root>
     );
 };
 

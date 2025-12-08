@@ -1,11 +1,11 @@
 import { type FC, useEffect, useMemo, useState } from 'react';
-import { Card, Flex, Image } from '@chakra-ui/react';
+import { Card, CloseButton, Dialog, Flex, Image, Portal } from '@chakra-ui/react';
 import { Button } from '@ui/button';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
-import { Modal } from '@ui/modal';
 import { EffectFactory, Type_Effect_Creator } from './effects/effect-factory';
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
 import { RecordIdString } from '@shared/types/pocketbase';
+import { DialogContent } from '@ui/dialog-content';
 
 interface InventoryItemProps {
     invItem: InventoryItemRecord;
@@ -53,19 +53,32 @@ export const InventoryItem: FC<InventoryItemProps> = ({ invItem, showControlButt
                     <>
                         <Button colorPalette="red">Выбросить</Button>
                         {needModal && !isActive ? (
-                            <Modal
-                                title=""
-                                trigger={<Button colorPalette="green">Использовать</Button>}
-                            >
-                                <form action={handleSubmit}>
-                                    {effects.map((effect, i) => effect(i))}
-                                    <Flex justifyContent="center" pt={5}>
-                                        <Button type="submit" colorPalette="green">
-                                            Сохранить
-                                        </Button>
-                                    </Flex>
-                                </form>
-                            </Modal>
+                            <Dialog.Root lazyMount unmountOnExit>
+                                <Dialog.Trigger asChild>
+                                    <Button colorPalette="green">Использовать</Button>
+                                </Dialog.Trigger>
+                                <Portal>
+                                    <Dialog.Backdrop></Dialog.Backdrop>
+                                    <Dialog.Positioner>
+                                        <DialogContent>
+                                            <Dialog.Header />
+                                            <Dialog.Body>
+                                                <form action={handleSubmit}>
+                                                    {effects.map((effect, i) => effect(i))}
+                                                    <Flex justifyContent="center" pt={5}>
+                                                        <Button type="submit" colorPalette="green">
+                                                            Сохранить
+                                                        </Button>
+                                                    </Flex>
+                                                </form>
+                                            </Dialog.Body>
+                                            <Dialog.CloseTrigger asChild>
+                                                <CloseButton size="sm" />
+                                            </Dialog.CloseTrigger>
+                                        </DialogContent>
+                                    </Dialog.Positioner>
+                                </Portal>
+                            </Dialog.Root>
                         ) : (
                             <Button
                                 disabled={isActive}

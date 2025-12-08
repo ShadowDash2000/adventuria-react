@@ -6,11 +6,11 @@ import type { ActionRecord } from '@shared/types/action';
 import type { GameRecord } from '@shared/types/game';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { LuFerrisWheel, LuLoader } from 'react-icons/lu';
-import { Text, Flex as ChakraFlex } from '@chakra-ui/react';
+import { Text, Flex as ChakraFlex, Dialog, Portal, CloseButton } from '@chakra-ui/react';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { WheelOFortuneModal } from './WheelOFortuneModal';
+import { WheelOFortuneContent } from './WheelOFortuneContent';
 import { Button } from '@ui/button';
-import { WheeGameInfo } from './WheeGameInfo';
+import { WheelGameInfo } from './WheelGameInfo';
 import { Flex } from '@ui/flex';
 import { VolumeSlider } from '../../VolumeSlider';
 
@@ -102,13 +102,9 @@ export const GamesWheelModal = () => {
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
 
     return (
-        <WheelOFortuneModal
-            trigger={
-                <Button colorPalette="{colors.purple}" hoverColorPalette="{colors.purple.hover}">
-                    <LuFerrisWheel />
-                    Колесо
-                </Button>
-            }
+        <Dialog.Root
+            lazyMount
+            unmountOnExit
             open={open}
             onOpenChange={async e => {
                 if (!spinning) {
@@ -118,33 +114,64 @@ export const GamesWheelModal = () => {
                 }
                 if (!e.open && wasSpinned) await refetchActions();
             }}
-            wheelRef={wheelOFortuneRef}
-            wheelItems={wheelItems}
-            currentItemIndex={currentItemIndex}
-            setCurrentItemIndex={setCurrentItemIndex}
-            leftMenu={
-                <Flex h="vh" minW={450} justify="center">
-                    <WheeGameInfo
-                        game={games.data[currentItemIndex]}
-                        direction="column"
-                        justifyContent="space-around"
-                        px={4}
-                    />
-                </Flex>
-            }
-            controlsMenu={
-                <ChakraFlex gap={3} justify="center" align="center" direction="column">
-                    <Button disabled={spinning || wasSpinned} onClick={handleSpin} w="full">
-                        Крутить
-                    </Button>
-                    <VolumeSlider
-                        w="full"
-                        volume={audioActions.volume}
-                        setVolume={val => audioActions.setVolume(val)}
-                    />
-                </ChakraFlex>
-            }
-        />
+            size="full"
+        >
+            <Dialog.Trigger asChild>
+                <Button colorPalette="{colors.purple}" hoverColorPalette="{colors.purple.hover}">
+                    <LuFerrisWheel />
+                    Колесо
+                </Button>
+            </Dialog.Trigger>
+            <Portal>
+                <Dialog.Backdrop bg="blackAlpha.300" backdropFilter="blur(0.2vw)" />
+                <Dialog.Positioner>
+                    <Dialog.Content bg="none" boxShadow="none" mt={0}>
+                        <Dialog.Body display="flex" justifyContent="space-around" p={0}>
+                            <WheelOFortuneContent
+                                wheelRef={wheelOFortuneRef}
+                                wheelItems={wheelItems}
+                                currentItemIndex={currentItemIndex}
+                                setCurrentItemIndex={setCurrentItemIndex}
+                                leftMenu={
+                                    <Flex h="vh" minW={450} justify="center">
+                                        <WheelGameInfo
+                                            game={games.data[currentItemIndex]}
+                                            direction="column"
+                                            justifyContent="space-around"
+                                            px={4}
+                                        />
+                                    </Flex>
+                                }
+                                controlsMenu={
+                                    <ChakraFlex
+                                        gap={3}
+                                        justify="center"
+                                        align="center"
+                                        direction="column"
+                                    >
+                                        <Button
+                                            disabled={spinning || wasSpinned}
+                                            onClick={handleSpin}
+                                            w="full"
+                                        >
+                                            Крутить
+                                        </Button>
+                                        <VolumeSlider
+                                            w="full"
+                                            volume={audioActions.volume}
+                                            setVolume={val => audioActions.setVolume(val)}
+                                        />
+                                    </ChakraFlex>
+                                }
+                            />
+                        </Dialog.Body>
+                        <Dialog.CloseTrigger asChild>
+                            <CloseButton size="sm" />
+                        </Dialog.CloseTrigger>
+                    </Dialog.Content>
+                </Dialog.Positioner>
+            </Portal>
+        </Dialog.Root>
     );
 };
 

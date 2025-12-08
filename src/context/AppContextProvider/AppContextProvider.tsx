@@ -37,7 +37,10 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     };
 
     const { data: user = pb.authStore.record as UserRecord, ...userQuery } = useQuery({
-        queryFn: () => pb.collection('users').getOne<UserRecord>(pb.authStore.record!.id),
+        queryFn: () => {
+            setIsAuth(pb.authStore.isValid);
+            return pb.collection('users').getOne<UserRecord>(pb.authStore.record!.id);
+        },
         enabled: isAuth,
         queryKey: ['user'],
         refetchOnWindowFocus: false,
@@ -62,10 +65,6 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
             pb.authStore.clear();
         }
     }, []);
-
-    useEffect(() => {
-        setIsAuth(pb.authStore.isValid);
-    }, [user]);
 
     const audioActions = useAudio('volume-actions', 0.1);
 

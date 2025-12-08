@@ -5,11 +5,11 @@ import { formatDateLocalized } from '@shared/helpers/helper';
 import { Button } from '@ui/button';
 import { Link } from 'react-router-dom';
 
-interface WheeGameInfoProps extends FlexProps {
+interface WheelGameInfoProps extends FlexProps {
     game: GameRecord;
 }
 
-export const WheeGameInfo: FC<WheeGameInfoProps> = ({ game, ...props }) => {
+export const WheelGameInfo: FC<WheelGameInfoProps> = ({ game, ...props }) => {
     const platforms = useMemo(
         () => (game.expand?.platforms ? game.expand?.platforms?.map(p => p.name).join(', ') : '-'),
         [game.expand?.platforms],

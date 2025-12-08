@@ -1,10 +1,9 @@
-import { Input, Field, Flex } from '@chakra-ui/react';
+import { Input, Field, Flex, Dialog, Portal, CloseButton } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@ui/password-input/password-input.js';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
-import type { UserRecord } from '@shared/types/user';
-import { Modal } from '@ui/modal';
 import { Button } from '@ui/button';
+import { DialogContent } from '@ui/dialog-content';
 
 type LoginFormValues = { login: string; password: string };
 
@@ -27,9 +26,8 @@ export const LoginModalButton = () => {
     };
 
     return (
-        <Modal
-            title="Вход"
-            trigger={
+        <Dialog.Root lazyMount unmountOnExit>
+            <Dialog.Trigger asChild>
                 <Button
                     colorPalette="{colors.blue}"
                     hoverColorPalette="{colors.blue.hover}"
@@ -37,38 +35,57 @@ export const LoginModalButton = () => {
                 >
                     Вход
                 </Button>
-            }
-        >
-            <Flex as="form" onSubmit={handleSubmit(onSubmit)} direction="column" gap={3}>
-                <Field.Root required>
-                    <Field.Label>
-                        Логин <Field.RequiredIndicator />
-                    </Field.Label>
-                    <Input
-                        placeholder={'Логин'}
-                        {...register('login', { required: true })}
-                        aria-invalid={errors.login ? 'true' : 'false'}
-                    />
-                </Field.Root>
-                <Field.Root required>
-                    <Field.Label>
-                        Пароль <Field.RequiredIndicator />
-                    </Field.Label>
-                    <PasswordInput
-                        placeholder={'Пароль'}
-                        {...register('password', { required: true })}
-                        aria-invalid={errors.password ? 'true' : 'false'}
-                    />
-                </Field.Root>
-                <Button
-                    type={'submit'}
-                    colorPalette="{colors.blue}"
-                    hoverColorPalette="{colors.blue.hover}"
-                    rounded={'lg'}
-                >
-                    Войти
-                </Button>
-            </Flex>
-        </Modal>
+            </Dialog.Trigger>
+            <Portal>
+                <Dialog.Backdrop></Dialog.Backdrop>
+                <Dialog.Positioner>
+                    <DialogContent>
+                        <Dialog.Header>
+                            <Dialog.Title>Вход</Dialog.Title>
+                        </Dialog.Header>
+                        <Dialog.Body>
+                            <Flex
+                                as="form"
+                                onSubmit={handleSubmit(onSubmit)}
+                                direction="column"
+                                gap={3}
+                            >
+                                <Field.Root required>
+                                    <Field.Label>
+                                        Логин <Field.RequiredIndicator />
+                                    </Field.Label>
+                                    <Input
+                                        placeholder={'Логин'}
+                                        {...register('login', { required: true })}
+                                        aria-invalid={errors.login ? 'true' : 'false'}
+                                    />
+                                </Field.Root>
+                                <Field.Root required>
+                                    <Field.Label>
+                                        Пароль <Field.RequiredIndicator />
+                                    </Field.Label>
+                                    <PasswordInput
+                                        placeholder={'Пароль'}
+                                        {...register('password', { required: true })}
+                                        aria-invalid={errors.password ? 'true' : 'false'}
+                                    />
+                                </Field.Root>
+                                <Button
+                                    type={'submit'}
+                                    colorPalette="{colors.blue}"
+                                    hoverColorPalette="{colors.blue.hover}"
+                                    rounded={'lg'}
+                                >
+                                    Войти
+                                </Button>
+                            </Flex>
+                        </Dialog.Body>
+                        <Dialog.CloseTrigger asChild>
+                            <CloseButton size="sm" />
+                        </Dialog.CloseTrigger>
+                    </DialogContent>
+                </Dialog.Positioner>
+            </Portal>
+        </Dialog.Root>
     );
 };

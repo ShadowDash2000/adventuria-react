@@ -17,7 +17,7 @@ import { Flex } from '@ui/flex';
 import { LuChevronUp } from 'react-icons/lu';
 import { Avatar } from '../Avatar';
 import { GiSwapBag } from 'react-icons/gi';
-import { PlayerInventory } from './inventory/PlayerInventory';
+import { PlayerInventoryButton } from './inventory/PlayerInventoryButton';
 import { Link } from 'react-router-dom';
 import { TfiTarget } from 'react-icons/tfi';
 import { Tooltip } from '@ui/tooltip';
@@ -75,18 +75,10 @@ export const PlayersFloatingList: FC = () => {
                                                 </HStack>
                                             </Link>
                                         </ChakraLink>
-                                        <PlayerInventory
-                                            userId={user.id}
-                                            trigger={
-                                                <Tooltip content="Инвентарь">
-                                                    <IconButton>
-                                                        <GiSwapBag />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            }
-                                        />
+                                        <PlayerInventoryButton userId={user.id} />
                                         <Tooltip content="Показать игрока">
                                             <IconButton
+                                                _hover={{ bg: 'orange' }}
                                                 onClick={() =>
                                                     document.dispatchEvent(
                                                         new Event(`player.scroll.${user.id}`),
