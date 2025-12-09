@@ -6,8 +6,11 @@ import { useCollectionOneFilter } from '@context/CollectionOneFilterContext';
 import { Box, ButtonGroup, Text, Link, DataList, Float, Circle } from '@chakra-ui/react';
 import { Button } from '@ui/button';
 import { LuTwitch, LuYoutube } from 'react-icons/lu';
+import { TimerSimple } from '../board/timer/TimerSimple';
+import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 
 export const UserProfile: FC = () => {
+    const { pb } = useAppContext();
     const { data: user } = useCollectionOneFilter<UserRecord>();
 
     return (
@@ -21,6 +24,7 @@ export const UserProfile: FC = () => {
                 )}
             </Box>
             <Text>{user.name}</Text>
+            <TimerSimple collection={pb.collection('timers')} userId={user.id} />
             <Box dangerouslySetInnerHTML={{ __html: user.description }} />
             {user.stats && (
                 <DataList.Root orientation="horizontal">

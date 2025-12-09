@@ -1,0 +1,132 @@
+import { useEffect, useState } from 'react';
+import type { TimerRecord } from '@shared/types/timer';
+import { useQuery } from '@tanstack/react-query';
+import type { RecordIdString } from '@shared/types/pocketbase';
+import type { RecordService } from 'pocketbase';
+
+interface TimerProps {
+    authToken?: string;
+    collection: RecordService<TimerRecord>;
+    userId: RecordIdString;
+    realtimeUpdate?: boolean;
+    onValueChange?: (value: string) => void;
+}
+
+export const useTimer = ({
+    authToken,
+    collection,
+    userId,
+    realtimeUpdate = false,
+    onValueChange,
+}: TimerProps) => {
+    const [timer, setTimer] = useState<TimerRecord | null>(null);
+    const [isActive, setIsActive] = useState<boolean>(false);
+
+    const timerQuery = useQuery({
+        queryFn: () => collection.getFirstListItem<TimerRecord>(`user = "${userId}"`),
+        queryKey: ['timer', userId],
+    });
+
+    useEffect(() => {
+        if (!timerQuery.isSuccess) {
+            setTimer(null);
+            return;
+        }
+        setTimer(timerQuery.data);
+        setIsActive(timerQuery.data.isActive);
+    }, [timerQuery.data]);
+
+    useEffect(() => {
+        if (!realtimeUpdate || !timer) return;
+
+        collection.subscribe<TimerRecord>(timer.id, data => {
+            if (data.action !== 'update') return;
+            setTimer(data.record);
+            setIsActive(data.record.isActive);
+        });
+
+        return () => {
+            collection.unsubscribe(timer.id);
+        };
+    }, [realtimeUpdate, timer]);
+
+    useEffect(() => {
+        if (!timer) {
+            if (onValueChange) onValueChange('00:00:00');
+            return;
+        }
+
+        let timeLeftMs = (timer.timeLimit - timer.timePassed) * 1000;
+        if (timer.isActive && timer.startTime) {
+            const now = Date.now();
+            const startTime = new Date(timer.startTime);
+            timeLeftMs -= now - startTime.getTime();
+        }
+        let initTime = Math.floor(timeLeftMs / 1000);
+
+        if (onValueChange) onValueChange(formatSecondsToString(initTime, initTime < 0));
+
+        if (!isActive) return;
+
+        const intervalId = setInterval(() => {
+            initTime -= 1;
+            if (onValueChange) onValueChange(formatSecondsToString(initTime, initTime < 0));
+        }, 1000);
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, [isActive, timer, userId]);
+
+    return {
+        isActive,
+        startTimer: async () => {
+            if (!authToken) return;
+            try {
+                await startTimer(authToken);
+                setIsActive(true);
+            } catch (e) {}
+        },
+        stopTimer: async () => {
+            if (!authToken) return;
+            try {
+                await stopTimer(authToken);
+                setIsActive(false);
+            } catch (e) {}
+        },
+    };
+};
+
+const startTimer = async (authToken: string) => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/timer/start`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${authToken}` },
+    });
+    if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(text || `Failed to start timer`);
+    }
+
+    return res.ok;
+};
+
+const stopTimer = async (authToken: string) => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/timer/stop`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${authToken}` },
+    });
+    if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(text || `Failed to stop timer`);
+    }
+
+    return res.ok;
+};
+
+const formatSecondsToString = (time: number, isNegative: boolean) => {
+    time = Math.abs(time);
+    const hours = String(Math.floor(time / 3600)).padStart(2, '0');
+    const minutes = String(Math.floor((time % 3600) / 60)).padStart(2, '0');
+    const seconds = String(time % 60).padStart(2, '0');
+    return (isNegative ? '-' : '') + `${hours}:${minutes}:${seconds}`;
+};
