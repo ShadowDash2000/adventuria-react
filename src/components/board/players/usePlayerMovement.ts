@@ -178,7 +178,7 @@ export const usePlayerMovement = ({
     }, [rows, cols, isAuth, startMovingInterval]);
 
     useEffect(() => {
-        if (!isAuth || isCurrentUser) return;
+        if (!isAuth) return;
 
         const abortController = new AbortController();
 
