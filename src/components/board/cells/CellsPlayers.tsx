@@ -1,17 +1,18 @@
 import { type FC, useMemo } from 'react';
-import { useBoardInnerContext } from './BoardInner';
+import { useBoardInnerContext } from '../BoardInner';
 import { For, HStack, IconButton, VStack, Text } from '@chakra-ui/react';
 import { ToggleTip } from '@ui/toggle-tip';
-import { BoardHelper } from './BoardHelper';
+import { BoardHelper } from '../BoardHelper';
 import type { UserRecord } from '@shared/types/user';
-import { Avatar } from '../Avatar';
+import { Avatar } from '../../Avatar';
+import { CELL_MAX_USERS } from '../Board';
 
 export const CellsPlayers: FC = () => {
     const { cells, cellsUsers } = useBoardInnerContext();
     const cellTooltips = useMemo(() => {
         const cellsWithoutSpace = new Map<string, string[]>();
         for (const [cellId, usersIds] of cellsUsers.entries()) {
-            if (usersIds.length <= 6) continue;
+            if (usersIds.length <= CELL_MAX_USERS) continue;
             cellsWithoutSpace.set(cellId, usersIds);
         }
 

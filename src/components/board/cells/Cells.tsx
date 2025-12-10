@@ -1,6 +1,6 @@
 import { For, Grid, GridItem } from '@chakra-ui/react';
 import { Cell } from './Cell';
-import { useBoardInnerContext } from './BoardInner';
+import { useBoardInnerContext } from '../BoardInner';
 
 export const Cells = () => {
     const { cellsOrderedRev } = useBoardInnerContext();

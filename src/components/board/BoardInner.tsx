@@ -1,14 +1,14 @@
 import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
-import { Players } from './Players';
+import { Players } from './players/Players';
 import type { CellRecord } from '@shared/types/cell';
 import type { UserRecord } from '@shared/types/user';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
-import { Cells } from './Cells';
+import { Cells } from './cells/Cells';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { BoardHelper } from './BoardHelper';
 import { useBoardDataContext } from './BoardDataContext';
 import { useBoardContext } from './Board';
-import { CellsPlayers } from './CellsPlayers';
+import { CellsPlayers } from './cells/CellsPlayers';
 
 type BoardInnerContextType = {
     cells: CellRecord[];

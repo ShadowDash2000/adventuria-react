@@ -9,6 +9,9 @@ type BoardContextType = {
     boardInnerRef: RefObject<HTMLDivElement | null>;
 };
 
+export const CELL_MAX_USERS_LINE = 3;
+export const CELL_MAX_USERS = 6;
+
 export const BoardContext = createContext<BoardContextType>({} as BoardContextType);
 
 export const Board = () => {

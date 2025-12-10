@@ -22,7 +22,7 @@ import { ActionTextEditor } from './ActionTextEditor';
 import { type HTMLContent } from '@tiptap/react';
 import { InfoTip } from '@ui/toggle-tip';
 import { Button } from '@ui/button';
-import { CellInfo } from '../board/CellInfoModal';
+import { CellInfo } from '../board/cells/CellInfoModal';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
 
 type ActionProps = { action: ActionRecord };
