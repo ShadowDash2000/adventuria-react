@@ -1,6 +1,6 @@
 import { Flex as ChakraFlex, For, Image, Text } from '@chakra-ui/react';
 import { WheelItem, WheelOFortune, type WheelOFortuneHandle } from './WheelOFortune';
-import type { FC, JSX, RefObject } from 'react';
+import type { JSX, RefObject } from 'react';
 import { Flex } from '@ui/flex';
 
 interface WheelOFortuneContentProps {
@@ -12,14 +12,14 @@ interface WheelOFortuneContentProps {
     controlsMenu?: JSX.Element;
 }
 
-export const WheelOFortuneContent: FC<WheelOFortuneContentProps> = ({
+export const WheelOFortuneContent = ({
     wheelRef,
     wheelItems,
     currentItemIndex,
     setCurrentItemIndex,
     leftMenu,
     controlsMenu,
-}) => {
+}: WheelOFortuneContentProps) => {
     return (
         <>
             {leftMenu}

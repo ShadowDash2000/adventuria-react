@@ -1,4 +1,4 @@
-import { type FC, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { DiceFactory, type DiceFactoryItem, DiceType } from './dices';
 import { Flex, For, Portal } from '@chakra-ui/react';
 import { Button } from '@ui/button';
@@ -11,7 +11,7 @@ import { LuDices } from 'react-icons/lu';
 
 const FADEOUT_DURATION = 3;
 
-export const RollDiceButton: FC = () => {
+export const RollDiceButton = () => {
     const { pb, audioActions, refetchActions, user, refetchUser } = useAppContext();
     const [dices, setDices] = useState<DiceFactoryItem[] | null>(null);
     const [rolls, setRolls] = useState<number[] | null>(null);

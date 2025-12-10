@@ -1,5 +1,5 @@
 import './action-text-editor.css';
-import { type FC, useCallback } from 'react';
+import { useCallback } from 'react';
 import { type Content, EditorContent, useEditor } from '@tiptap/react';
 import Document from '@tiptap/extension-document';
 import Text from '@tiptap/extension-text';
@@ -15,12 +15,12 @@ interface ActionTextEditorProps {
     placeholder?: string;
 }
 
-export const ActionTextEditor: FC<ActionTextEditorProps> = ({
+export const ActionTextEditor = ({
     content,
     setContent,
     editable = true,
     placeholder,
-}) => {
+}: ActionTextEditorProps) => {
     const editor = useEditor(
         {
             extensions: [

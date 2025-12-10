@@ -1,4 +1,3 @@
-import { type FC } from 'react';
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
 import { For, Grid, Text } from '@chakra-ui/react';
 import { InventoryItem } from './InventoryItem';
@@ -11,7 +10,7 @@ interface InventoryProps {
     userId: RecordIdString;
 }
 
-export const Inventory: FC<InventoryProps> = ({ userId }) => {
+export const Inventory = ({ userId }: InventoryProps) => {
     const { pb, isAuth, user } = useAppContext();
     const inventory = useQuery({
         queryFn: () => {

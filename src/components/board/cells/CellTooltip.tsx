@@ -1,24 +1,21 @@
-import {Tooltip} from "@ui/tooltip";
-import {CellRecord} from "@shared/types/cell";
-import {FC, ReactNode} from "react";
+import { Tooltip } from '@ui/tooltip';
+import type { CellRecord } from '@shared/types/cell';
+import { type ReactNode } from 'react';
 
-type CellTooltipProps = {
-    cell: CellRecord;
-    children: ReactNode;
-}
+type CellTooltipProps = { cell: CellRecord; children: ReactNode };
 
-export const CellTooltip: FC<CellTooltipProps> = ({cell, children}) => {
-    return (
-        cell.description ?
-            <Tooltip
-                showArrow
-                content={<div dangerouslySetInnerHTML={{__html: cell.description}}/>}
-                openDelay={0}
-                closeDelay={0}
-                positioning={{placement: "top"}}
-            >
-                {children}
-            </Tooltip>
-            : <>{children}</>
-    )
-}
+export const CellTooltip = ({ cell, children }: CellTooltipProps) => {
+    return cell.description ? (
+        <Tooltip
+            showArrow
+            content={<div dangerouslySetInnerHTML={{ __html: cell.description }} />}
+            openDelay={0}
+            closeDelay={0}
+            positioning={{ placement: 'top' }}
+        >
+            {children}
+        </Tooltip>
+    ) : (
+        <>{children}</>
+    );
+};

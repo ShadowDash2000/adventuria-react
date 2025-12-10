@@ -1,4 +1,3 @@
-import { type FC } from 'react';
 import { HStack, Icon, Text, VStack } from '@chakra-ui/react';
 import { PlayerInventoryButton } from './inventory/PlayerInventoryButton';
 import { Tooltip } from '@ui/tooltip';
@@ -8,8 +7,8 @@ import { PiCoinVerticalFill } from 'react-icons/pi';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 import { Timer } from './timer/Timer';
 
-export const UserMenu: FC = () => {
-    const { pb, user } = useAppContext();
+export const UserMenu = () => {
+    const { user } = useAppContext();
 
     return (
         <>
@@ -38,7 +37,7 @@ export const UserMenu: FC = () => {
                 justify="center"
                 align="center"
             >
-                <Timer pb={pb} userId={user.id} realtimeUpdate={true} />
+                <Timer userId={user.id} />
             </HStack>
         </>
     );

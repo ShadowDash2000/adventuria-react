@@ -1,5 +1,4 @@
 import { chakra, DialogContent as ChakraDialogContent, DialogContentProps } from '@chakra-ui/react';
-import { FC } from 'react';
 
 const CustomDialogContent = chakra(ChakraDialogContent, {
     base: {
@@ -18,6 +17,6 @@ const CustomDialogContent = chakra(ChakraDialogContent, {
     },
 });
 
-export const DialogContent: FC<DialogContentProps> = ({ children, ...rest }) => {
+export const DialogContent = ({ children, ...rest }: DialogContentProps) => {
     return <CustomDialogContent {...rest}>{children}</CustomDialogContent>;
 };

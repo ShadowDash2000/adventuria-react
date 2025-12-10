@@ -1,4 +1,4 @@
-import { type FC, useRef } from 'react';
+import { useRef } from 'react';
 import type { UserRecord } from '@shared/types/user';
 import { Avatar } from '../../Avatar';
 import { type AvatarRootProps } from '@chakra-ui/react/avatar';
@@ -8,7 +8,7 @@ interface PlayerProps extends AvatarRootProps {
     user: UserRecord;
 }
 
-export const Player: FC<PlayerProps> = ({ user, ...rest }) => {
+export const Player = ({ user, ...rest }: PlayerProps) => {
     const avatarRef = useRef<HTMLDivElement | null>(null);
     const { position, visible, moving, moveTime } = usePlayerMovement({
         user: user,

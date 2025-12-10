@@ -1,4 +1,3 @@
-import { type FC, useState } from 'react';
 import { useCollectionListAll } from '@context/CollectionListAllContext';
 import { UserRecord } from '@shared/types/user';
 import {
@@ -17,13 +16,12 @@ import {
 import { Flex } from '@ui/flex';
 import { LuChevronUp } from 'react-icons/lu';
 import { Avatar } from '../Avatar';
-import { GiSwapBag } from 'react-icons/gi';
 import { PlayerInventoryButton } from './inventory/PlayerInventoryButton';
 import { Link } from 'react-router-dom';
 import { TfiTarget } from 'react-icons/tfi';
 import { Tooltip } from '@ui/tooltip';
 
-export const PlayersFloatingList: FC = () => {
+export const PlayersFloatingList = () => {
     const { data: users } = useCollectionListAll<UserRecord>();
 
     return (

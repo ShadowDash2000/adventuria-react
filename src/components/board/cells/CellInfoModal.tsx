@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Image, Blockquote, Stack, DataList, Dialog, Portal, CloseButton } from '@chakra-ui/react';
 import HTMLReactParser from 'html-react-parser';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
@@ -7,7 +7,7 @@ import { DialogContent } from '@ui/dialog-content';
 
 type CellInfoProps = { cell: CellRecord; children?: ReactNode };
 
-export const CellInfo: FC<CellInfoProps> = ({ cell, children }) => {
+export const CellInfo = ({ cell, children }: CellInfoProps) => {
     const { pb } = useAppContext();
 
     return (

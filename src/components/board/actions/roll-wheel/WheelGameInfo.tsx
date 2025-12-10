@@ -1,4 +1,4 @@
-import { type FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import type { GameRecord } from '@shared/types/game';
 import { ButtonGroup, DataList, Flex, FlexProps, Heading, Image } from '@chakra-ui/react';
 import { formatDateLocalized } from '@shared/helpers/helper';
@@ -9,7 +9,7 @@ interface WheelGameInfoProps extends FlexProps {
     game: GameRecord;
 }
 
-export const WheelGameInfo: FC<WheelGameInfoProps> = ({ game, ...props }) => {
+export const WheelGameInfo = ({ game, ...props }: WheelGameInfoProps) => {
     const platforms = useMemo(
         () => (game.expand?.platforms ? game.expand?.platforms?.map(p => p.name).join(', ') : '-'),
         [game.expand?.platforms],

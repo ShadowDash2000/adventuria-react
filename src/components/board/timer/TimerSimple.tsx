@@ -1,4 +1,4 @@
-import { useRef, type FC } from 'react';
+import { useRef } from 'react';
 import { Text } from '@chakra-ui/react';
 import { useTimer } from './useTimer';
 import type { RecordService } from 'pocketbase';
@@ -11,11 +11,7 @@ interface TimerSimpleProps {
     realtimeUpdate?: boolean;
 }
 
-export const TimerSimple: FC<TimerSimpleProps> = ({
-    collection,
-    userId,
-    realtimeUpdate = false,
-}) => {
+export const TimerSimple = ({ collection, userId, realtimeUpdate = false }: TimerSimpleProps) => {
     const timerRef = useRef<HTMLParagraphElement | null>(null);
     useTimer({
         collection: collection,

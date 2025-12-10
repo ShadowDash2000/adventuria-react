@@ -1,4 +1,4 @@
-import { useRef, type FC } from 'react';
+import { useRef } from 'react';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { VStack, Text, ButtonGroup, IconButton, Box, Float, Clipboard } from '@chakra-ui/react';
 import { FaCopy, FaPause, FaPlay } from 'react-icons/fa6';
@@ -10,7 +10,7 @@ interface TimerProps {
     userId: RecordIdString;
 }
 
-export const Timer: FC<TimerProps> = ({ userId }) => {
+export const Timer = ({ userId }: TimerProps) => {
     const { pb } = useAppContext();
     const timerRef = useRef<HTMLParagraphElement | null>(null);
     const { isActive, startTimer, stopTimer } = useTimer({

@@ -1,4 +1,4 @@
-import { type FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useBoardInnerContext } from '../BoardInner';
 import { For, HStack, IconButton, VStack, Text } from '@chakra-ui/react';
 import { ToggleTip } from '@ui/toggle-tip';
@@ -7,7 +7,7 @@ import type { UserRecord } from '@shared/types/user';
 import { Avatar } from '../../Avatar';
 import { CELL_MAX_USERS } from '../Board';
 
-export const CellsPlayers: FC = () => {
+export const CellsPlayers = () => {
     const { cells, cellsUsers } = useBoardInnerContext();
     const cellTooltips = useMemo(() => {
         const cellsWithoutSpace = new Map<string, string[]>();
@@ -40,7 +40,7 @@ interface CellTooltipProps {
     usersIds: string[];
 }
 
-const CellPlayers: FC<CellTooltipProps> = ({ cellIndex, usersIds }) => {
+const CellPlayers = ({ cellIndex, usersIds }: CellTooltipProps) => {
     const { rows, cols, cellWidth, cellHeight, users } = useBoardInnerContext();
     const position = useMemo(
         () => BoardHelper.getCoords(rows, cols, cellIndex),

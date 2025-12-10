@@ -1,6 +1,5 @@
 import { Box, type BoxProps, Image } from '@chakra-ui/react';
 import { CellRecord } from '@shared/types/cell';
-import { FC } from 'react';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 import { CellTooltip } from './CellTooltip';
 import { CellInfo } from './CellInfoModal';
@@ -11,7 +10,7 @@ interface CellProps extends BoxProps {
     height: number | string;
 }
 
-export const Cell: FC<CellProps> = ({ cell, width, height, ...rest }) => {
+export const Cell = ({ cell, width, height, ...rest }: CellProps) => {
     const { pb } = useAppContext();
 
     return (

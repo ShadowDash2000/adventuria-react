@@ -1,5 +1,5 @@
 import { Portal, Tooltip as ChakraTooltip } from '@chakra-ui/react';
-import type { FC, RefObject, ReactNode, Ref } from 'react';
+import type { RefObject, ReactNode, Ref } from 'react';
 
 interface TooltipCProps extends ChakraTooltip.RootProps {
     content: ReactNode;
@@ -13,7 +13,7 @@ interface TooltipCProps extends ChakraTooltip.RootProps {
     asChildTrigger?: boolean;
 }
 
-export const Tooltip: FC<TooltipCProps> = ({
+export const Tooltip = ({
     showArrow,
     children,
     disabled,
@@ -24,7 +24,7 @@ export const Tooltip: FC<TooltipCProps> = ({
     portalRef,
     asChildTrigger = true,
     ...props
-}) => {
+}: TooltipCProps) => {
     if (disabled) return children;
 
     return (

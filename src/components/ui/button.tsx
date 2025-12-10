@@ -1,5 +1,4 @@
 import { Button as ChakraButton, ButtonProps as ChakraButtonProps, chakra } from '@chakra-ui/react';
-import type { FC } from 'react';
 
 const CustomButton = chakra(ChakraButton, {
     base: {
@@ -23,12 +22,12 @@ interface ButtonProps extends ChakraButtonProps {
     hoverColorPalette?: string;
 }
 
-export const Button: FC<ButtonProps> = ({
+export const Button = ({
     colorPalette = '#AEAFAE',
     hoverColorPalette = 'lightgrey',
     children,
     ...props
-}) => {
+}: ButtonProps) => {
     return (
         <CustomButton
             bg={`-webkit-linear-gradient(left, transparent, ${colorPalette}, transparent)`}

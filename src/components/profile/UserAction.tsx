@@ -7,12 +7,11 @@ import {
     VStack,
     DataList,
     Stack,
-    Link,
     IconButton,
 } from '@chakra-ui/react';
 import { LuPencil } from 'react-icons/lu';
 import HTMLReactParser from 'html-react-parser';
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { type ActionRecord } from '@shared/types/action';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 import { formatDateLocalized } from '@shared/helpers/helper';
@@ -27,7 +26,7 @@ import { HiOutlineInformationCircle } from 'react-icons/hi';
 
 type ActionProps = { action: ActionRecord };
 
-export const UserAction: FC<ActionProps> = ({ action }) => {
+export const UserAction = ({ action }: ActionProps) => {
     const { pb, user: authUser, isAuth } = useAppContext();
     const actionController = ActionFactory.get(action.type);
 

@@ -1,9 +1,9 @@
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CloseButton, Drawer, IconButton, Kbd, Portal, VStack } from '@chakra-ui/react';
 import { FaRadio } from 'react-icons/fa6';
 import { Tooltip } from '@ui/tooltip';
 
-export const RadioPlayerButton: FC = () => {
+export const RadioPlayerButton = () => {
     const [open, setOpen] = useState<boolean>(false);
 
     useEffect(() => {

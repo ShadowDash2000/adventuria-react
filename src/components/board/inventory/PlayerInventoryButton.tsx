@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { Inventory } from './Inventory';
 import { Tooltip } from '@ui/tooltip';
@@ -10,7 +10,7 @@ interface PlayerInventoryButtonProps {
     kbd?: boolean;
 }
 
-export const PlayerInventoryButton: FC<PlayerInventoryButtonProps> = ({ userId, kbd = false }) => {
+export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryButtonProps) => {
     const [open, setOpen] = useState<boolean>(false);
 
     useEffect(() => {

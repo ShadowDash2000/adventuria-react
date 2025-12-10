@@ -1,9 +1,9 @@
-import { type FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 import { ActionFactory } from './actions/action-factory';
 import { Flex, For } from '@chakra-ui/react';
 
-export const UserActionMenu: FC = () => {
+export const UserActionMenu = () => {
     const { availableActions } = useAppContext();
     const actions = useMemo(() => {
         return ActionFactory.getAvailableActions(availableActions);

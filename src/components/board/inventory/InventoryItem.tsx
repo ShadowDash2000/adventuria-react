@@ -1,4 +1,4 @@
-import { type FC, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CloseButton, Dialog, Flex, Image, Portal } from '@chakra-ui/react';
 import { Button } from '@ui/button';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
@@ -12,7 +12,7 @@ interface InventoryItemProps {
     showControlButtons?: boolean;
 }
 
-export const InventoryItem: FC<InventoryItemProps> = ({ invItem, showControlButtons = false }) => {
+export const InventoryItem = ({ invItem, showControlButtons = false }: InventoryItemProps) => {
     const { pb } = useAppContext();
     const item = useMemo(() => invItem.expand!.item, [invItem.expand!.item]);
     const icon = useMemo(() => pb.files.getURL(item, item.icon), [item.icon]);

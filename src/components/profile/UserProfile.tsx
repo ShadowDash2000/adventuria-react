@@ -1,4 +1,3 @@
-import { type FC } from 'react';
 import type { UserRecord } from '@shared/types/user';
 import { Flex } from '@ui/flex';
 import { Avatar } from '../Avatar';
@@ -9,7 +8,7 @@ import { LuTwitch, LuYoutube } from 'react-icons/lu';
 import { TimerSimple } from '../board/timer/TimerSimple';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 
-export const UserProfile: FC = () => {
+export const UserProfile = () => {
     const { pb } = useAppContext();
     const { data: user } = useCollectionOneFilter<UserRecord>();
 
