@@ -5,7 +5,7 @@ import { useCollectionOneFilter } from '@context/CollectionOneFilterContext';
 import { Box, ButtonGroup, Text, Link, DataList, Float, Circle } from '@chakra-ui/react';
 import { Button } from '@ui/button';
 import { LuTwitch, LuYoutube } from 'react-icons/lu';
-import { TimerSimple } from '../board/timer/TimerSimple';
+import { TimerSimple } from '@components/timer/TimerSimple';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 
 export const UserProfile = () => {

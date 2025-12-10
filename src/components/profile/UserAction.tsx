@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 import { type ActionRecord } from '@shared/types/action';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 import { formatDateLocalized } from '@shared/helpers/helper';
-import { ActionFactory } from '../board/actions/action-factory';
+import { ActionFactory } from '../actions/action-factory';
 import { Avatar } from '../Avatar';
 import { ActionTextEditor } from './ActionTextEditor';
 import { type HTMLContent } from '@tiptap/react';

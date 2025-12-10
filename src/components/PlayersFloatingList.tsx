@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { Flex } from '@ui/flex';
 import { LuChevronUp } from 'react-icons/lu';
-import { Avatar } from '../Avatar';
+import { Avatar } from './Avatar';
 import { PlayerInventoryButton } from './inventory/PlayerInventoryButton';
 import { Link } from 'react-router-dom';
 import { TfiTarget } from 'react-icons/tfi';

@@ -10,7 +10,6 @@ import {
 import PocketBase, { ClientResponseError } from 'pocketbase';
 import type { UserRecord } from '@shared/types/user';
 import { type QueryObserverResult, useQuery, useQueryClient } from '@tanstack/react-query';
-import { type AudioPlayer, useAudio } from '@shared/hook/useAudio';
 
 export type AppProviderType = {
     pb: PocketBase;
@@ -20,7 +19,6 @@ export type AppProviderType = {
     availableActions: string[];
     logout: () => void;
     refetchActions: () => Promise<QueryObserverResult<string[], Error>>;
-    audioActions: AudioPlayer;
 };
 
 export type AppContextProviderProps = { children: ReactNode };
@@ -66,8 +64,6 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         }
     }, []);
 
-    const audioActions = useAudio('volume-actions', 0.1);
-
     return (
         <AppContext.Provider
             value={{
@@ -78,7 +74,6 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
                 isAuth,
                 availableActions,
                 refetchActions,
-                audioActions,
             }}
         >
             {children}

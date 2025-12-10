@@ -1,11 +1,11 @@
 import { HStack, Icon, Text, VStack } from '@chakra-ui/react';
 import { PlayerInventoryButton } from './inventory/PlayerInventoryButton';
 import { Tooltip } from '@ui/tooltip';
-import { ItemsWheelModal } from './actions/roll-wheel/ItemsWheelModal';
+import { ItemsWheelModal } from '@components/actions/roll-wheel/ItemsWheelModal';
 import { RadioPlayerButton } from './RadioPlayerButton';
 import { PiCoinVerticalFill } from 'react-icons/pi';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
-import { Timer } from './timer/Timer';
+import { Timer } from '@components/timer/Timer';
 
 export const UserMenu = () => {
     const { user } = useAppContext();

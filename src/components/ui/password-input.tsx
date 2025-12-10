@@ -7,14 +7,22 @@ import {
     Stack,
     mergeRefs,
     useControllableState,
+    type InputProps,
+    type BoxProps,
+    type IconButtonProps,
+    type StackProps,
 } from '@chakra-ui/react';
-import { useRef } from 'react';
+import { type ReactNode, type Ref, useRef } from 'react';
 import { LuEye, LuEyeOff } from 'react-icons/lu';
-import type {
-    PasswordInputProps,
-    VisibilityTriggerProps,
-    PasswordStrengthMeterProps,
-} from './types';
+
+export interface PasswordInputProps extends InputProps {
+    ref?: Ref<HTMLInputElement>;
+    rootProps?: BoxProps;
+    defaultVisible?: boolean;
+    visible?: boolean;
+    onVisibleChange?: (visible: boolean) => void;
+    visibilityIcon?: { on: ReactNode; off: ReactNode };
+}
 
 export const PasswordInput = ({
     rootProps,
@@ -56,6 +64,10 @@ export const PasswordInput = ({
     );
 };
 
+export interface VisibilityTriggerProps extends IconButtonProps {
+    ref?: Ref<HTMLButtonElement>;
+}
+
 const VisibilityTrigger = (props: VisibilityTriggerProps) => {
     return (
         <IconButton
@@ -71,6 +83,16 @@ const VisibilityTrigger = (props: VisibilityTriggerProps) => {
         />
     );
 };
+
+export interface PasswordStrengthMeterProps extends StackProps {
+    max: number;
+    value: number;
+    colorPalette?: string;
+    label?: ReactNode;
+    rootProps?: StackProps;
+    barsProps?: BoxProps;
+    ref?: Ref<HTMLDivElement>;
+}
 
 export const PasswordStrengthMeter = ({ max = 4, value, ...props }: PasswordStrengthMeterProps) => {
     const percent = (value / max) * 100;

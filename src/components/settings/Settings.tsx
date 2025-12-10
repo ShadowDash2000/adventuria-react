@@ -1,11 +1,11 @@
 import { Collapsible, Flex as ChakraFlex } from '@chakra-ui/react';
 import { LuChevronUp } from 'react-icons/lu';
 import { Flex } from '@ui/flex';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
-import { VolumeSlider } from './VolumeSlider';
+import { SliderDebounced } from '@ui/slider-debounced';
+import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 
 export const Settings = () => {
-    const { audioActions } = useAppContext();
+    const { volume, setVolume } = useAudioPlayer(AudioKey.music);
 
     return (
         <ChakraFlex
@@ -34,9 +34,10 @@ export const Settings = () => {
                 </Collapsible.Trigger>
                 <Collapsible.Content>
                     <Flex flexDir="column" p={5}>
-                        <VolumeSlider
-                            volume={audioActions.volume}
-                            setVolume={val => audioActions.setVolume(val)}
+                        <SliderDebounced
+                            value={volume}
+                            setValue={val => setVolume(val)}
+                            label="Громкость"
                         />
                     </Flex>
                 </Collapsible.Content>

@@ -2,46 +2,57 @@ import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import type { WheelOFortuneHandle } from './WheelOFortune';
 import { useQuery } from '@tanstack/react-query';
+import type { ActionRecord } from '@shared/types/action';
+import type { GameRecord } from '@shared/types/game';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { LuFerrisWheel, LuLoader } from 'react-icons/lu';
-import {
-    Text,
-    Flex as ChakraFlex,
-    IconButton,
-    Dialog,
-    Portal,
-    CloseButton,
-} from '@chakra-ui/react';
+import { CloseButton, Dialog, Flex as ChakraFlex, Portal, Text } from '@chakra-ui/react';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { WheelOFortuneContent } from './WheelOFortuneContent';
 import { Button } from '@ui/button';
-import { VolumeSlider } from '../../VolumeSlider';
-import type { ItemRecord } from '@shared/types/item';
+import { WheelGameInfo } from './WheelGameInfo';
 import { Flex } from '@ui/flex';
-import { WheelItemInfo } from './WheeItemInfo';
-import { Tooltip } from '@ui/tooltip';
+import { SliderDebounced } from '@ui/slider-debounced';
+import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 
-export const ItemsWheelModal = () => {
-    const { pb, user, audioActions, refetchUser } = useAppContext();
+export const GamesWheelModal = () => {
+    const { pb, user, refetchActions } = useAppContext();
+    const { volume, setVolume, play } = useAudioPlayer(AudioKey.music);
     const wheelOFortuneRef = useRef<WheelOFortuneHandle>(null);
     const [open, setOpen] = useState(false);
     const [spinning, setSpinning] = useState(false);
+    const [wasSpinned, setWasSpinned] = useState(false);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
 
-    const items = useQuery({
+    const action = useQuery({
         queryFn: () =>
             pb
-                .collection('items')
-                .getFullList<ItemRecord>({ filter: `type = "buff" && isRollable = true` }),
+                .collection('actions')
+                .getFirstListItem<ActionRecord>(`user = "${user!.id}"`, {
+                    sort: '-created',
+                    fields: 'items_list',
+                }),
         refetchOnWindowFocus: false,
-        queryKey: ['items'],
+        queryKey: ['action'],
+    });
+    const games = useQuery({
+        queryFn: () =>
+            pb
+                .collection('games')
+                .getFullList<GameRecord>({
+                    filter: action.data!.items_list.map(id => `id="${id}"`).join('||'),
+                    expand: 'platforms,developers,publishers,genres,tags',
+                }),
+        refetchOnWindowFocus: false,
+        enabled: action.isSuccess,
+        queryKey: [action],
     });
 
     const audioPreset = useQuery({
         queryFn: async () => {
             return pb
                 .collection('audio_presets')
-                .getFirstListItem<AudioPresetRecord>('slug = "roll-items"', {
+                .getFirstListItem<AudioPresetRecord>('slug = "roll-wheel"', {
                     expand: 'audio',
                     fields:
                         'audio,' +
@@ -49,7 +60,7 @@ export const ItemsWheelModal = () => {
                 });
         },
         refetchOnWindowFocus: false,
-        queryKey: ['roll-items-audio-preset'],
+        queryKey: ['roll-wheel-audio-preset'],
     });
 
     const handleSpin = useCallback(async () => {
@@ -66,33 +77,30 @@ export const ItemsWheelModal = () => {
             const randAudio = audioPreset.data.expand!.audio[randIndex];
             duration = randAudio.duration;
             const audioUrl = pb.files.getURL(randAudio, randAudio.audio);
-            await audioActions.play(audioUrl);
+            await play(audioUrl);
         }
 
         ref.spin({ targetKey: res.data.winnerId, durationMs: duration * 1000 }).then(
-            async currentIndex => {
+            currentIndex => {
                 setSpinning(false);
                 setCurrentItemIndex(currentIndex);
-                await refetchUser();
             },
         );
         setSpinning(true);
-    }, [wheelOFortuneRef, audioPreset, audioActions]);
+        setWasSpinned(true);
+    }, [wheelOFortuneRef, audioPreset, play]);
 
     const wheelItems = useMemo(
         () =>
-            items.data
-                ? items.data.map(item => ({
-                      key: item.id,
-                      image: pb.files.getURL(item, item.icon),
-                      title: item.name,
-                  }))
+            games.data
+                ? games.data.map(game => ({ key: game.id, image: game.cover, title: game.name }))
                 : [],
-        [items.data],
+        [games.data],
     );
 
-    if (items.isPending || audioPreset.isPending) return <LuLoader />;
-    if (items.isError) return <Text>Error: {items.error?.message}</Text>;
+    if (action.isPending || games.isPending || audioPreset.isPending) return <LuLoader />;
+    if (action.isError) return <Text>Error: {action.error?.message}</Text>;
+    if (games.isError) return <Text>Error: {games.error?.message}</Text>;
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
 
     return (
@@ -101,21 +109,21 @@ export const ItemsWheelModal = () => {
             unmountOnExit
             open={open}
             onOpenChange={async e => {
-                if (!spinning) setOpen(e.open);
+                if (!spinning) {
+                    setOpen(e.open);
+                } else {
+                    return;
+                }
+                if (!e.open && wasSpinned) await refetchActions();
             }}
             size="full"
         >
-            <Tooltip content="Колесо предметов">
-                <Dialog.Trigger asChild>
-                    <IconButton
-                        disabled={user.itemWheelsCount === 0}
-                        colorPalette="{colors.purple}"
-                        _hover={{ bg: '{colors.purple.hover}' }}
-                    >
-                        <LuFerrisWheel />x{user.itemWheelsCount}
-                    </IconButton>
-                </Dialog.Trigger>
-            </Tooltip>
+            <Dialog.Trigger asChild>
+                <Button colorPalette="{colors.purple}" hoverColorPalette="{colors.purple.hover}">
+                    <LuFerrisWheel />
+                    Колесо
+                </Button>
+            </Dialog.Trigger>
             <Portal>
                 <Dialog.Backdrop bg="blackAlpha.300" backdropFilter="blur(0.2vw)" />
                 <Dialog.Positioner>
@@ -128,8 +136,8 @@ export const ItemsWheelModal = () => {
                                 setCurrentItemIndex={setCurrentItemIndex}
                                 leftMenu={
                                     <Flex h="vh" minW={450} justify="center">
-                                        <WheelItemInfo
-                                            item={items.data[currentItemIndex]}
+                                        <WheelGameInfo
+                                            game={games.data[currentItemIndex]}
                                             direction="column"
                                             justifyContent="space-around"
                                             px={4}
@@ -137,16 +145,24 @@ export const ItemsWheelModal = () => {
                                     </Flex>
                                 }
                                 controlsMenu={
-                                    <ChakraFlex gap={3} justify="center" direction="column">
+                                    <ChakraFlex
+                                        gap={3}
+                                        justify="center"
+                                        align="center"
+                                        direction="column"
+                                    >
                                         <Button
-                                            disabled={spinning || user.itemWheelsCount === 0}
+                                            disabled={spinning || wasSpinned}
                                             onClick={handleSpin}
+                                            w="full"
                                         >
-                                            Крутить (x{user.itemWheelsCount})
+                                            Крутить
                                         </Button>
-                                        <VolumeSlider
-                                            volume={audioActions.volume}
-                                            setVolume={val => audioActions.setVolume(val)}
+                                        <SliderDebounced
+                                            w="full"
+                                            value={volume}
+                                            setValue={val => setVolume(val)}
+                                            label="Громкость"
                                         />
                                     </ChakraFlex>
                                 }
@@ -162,18 +178,18 @@ export const ItemsWheelModal = () => {
     );
 };
 
-type RollItemSuccess = { success: true; data: RollItemResultData; error?: never };
+type RollWheelSuccess = { success: true; data: RollWheelResultData; error?: never };
 
-type RollItemError = { success: false; error: string; data?: never };
+type RollWheelError = { success: false; error: string; data?: never };
 
-type RollItemResult = RollItemSuccess | RollItemError;
+type RollWheelResult = RollWheelSuccess | RollWheelError;
 
-type RollItemResultData = { fillerItems: WheelItem[]; winnerId: RecordIdString };
+type RollWheelResultData = { fillerItems: WheelItem[]; winnerId: RecordIdString };
 
 type WheelItem = { id: RecordIdString; name: string; icon: string };
 
 const rollWheelRequest = async (authToken: string) => {
-    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/roll-item`, {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/roll-wheel`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}` },
     });
@@ -183,8 +199,8 @@ const rollWheelRequest = async (authToken: string) => {
             .then(res => res.error)
             .catch(() => '');
         const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to roll item`);
+        throw new Error(error || text || `Failed to roll wheel`);
     }
 
-    return (await res.json()) as RollItemResult;
+    return (await res.json()) as RollWheelResult;
 };

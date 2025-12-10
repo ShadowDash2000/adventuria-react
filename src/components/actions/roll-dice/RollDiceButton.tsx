@@ -4,15 +4,17 @@ import { Flex, For, Portal } from '@chakra-ui/react';
 import { Button } from '@ui/button';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 import type { CellRecord } from '@shared/types/cell';
-import { performFadeOut } from './dices/roll';
+import { performFadeOut } from '@components/actions/roll-dice/dices/roll';
 import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { LuDices } from 'react-icons/lu';
+import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 
 const FADEOUT_DURATION = 3;
 
 export const RollDiceButton = () => {
-    const { pb, audioActions, refetchActions, user, refetchUser } = useAppContext();
+    const { pb, refetchActions, user, refetchUser } = useAppContext();
+    const { play } = useAudioPlayer(AudioKey.music);
     const [dices, setDices] = useState<DiceFactoryItem[] | null>(null);
     const [rolls, setRolls] = useState<number[] | null>(null);
     const [path, setPath] = useState<Array<MoveEvent> | null>(null);
@@ -60,7 +62,7 @@ export const RollDiceButton = () => {
             const randAudio = audioPreset.data.expand!.audio[randIndex];
             duration = randAudio.duration;
             const audioUrl = pb.files.getURL(randAudio, randAudio.audio);
-            audioActions.play(audioUrl);
+            play(audioUrl);
         }
 
         const durationDifference = 1;
@@ -92,7 +94,7 @@ export const RollDiceButton = () => {
                 await refetchUser();
             }, FADEOUT_DURATION * 1000);
         }, duration * 1000);
-    }, [dices, rolls, path]);
+    }, [dices, rolls, path, play]);
 
     return (
         <>

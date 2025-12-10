@@ -1,6 +1,6 @@
 import { Input, Field, Flex, Dialog, Portal, CloseButton } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
-import { PasswordInput } from '@ui/password-input/password-input.js';
+import { PasswordInput } from '@ui/password-input';
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
 import { Button } from '@ui/button';
 import { DialogContent } from '@ui/dialog-content';

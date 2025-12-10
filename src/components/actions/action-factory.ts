@@ -2,7 +2,7 @@ import { Done } from './done/done';
 import { ActionDispenser } from './action-base';
 import { RollDice } from './roll-dice/roll-dice';
 import { Unknown } from './unknown';
-import { RollWheel } from './roll-wheel/roll-wheel';
+import { RollWheel } from '@components/actions/roll-wheel/roll-wheel';
 import { Drop } from './drop/drop';
 import { Reroll } from './reroll/reroll';
 

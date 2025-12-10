@@ -4,9 +4,9 @@ import { LoginModalButton } from './LoginModalButton';
 import { Button } from '@ui/button';
 import { Link } from 'react-router-dom';
 import { CollectionListAllProvider } from '@context/CollectionListAllContext';
-import { PlayersFloatingList } from './board/PlayersFloatingList';
-import { Settings } from './board/Settings';
-import { UserMenu } from './board/UserMenu';
+import { PlayersFloatingList } from './PlayersFloatingList';
+import { Settings } from './settings/Settings';
+import { UserMenu } from './UserMenu';
 
 export const Header = () => {
     const { pb } = useAppContext();

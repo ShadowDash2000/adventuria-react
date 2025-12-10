@@ -1,5 +1,5 @@
 import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
-import { UserActionMenu } from '../board/UserActionMenu';
+import { UserActionMenu } from '../UserActionMenu';
 import { Box, Spacer } from '@chakra-ui/react';
 import { LatestActions } from '../LatestActions';
 import { CollectionListInfiniteProvider } from '@context/CollectionListInfiniteContext';
