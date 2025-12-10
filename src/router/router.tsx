@@ -1,17 +1,34 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { Layout } from '../components/Layout';
-import { Main } from '../components/pages/Main';
-import { Profile } from '../components/pages/Profile';
-import { Timer } from '../components/pages/Timer';
 
 export const router = createBrowserRouter([
     {
         path: '/',
-        element: <Layout />,
+        async lazy() {
+            const { Layout } = await import('../components/Layout');
+            return { Component: Layout };
+        },
         children: [
-            { index: true, element: <Main /> },
-            { path: '/profile/:login', element: <Profile /> },
+            {
+                index: true,
+                async lazy() {
+                    const { Main } = await import('../components/pages/Main');
+                    return { Component: Main };
+                },
+            },
+            {
+                path: '/profile/:login',
+                async lazy() {
+                    const { Profile } = await import('../components/pages/Profile');
+                    return { Component: Profile };
+                },
+            },
         ],
     },
-    { path: '/timer/:userId', element: <Timer /> },
+    {
+        path: '/timer/:userId',
+        async lazy() {
+            const { Timer } = await import('../components/pages/Timer');
+            return { Component: Timer };
+        },
+    },
 ]);
