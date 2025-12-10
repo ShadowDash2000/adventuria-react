@@ -8,6 +8,7 @@ import type { RecordIdString } from '@shared/types/pocketbase';
 import { BoardHelper } from './BoardHelper';
 import { useBoardDataContext } from './BoardDataContext';
 import { useBoardContext } from './Board';
+import { CellsPlayers } from './CellsPlayers';
 
 type BoardInnerContextType = {
     cells: CellRecord[];
@@ -47,6 +48,10 @@ export const BoardInner = () => {
     const cellsUsersRebuild = useCallback(() => {
         setCellsUsersRef({});
     }, []);
+
+    useEffect(() => {
+        document.dispatchEvent(new CustomEvent('player.update'));
+    }, [cellsUsersRef]);
 
     // board geometry
     const [boardDimensions, setBoardDimensions] = useState<Dimension>({ width: 0, height: 0 });
@@ -148,6 +153,7 @@ export const BoardInner = () => {
         >
             <Cells />
             <Players />
+            <CellsPlayers />
         </BoardInnerContext.Provider>
     );
 };

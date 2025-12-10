@@ -7,7 +7,7 @@ export const Players = () => {
 
     return (
         <For each={[...users.entries()]}>
-            {([id, user]) => <Player user={user} key={id} zIndex={10} />}
+            {([id, user]) => <Player user={user} key={id} zIndex={10} pointerEvents="none" />}
         </For>
     );
 };

@@ -12,6 +12,7 @@ import {
     Link as ChakraLink,
     Float,
     Circle,
+    VStack,
 } from '@chakra-ui/react';
 import { Flex } from '@ui/flex';
 import { LuChevronUp } from 'react-icons/lu';
@@ -51,48 +52,50 @@ export const PlayersFloatingList: FC = () => {
                     </Collapsible.Indicator>
                 </Collapsible.Trigger>
                 <Collapsible.Content>
-                    <Flex flexDir="column" p={5}>
-                        <For each={users}>
-                            {user => (
-                                <Box key={user.id}>
-                                    <HStack minH={16}>
-                                        <ChakraLink w="full" asChild>
-                                            <Link to={`/profile/${user.name}`}>
-                                                <HStack gap={4}>
-                                                    <Box pos="relative">
-                                                        <Avatar user={user} />
-                                                        {user.is_stream_live && (
-                                                            <Float placement="bottom-end">
-                                                                <Circle
-                                                                    bg="red.solid"
-                                                                    w={4}
-                                                                    h={4}
-                                                                />
-                                                            </Float>
-                                                        )}
-                                                    </Box>
-                                                    {user.name}
-                                                </HStack>
-                                            </Link>
-                                        </ChakraLink>
-                                        <PlayerInventoryButton userId={user.id} />
-                                        <Tooltip content="Показать игрока">
-                                            <IconButton
-                                                _hover={{ bg: 'orange' }}
-                                                onClick={() =>
-                                                    document.dispatchEvent(
-                                                        new Event(`player.scroll.${user.id}`),
-                                                    )
-                                                }
-                                            >
-                                                <TfiTarget />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </HStack>
-                                    <Separator size="md" borderColor="white" variant="dashed" />
-                                </Box>
-                            )}
-                        </For>
+                    <Flex>
+                        <VStack p={5} maxH={96} overflowY="auto">
+                            <For each={users}>
+                                {user => (
+                                    <Box key={user.id} w="full">
+                                        <HStack minH={16}>
+                                            <ChakraLink w="full" asChild>
+                                                <Link to={`/profile/${user.name}`}>
+                                                    <HStack gap={4}>
+                                                        <Box pos="relative">
+                                                            <Avatar user={user} />
+                                                            {user.is_stream_live && (
+                                                                <Float placement="bottom-end">
+                                                                    <Circle
+                                                                        bg="red.solid"
+                                                                        w={4}
+                                                                        h={4}
+                                                                    />
+                                                                </Float>
+                                                            )}
+                                                        </Box>
+                                                        {user.name}
+                                                    </HStack>
+                                                </Link>
+                                            </ChakraLink>
+                                            <PlayerInventoryButton userId={user.id} />
+                                            <Tooltip content="Показать игрока">
+                                                <IconButton
+                                                    _hover={{ bg: 'orange' }}
+                                                    onClick={() =>
+                                                        document.dispatchEvent(
+                                                            new Event(`player.scroll.${user.id}`),
+                                                        )
+                                                    }
+                                                >
+                                                    <TfiTarget />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </HStack>
+                                        <Separator size="md" borderColor="white" variant="dashed" />
+                                    </Box>
+                                )}
+                            </For>
+                        </VStack>
                     </Flex>
                 </Collapsible.Content>
             </Collapsible.Root>
