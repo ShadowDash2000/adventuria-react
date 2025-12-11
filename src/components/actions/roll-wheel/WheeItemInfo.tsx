@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Box, Flex, FlexProps, Heading, Image } from '@chakra-ui/react';
 import type { ItemRecord } from '@shared/types/item';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 
 interface WheelItemInfoProps extends FlexProps {
     item: ItemRecord;

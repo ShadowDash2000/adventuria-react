@@ -105,10 +105,10 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                         img.crossOrigin = 'anonymous';
                         img.onload = () => {
                             // redraw when loaded
-                            const raf = requestAnimationFrame(() => draw());
+                            requestAnimationFrame(() => draw());
                         };
                         img.onerror = () => {
-                            const raf = requestAnimationFrame(() => draw());
+                            requestAnimationFrame(() => draw());
                         };
                         img.src = imgUrl;
                         imageCache.current.set(imgUrl, img);

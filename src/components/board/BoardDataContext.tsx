@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext } from 'react';
 import type { UserRecord } from '@shared/types/user';
 import type { CellRecord } from '@shared/types/cell';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 import { useQuery } from '@tanstack/react-query';
 import { LuLoader } from 'react-icons/lu';
 import { Text } from '@chakra-ui/react';

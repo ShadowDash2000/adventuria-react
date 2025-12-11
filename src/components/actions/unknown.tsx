@@ -1,6 +1,6 @@
-import {Status} from "@chakra-ui/react";
-import type {ReactNode} from "react";
-import {ActionDispenser} from "./action-base";
+import { Status } from '@chakra-ui/react';
+import type { ReactNode } from 'react';
+import { ActionDispenser } from './action-base';
 
 export class Unknown extends ActionDispenser {
     buttonNode(): ReactNode {
@@ -8,19 +8,23 @@ export class Unknown extends ActionDispenser {
     }
 
     color() {
-        return 'red'
+        return 'red';
     }
 
     name() {
-        return '[ДАННЫЕ УДАЛЕНЫ]'
+        return '[ДАННЫЕ УДАЛЕНЫ]';
+    }
+
+    key() {
+        return 'unknown';
     }
 
     statusNode() {
         return (
             <Status.Root colorPalette={this.color()}>
-                <Status.Indicator/>
+                <Status.Indicator />
                 {this.name()}
             </Status.Root>
-        )
+        );
     }
 }

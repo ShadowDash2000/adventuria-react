@@ -22,6 +22,8 @@ export const Player = ({ user, ...rest }: PlayerProps) => {
             user={user}
             visibility={visible || moving ? 'visible' : 'hidden'}
             position="absolute"
+            w="2.1vw"
+            h="2.1vw"
             transform={`translate(calc(${position.x}px + ${position.offsetX}%), calc(${position.y}px + ${position.offsetY}%))`}
             transition={`transform ${moveTime}s ease`}
         />

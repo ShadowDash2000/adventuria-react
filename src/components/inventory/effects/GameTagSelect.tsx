@@ -1,10 +1,10 @@
-import {keepPreviousData, useQuery} from "@tanstack/react-query";
-import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
-import type {TagRecord} from "@shared/types/tag";
-import {createListCollection} from "@chakra-ui/react";
-import {Select, type SelectProps} from "@ui/select";
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useAppContext } from '@context/AppContextProvider';
+import type { TagRecord } from '@shared/types/tag';
+import { createListCollection } from '@chakra-ui/react';
+import { Select, type SelectProps } from '@ui/select';
 
-type GameTagSelectProps = Omit<SelectProps, 'collection'>
+type GameTagSelectProps = Omit<SelectProps, 'collection'>;
 
 export const GameTagSelect = (props: GameTagSelectProps) => {
     const { pb } = useAppContext();

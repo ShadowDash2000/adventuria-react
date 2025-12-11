@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 import { ActionFactory } from './actions/action-factory';
 import { Flex, For } from '@chakra-ui/react';
 
@@ -10,7 +10,16 @@ export const UserActionMenu = () => {
     }, [availableActions]);
 
     return (
-        <Flex position="fixed" bottom={0} zIndex={100} py={10} justify="center" align="center">
+        <Flex
+            position="fixed"
+            left={0}
+            right={0}
+            bottom={0}
+            zIndex={100}
+            mb={10}
+            justify="center"
+            align="center"
+        >
             <For each={actions}>{action => action.buttonNode()}</For>
         </Flex>
     );

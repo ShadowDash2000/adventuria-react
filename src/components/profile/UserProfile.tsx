@@ -6,7 +6,7 @@ import { Box, ButtonGroup, Text, Link, DataList, Float, Circle } from '@chakra-u
 import { Button } from '@ui/button';
 import { LuTwitch, LuYoutube } from 'react-icons/lu';
 import { TimerSimple } from '@components/timer/TimerSimple';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 
 export const UserProfile = () => {
     const { pb } = useAppContext();

@@ -1,15 +1,12 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useBoardInnerContext } from '../BoardInner';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
-import { BoardHelper, type CellPosition } from '../BoardHelper';
+import { useAppContext } from '@context/AppContextProvider';
+import { BoardHelper } from '../BoardHelper';
 import type { UserRecord } from '@shared/types/user';
 import { CELL_MAX_USERS, CELL_MAX_USERS_LINE } from '../Board';
+import { usePlayer } from '@components/board/players/usePlayer';
 
 type PlayerPosition = { x: number; y: number; offsetX: number; offsetY: number };
-
-export type PlayerMoveEvent = { prevCellsPassed: number; cellsPassed: number; pathTime?: number };
-
-const MOVE_TIME_DEFAULT = 1;
 
 interface PlayerMovementProps {
     user: UserRecord;
@@ -23,64 +20,63 @@ interface PlayerMovementReturn {
     visible: boolean;
 }
 
+const SCROLL_INTERVAL = 50;
+
 export const usePlayerMovement = ({
     user,
     playerRef,
 }: PlayerMovementProps): PlayerMovementReturn => {
-    const { isAuth, user: userAuth } = useAppContext();
-    const { rows, cols, cellWidth, cellHeight, cellsOrdered, cellsUsers, cellsUsersRebuild } =
-        useBoardInnerContext();
-    const [position, setPosition] = useState<PlayerPosition>({
-        offsetX: 0,
-        offsetY: 0,
-        x: 0,
-        y: 0,
-    });
-    const isCurrentUser = user.id === userAuth.id;
+    const { user: userAuth } = useAppContext();
+    const { rows, cols, cellWidth, cellHeight, cellsOrdered } = useBoardInnerContext();
+    const isCurrentUser = userAuth ? user.id === userAuth.id : false;
     const [moving, setMoving] = useState<boolean>(false);
-    const [moveTime, setMoveTime] = useState<number>(MOVE_TIME_DEFAULT);
-    const [visible, setVisible] = useState<boolean>(true);
 
-    const stepsQueue = useRef<CellPosition[]>([]);
-    const [moveIntervalId, setMoveIntervalId] = useState<number | null>(null);
-    const [scrollIntervalId, setScrollIntervalId] = useState<number | null>(null);
+    const { pullPath, paths, moveTime, clearMoveTime } = usePlayer(user.id);
 
-    const [movementTick, setMovementTick] = useState<number>(0);
+    const isMovingRef = useRef(false);
 
-    const move = useCallback(
-        (row: number, col: number) => {
+    const calculateState = useCallback(
+        (row: number, col: number): { position: PlayerPosition; visible: boolean } => {
             const cell = cellsOrdered[row][col];
             let userCol = 0;
             let userRow = 0;
-            if (cell) {
-                const cellUsers = cellsUsers.get(cell.id);
-                if (cellUsers) {
-                    const index = cellUsers.findIndex(value => value === user.id);
-                    if (index !== -1) {
-                        userCol = index % CELL_MAX_USERS_LINE;
-                        userRow = Math.floor(index / CELL_MAX_USERS_LINE);
-                    }
+            let isVisible = true;
 
-                    setVisible(cellUsers.length <= CELL_MAX_USERS);
-                } else {
-                    setVisible(true);
+            if (cell.players) {
+                const index = cell.players.findIndex(player => player.id === user.id);
+                if (index !== -1) {
+                    userCol = index % CELL_MAX_USERS_LINE;
+                    userRow = Math.floor(index / CELL_MAX_USERS_LINE);
                 }
+                isVisible = cell.players.length <= CELL_MAX_USERS;
             }
+
             const x = cellWidth * col;
             const y = -(cellHeight * row) - cellHeight;
             const offsetX = 50 + 100 * userCol;
             const offsetY = 130 + 100 * userRow;
 
-            setPosition({ x, y, offsetX, offsetY });
+            return { position: { x, y, offsetX, offsetY }, visible: isVisible };
         },
-        [cellWidth, cellHeight, cellsOrdered, cellsUsers],
+        [cellWidth, cellHeight, cellsOrdered, user.id],
     );
 
-    // sets the initial position
-    useEffect(() => {
+    const [initialState] = useState(() => {
         const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
-        move(pos.row, pos.col);
-    }, [rows, cols, cellWidth, cellHeight]);
+        return calculateState(pos.row, pos.col);
+    });
+
+    const [position, setPosition] = useState<PlayerPosition>(initialState.position);
+    const [visible, setVisible] = useState<boolean>(initialState.visible);
+
+    const move = useCallback(
+        (row: number, col: number) => {
+            const newState = calculateState(row, col);
+            setPosition(newState.position);
+            setVisible(newState.visible);
+        },
+        [calculateState],
+    );
 
     const scrollToUser = useCallback(() => {
         playerRef.current?.scrollIntoView({
@@ -90,112 +86,11 @@ export const usePlayerMovement = ({
         });
     }, [playerRef]);
 
-    const startMovingInterval = useCallback(
-        (stepTimeSec: number, blockScroll: boolean): void => {
-            if (moveIntervalId) return;
-
-            setMoveTime(stepTimeSec);
-            setMoving(true);
-            setMovementTick(prev => prev + 1);
-            setMoveIntervalId(
-                setInterval(() => {
-                    setMovementTick(prev => prev + 1);
-                }, stepTimeSec * 1000),
-            );
-
-            if (blockScroll) {
-                setScrollIntervalId(setInterval(scrollToUser, 100));
-                document.body.style.overflow = 'hidden';
-            }
-        },
-        [moveIntervalId],
-    );
-
     useEffect(() => {
-        if (!moveIntervalId) return;
-
-        const next = stepsQueue.current.shift();
-
-        if (next) {
-            move(next.row, next.col);
-            return;
-        }
-
-        setMoving(false);
-        setMovementTick(0);
-        if (moveIntervalId) {
-            clearInterval(moveIntervalId);
-            setMoveIntervalId(null);
-            setMoveTime(MOVE_TIME_DEFAULT);
-        }
-        if (scrollIntervalId) {
-            clearInterval(scrollIntervalId);
-            setScrollIntervalId(null);
-            document.body.style.overflow = 'auto';
-        }
-        cellsUsersRebuild();
-    }, [movementTick, moveIntervalId, scrollIntervalId]);
-
-    useEffect(() => {
-        if (!isAuth) return;
-
-        const abortController = new AbortController();
-
-        document.addEventListener(
-            `player.move.${user.id}`,
-            e => {
-                const { detail } = e as CustomEvent<PlayerMoveEvent>;
-
-                const newPath: CellPosition[] = [];
-                if (stepsQueue.current.length > 0) {
-                    newPath.push(BoardHelper.getCoords(rows, cols, detail.cellsPassed));
-                } else {
-                    newPath.push(
-                        ...BoardHelper.createPath(
-                            rows,
-                            cols,
-                            detail.prevCellsPassed,
-                            detail.cellsPassed,
-                        ),
-                    );
-                }
-
-                stepsQueue.current = [...stepsQueue.current, ...newPath];
-
-                let stepTime = MOVE_TIME_DEFAULT;
-                if (detail.pathTime) {
-                    stepTime = detail.pathTime / newPath.length;
-                }
-
-                startMovingInterval(stepTime, isCurrentUser);
-            },
-            { signal: abortController.signal },
-        );
-
-        return () => {
-            abortController.abort();
-        };
-    }, [rows, cols, isAuth, startMovingInterval]);
-
-    useEffect(() => {
-        if (!isAuth) return;
-
-        const abortController = new AbortController();
-
-        document.addEventListener(
-            'player.update',
-            () => {
-                if (moving) return;
-                const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
-                move(pos.row, pos.col);
-            },
-            { signal: abortController.signal },
-        );
-
-        return () => {
-            abortController.abort();
-        };
-    }, [rows, cols, moving, user.cellsPassed, move]);
+        if (moving || paths) return;
+        const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
+        move(pos.row, pos.col);
+    }, [cellWidth, cellHeight, cellsOrdered]);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -210,6 +105,50 @@ export const usePlayerMovement = ({
             abortController.abort();
         };
     }, [scrollToUser]);
+
+    useEffect(() => {
+        if (!paths || isMovingRef.current) return;
+
+        setMoving(true);
+        isMovingRef.current = true;
+
+        let scrollInterval: number | null = null;
+        let moveInterval: number | null = null;
+
+        if (isCurrentUser) {
+            document.body.style.overflow = 'hidden';
+            scrollInterval = window.setInterval(scrollToUser, SCROLL_INTERVAL);
+        }
+        const cleanup = () => {
+            if (moveInterval !== null) clearInterval(moveInterval);
+            if (scrollInterval !== null) {
+                clearInterval(scrollInterval);
+                document.body.style.overflow = 'auto';
+            }
+            setMoving(false);
+            clearMoveTime();
+            isMovingRef.current = false;
+        };
+
+        const performStep = () => {
+            const next = pullPath();
+
+            if (next) {
+                move(next.row, next.col);
+            } else {
+                cleanup();
+            }
+        };
+
+        performStep();
+        if (isMovingRef.current) {
+            moveInterval = window.setInterval(performStep, moveTime * 1000);
+        }
+
+        return () => {
+            cleanup();
+        };
+    }, [paths, moveTime, isCurrentUser, scrollToUser, move, pullPath]);
 
     return { position, moving, moveTime, visible };
 };

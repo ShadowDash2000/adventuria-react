@@ -8,28 +8,20 @@ import { Avatar } from '../../Avatar';
 import { CELL_MAX_USERS } from '../Board';
 
 export const CellsPlayers = () => {
-    const { cells, cellsUsers } = useBoardInnerContext();
+    const { usersByCellIndex } = useBoardInnerContext();
     const cellTooltips = useMemo(() => {
-        const cellsWithoutSpace = new Map<string, string[]>();
-        for (const [cellId, usersIds] of cellsUsers.entries()) {
-            if (usersIds.length <= CELL_MAX_USERS) continue;
-            cellsWithoutSpace.set(cellId, usersIds);
+        const cellsWithoutSpace = new Map<number, UserRecord[]>();
+        for (const [cellIndex, users] of usersByCellIndex) {
+            if (users.length <= CELL_MAX_USERS) continue;
+            cellsWithoutSpace.set(cellIndex, users);
         }
-
-        const cellPosToUsers = new Map<number, string[]>();
-        for (const [cellIndex, cell] of cells.entries()) {
-            const users = cellsWithoutSpace.get(cell.id);
-            if (users) {
-                cellPosToUsers.set(cellIndex, users);
-            }
-        }
-        return cellPosToUsers;
-    }, [cellsUsers]);
+        return cellsWithoutSpace;
+    }, [usersByCellIndex]);
 
     return (
         <For each={[...cellTooltips.entries()]}>
-            {([cellIndex, usersIds]) => (
-                <CellPlayers key={cellIndex} cellIndex={cellIndex} usersIds={usersIds} />
+            {([cellIndex, users]) => (
+                <CellPlayers key={cellIndex} cellIndex={cellIndex} users={users} />
             )}
         </For>
     );
@@ -37,18 +29,14 @@ export const CellsPlayers = () => {
 
 interface CellTooltipProps {
     cellIndex: number;
-    usersIds: string[];
+    users: UserRecord[];
 }
 
-const CellPlayers = ({ cellIndex, usersIds }: CellTooltipProps) => {
-    const { rows, cols, cellWidth, cellHeight, users } = useBoardInnerContext();
+const CellPlayers = ({ cellIndex, users }: CellTooltipProps) => {
+    const { rows, cols, cellWidth, cellHeight } = useBoardInnerContext();
     const position = useMemo(
         () => BoardHelper.getCoords(rows, cols, cellIndex),
         [rows, cols, cellIndex],
-    );
-    const usersFiltered = useMemo<UserRecord[]>(
-        () => usersIds.map(userId => users.get(userId)!),
-        [usersIds, users],
     );
 
     const x = cellWidth * position.col + cellWidth / 2;
@@ -61,7 +49,7 @@ const CellPlayers = ({ cellIndex, usersIds }: CellTooltipProps) => {
             positioning={{ placement: 'top' }}
             content={
                 <VStack p={2} gap={4} align="stretch">
-                    <For each={usersFiltered}>
+                    <For each={users}>
                         {user => (
                             <HStack key={user.id}>
                                 <Avatar user={user} size="xs" />
@@ -80,7 +68,7 @@ const CellPlayers = ({ cellIndex, usersIds }: CellTooltipProps) => {
                 top="anchor(end)"
                 transform={`translate(calc(${x}px - 50%), calc(${y}px + 50%))`}
             >
-                {usersIds.length}
+                {users.length}
             </IconButton>
         </ToggleTip>
     );

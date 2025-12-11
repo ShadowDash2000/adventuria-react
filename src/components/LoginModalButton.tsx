@@ -1,14 +1,15 @@
 import { Input, Field, Flex, Dialog, Portal, CloseButton } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@ui/password-input';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 import { Button } from '@ui/button';
 import { DialogContent } from '@ui/dialog-content';
+import { invalidateUser } from '@shared/queryClient';
 
 type LoginFormValues = { login: string; password: string };
 
 export const LoginModalButton = () => {
-    const { pb, refetchUser } = useAppContext();
+    const { pb } = useAppContext();
     const {
         register,
         handleSubmit,
@@ -21,7 +22,7 @@ export const LoginModalButton = () => {
             .authWithPassword(values['login'], values['password']);
 
         if (authResult.token) {
-            await refetchUser();
+            await invalidateUser();
         }
     };
 

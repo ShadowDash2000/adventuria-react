@@ -2,13 +2,14 @@ import { Button } from '@ui/button';
 import { ButtonGroup, CloseButton, Dialog, Flex, Portal } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
 import { Content } from '@tiptap/react';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 import { LuNotebookPen } from 'react-icons/lu';
 import { DialogContent } from '@ui/dialog-content';
 import { ActionTextEditor } from '@components/profile/ActionTextEditor';
+import { invalidateAllActions, invalidateUser } from '@shared/queryClient';
 
 export const DoneModal = () => {
-    const { pb, availableActions, refetchActions, refetchUser } = useAppContext();
+    const { pb, availableActions } = useAppContext();
     const [content, setContent] = useState<Content | undefined>(null);
     const [actionType, setActionType] = useState<string>('');
     const [openConfirm, setOpenConfirm] = useState(false);
@@ -20,8 +21,8 @@ export const DoneModal = () => {
 
             if (!res.success) return;
 
-            await refetchActions();
-            await refetchUser();
+            await invalidateAllActions();
+            await invalidateUser();
         },
         [pb, content],
     );

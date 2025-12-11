@@ -4,15 +4,15 @@ import { Tooltip } from '@ui/tooltip';
 import { ItemsWheelModal } from '@components/actions/roll-wheel/ItemsWheelModal';
 import { RadioPlayerButton } from './RadioPlayerButton';
 import { PiCoinVerticalFill } from 'react-icons/pi';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppAuthContext } from '@context/AppContextProvider';
 import { Timer } from '@components/timer/Timer';
 
 export const UserMenu = () => {
-    const { user } = useAppContext();
+    const { user } = useAppAuthContext();
 
     return (
         <>
-            <VStack position="fixed" left={0} bottom={0} pl={4} pb={10} zIndex={100} align="center">
+            <VStack position="fixed" left={0} bottom={0} pl={4} mb={10} zIndex={100} align="center">
                 <Tooltip content="Баланс">
                     <HStack>
                         <Text userSelect="none">{user.balance}</Text>
@@ -32,7 +32,7 @@ export const UserMenu = () => {
                 right={0}
                 bottom={0}
                 pr={4}
-                pb={10}
+                mb={10}
                 zIndex={100}
                 justify="center"
                 align="center"

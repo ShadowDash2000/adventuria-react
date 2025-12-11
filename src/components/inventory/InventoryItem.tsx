@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CloseButton, Dialog, Flex, Image, Portal } from '@chakra-ui/react';
 import { Button } from '@ui/button';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 import { EffectFactory, Type_Effect_Creator } from '@components/inventory/effects/effect-factory';
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
 import { RecordIdString } from '@shared/types/pocketbase';

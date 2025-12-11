@@ -1,4 +1,4 @@
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppAuthContext } from '@context/AppContextProvider';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import type { WheelOFortuneHandle } from './WheelOFortune';
 import { useQuery } from '@tanstack/react-query';
@@ -14,9 +14,10 @@ import { WheelGameInfo } from './WheelGameInfo';
 import { Flex } from '@ui/flex';
 import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
+import { invalidateAllActions } from '@shared/queryClient';
 
 export const GamesWheelModal = () => {
-    const { pb, user, refetchActions } = useAppContext();
+    const { pb, user } = useAppAuthContext();
     const { volume, setVolume, play } = useAudioPlayer(AudioKey.music);
     const wheelOFortuneRef = useRef<WheelOFortuneHandle>(null);
     const [open, setOpen] = useState(false);
@@ -28,7 +29,7 @@ export const GamesWheelModal = () => {
         queryFn: () =>
             pb
                 .collection('actions')
-                .getFirstListItem<ActionRecord>(`user = "${user!.id}"`, {
+                .getFirstListItem<ActionRecord>(`user = "${user.id}"`, {
                     sort: '-created',
                     fields: 'items_list',
                 }),
@@ -114,7 +115,7 @@ export const GamesWheelModal = () => {
                 } else {
                     return;
                 }
-                if (!e.open && wasSpinned) await refetchActions();
+                if (!e.open && wasSpinned) await invalidateAllActions();
             }}
             size="full"
         >

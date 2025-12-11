@@ -1,7 +1,7 @@
 import { UserActionsList } from '../profile/UserActionsList';
 import { useParams } from 'react-router-dom';
 import { CollectionListInfiniteProvider } from '@context/CollectionListInfiniteContext';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 import { Sort } from '@shared/hook/useSort';
 import { CollectionOneFilterProvider } from '@context/CollectionOneFilterContext';
 import { Flex } from '@chakra-ui/react';

@@ -1,5 +1,4 @@
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
-import { UserActionMenu } from '../UserActionMenu';
+import { useAppContext } from '@context/AppContextProvider';
 import { Box, Spacer } from '@chakra-ui/react';
 import { LatestActions } from '../LatestActions';
 import { CollectionListInfiniteProvider } from '@context/CollectionListInfiniteContext';
@@ -7,7 +6,7 @@ import { Sort } from '@shared/hook/useSort';
 import { Board } from '../board/Board';
 
 export const Main = () => {
-    const { pb, isAuth } = useAppContext();
+    const { pb } = useAppContext();
 
     return (
         <>
@@ -24,7 +23,6 @@ export const Main = () => {
                     <LatestActions />
                 </CollectionListInfiniteProvider>
             </Box>
-            {isAuth ? <UserActionMenu /> : null}
         </>
     );
 };

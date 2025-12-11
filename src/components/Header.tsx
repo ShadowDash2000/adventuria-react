@@ -1,5 +1,5 @@
 import { Flex } from '@chakra-ui/react';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 import { LoginModalButton } from './LoginModalButton';
 import { Button } from '@ui/button';
 import { Link } from 'react-router-dom';

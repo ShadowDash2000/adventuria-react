@@ -13,7 +13,7 @@ import { LuPencil } from 'react-icons/lu';
 import HTMLReactParser from 'html-react-parser';
 import { useEffect, useState } from 'react';
 import { type ActionRecord } from '@shared/types/action';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 import { formatDateLocalized } from '@shared/helpers/helper';
 import { ActionFactory } from '../actions/action-factory';
 import { Avatar } from '../Avatar';
@@ -36,7 +36,7 @@ export const UserAction = ({ action }: ActionProps) => {
     const [comment, setComment] = useState<string>(action.comment);
     const [draft, setDraft] = useState<string>(comment);
 
-    const canEdit = Boolean(isAuth && authUser?.id && action.user === authUser.id);
+    const canEdit = isAuth && authUser.id && action.user === authUser.id;
 
     useEffect(() => {
         if (isEditing) {

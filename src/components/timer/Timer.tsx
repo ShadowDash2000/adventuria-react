@@ -3,7 +3,7 @@ import type { RecordIdString } from '@shared/types/pocketbase';
 import { VStack, Text, ButtonGroup, IconButton, Box, Float, Clipboard } from '@chakra-ui/react';
 import { FaCopy, FaPause, FaPlay } from 'react-icons/fa6';
 import { Tooltip } from '@ui/tooltip';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 import { useTimer } from './useTimer';
 
 interface TimerProps {

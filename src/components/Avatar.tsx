@@ -1,7 +1,7 @@
-import { type RefObject, useMemo} from "react";
-import {Avatar as ChakraAvatar, type AvatarRootProps} from "@chakra-ui/react/avatar";
-import type {UserRecord} from "@shared/types/user";
-import {useAppContext} from "@context/AppContextProvider/AppContextProvider";
+import { type RefObject, useMemo } from 'react';
+import { Avatar as ChakraAvatar, type AvatarRootProps } from '@chakra-ui/react/avatar';
+import type { UserRecord } from '@shared/types/user';
+import { useAppContext } from '@context/AppContextProvider';
 
 interface AvatarProps extends AvatarRootProps {
     ref?: RefObject<HTMLDivElement | null>;
@@ -15,7 +15,7 @@ export const Avatar = ({ user, ref, ...props }: AvatarProps) => {
     return (
         <ChakraAvatar.Root
             ref={ref}
-            outlineWidth="{spacing.1}"
+            outlineWidth=".25vw"
             outlineColor={user.color}
             outlineOffset="{spacing.0.5}"
             outlineStyle="solid"

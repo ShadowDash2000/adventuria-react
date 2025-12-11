@@ -2,7 +2,7 @@ import type { InventoryItemRecord } from '@shared/types/inventory-item';
 import { For, Grid, Text } from '@chakra-ui/react';
 import { InventoryItem } from './InventoryItem';
 import { type RecordIdString } from '@shared/types/pocketbase';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 import { useQuery } from '@tanstack/react-query';
 import { LuLoader } from 'react-icons/lu';
 
@@ -35,7 +35,7 @@ export const Inventory = ({ userId }: InventoryProps) => {
                     <InventoryItem
                         key={index}
                         invItem={inv}
-                        showControlButtons={isAuth && user?.id === userId}
+                        showControlButtons={isAuth && user.id === userId}
                     />
                 )}
             </For>

@@ -1,27 +1,26 @@
-import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { Players } from './players/Players';
-import type { CellRecord } from '@shared/types/cell';
 import type { UserRecord } from '@shared/types/user';
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppContext } from '@context/AppContextProvider';
 import { Cells } from './cells/Cells';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { BoardHelper } from './BoardHelper';
+import { BoardHelper, type CellBoard } from './BoardHelper';
 import { useBoardDataContext } from './BoardDataContext';
 import { useBoardContext } from './Board';
 import { CellsPlayers } from './cells/CellsPlayers';
+import { UserActionMenu } from '@components/UserActionMenu';
+import { usePlayersStore } from '@components/board/players/usePlayersStore';
+import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 
 type BoardInnerContextType = {
-    cells: CellRecord[];
-    cellsOrdered: CellRecord[][];
-    cellsOrderedRev: CellRecord[][];
-    cellsUsers: Map<RecordIdString, RecordIdString[]>;
+    cellsOrdered: CellBoard[][];
+    cellsOrderedRev: CellBoard[][];
+    usersByCellIndex: Map<number, UserRecord[]>;
     users: Map<RecordIdString, UserRecord>;
-    boardDimensions: Dimension;
     rows: number;
     cols: number;
     cellWidth: number;
     cellHeight: number;
-    cellsUsersRebuild: () => void;
 };
 
 type Dimension = { width: number; height: number };
@@ -31,34 +30,23 @@ export const BoardInnerContext = createContext<BoardInnerContextType>({} as Boar
 export const BoardInner = () => {
     const { pb, isAuth, user } = useAppContext();
     const { boardInnerRef } = useBoardContext();
-    const { users: usersRaw, cells: cellRaw } = useBoardDataContext();
-
-    const [cells, setCells] = useState<CellRecord[]>(cellRaw);
+    const { users: usersRaw, cells } = useBoardDataContext();
     const [users, setUsers] = useState<Map<RecordIdString, UserRecord>>(
         new Map(usersRaw.map(u => [u.id, u])),
     );
 
-    const cellsOrdered = useMemo(() => BoardHelper.buildCells(cells), [cells]);
-    const cellsOrderedRev = useMemo(() => cellsOrdered.slice().reverse(), [cellsOrdered]);
-    const [cellsUsersRef, setCellsUsersRef] = useState({});
-    const cellsUsers = useMemo(() => {
-        return BoardHelper.buildCellsUsers([...users.values()], cells);
-    }, [users, cells, cellsUsersRef]);
-
-    const cellsUsersRebuild = useCallback(() => {
-        setCellsUsersRef({});
-    }, []);
-
-    useEffect(() => {
-        document.dispatchEvent(new CustomEvent('player.update'));
-    }, [cellsUsersRef]);
+    const cellsOrdered = useMemo(() => BoardHelper.buildCells(cells, users), [cells, users]);
+    const cellsOrderedRev = useMemo(
+        () => cellsOrdered.lines.slice().reverse(),
+        [cellsOrdered.lines],
+    );
 
     // board geometry
     const [boardDimensions, setBoardDimensions] = useState<Dimension>({ width: 0, height: 0 });
 
     // derived grid size
-    const rows = cellsOrdered.length;
-    const cols = rows > 0 ? cellsOrdered[0].length : 0;
+    const rows = cellsOrdered.lines.length;
+    const cols = rows > 0 ? cellsOrdered.lines[0].length : 0;
 
     // derived cell size in px based on container size
     const { width: cellWidth, height: cellHeight } = useMemo((): Dimension => {
@@ -104,15 +92,18 @@ export const BoardInner = () => {
                     break;
                 case 'update':
                     setUsers(prev => {
-                        if (e.record.id !== user!.id) {
-                            document.dispatchEvent(
-                                new CustomEvent(`player.move.${e.record.id}`, {
-                                    detail: {
-                                        prevCellsPassed: prev.get(e.record.id)!.cellsPassed,
-                                        cellsPassed: e.record.cellsPassed,
-                                    },
-                                }),
-                            );
+                        if (!(e.record.id === user.id && useRollDiceStore.getState().isRolling)) {
+                            usePlayersStore
+                                .getState()
+                                .addPaths(
+                                    e.record.id,
+                                    BoardHelper.createPath(
+                                        rows,
+                                        cols,
+                                        prev.get(e.record.id)!.cellsPassed,
+                                        e.record.cellsPassed,
+                                    ),
+                                );
                         }
 
                         const next = new Map(prev);
@@ -138,22 +129,20 @@ export const BoardInner = () => {
     return (
         <BoardInnerContext.Provider
             value={{
-                cells,
-                cellsOrdered,
+                cellsOrdered: cellsOrdered.lines,
+                usersByCellIndex: cellsOrdered.usersByCellIndex,
                 cellsOrderedRev,
-                cellsUsers,
                 users,
-                boardDimensions,
                 rows,
                 cols,
                 cellWidth,
                 cellHeight,
-                cellsUsersRebuild,
             }}
         >
             <Cells />
-            <Players />
+            {cellWidth !== 0 && cellHeight !== 0 && <Players />}
             <CellsPlayers />
+            {isAuth ? <UserActionMenu /> : null}
         </BoardInnerContext.Provider>
     );
 };

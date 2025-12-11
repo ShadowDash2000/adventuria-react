@@ -1,4 +1,4 @@
-import { useAppContext } from '@context/AppContextProvider/AppContextProvider';
+import { useAppAuthContext } from '@context/AppContextProvider';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import type { WheelOFortuneHandle } from './WheelOFortune';
 import { useQuery } from '@tanstack/react-query';
@@ -21,9 +21,10 @@ import { Flex } from '@ui/flex';
 import { WheelItemInfo } from './WheeItemInfo';
 import { Tooltip } from '@ui/tooltip';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
+import { invalidateUser } from '@shared/queryClient';
 
 export const ItemsWheelModal = () => {
-    const { pb, user, refetchUser } = useAppContext();
+    const { pb, user } = useAppAuthContext();
     const { volume, setVolume, play } = useAudioPlayer(AudioKey.music);
     const wheelOFortuneRef = useRef<WheelOFortuneHandle>(null);
     const [open, setOpen] = useState(false);
@@ -75,7 +76,7 @@ export const ItemsWheelModal = () => {
             async currentIndex => {
                 setSpinning(false);
                 setCurrentItemIndex(currentIndex);
-                await refetchUser();
+                await invalidateUser();
             },
         );
         setSpinning(true);
