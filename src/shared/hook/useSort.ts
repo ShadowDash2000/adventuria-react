@@ -1,19 +1,19 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from 'react';
 
 interface SortProps {
-    sortSet: (key: string, value: Sort) => void
+    sortSet: (key: string, value: Sort) => void;
 
-    sortRemove(key: string): void
+    sortRemove(key: string): void;
 
-    sortIs(key: string, value: Sort): boolean
+    sortIs(key: string, value: Sort): boolean;
 
-    sortToggle(key: string): void
+    sortToggle(key: string): void;
 
-    sortBuild: string
+    sortBuild: string;
 }
 
 interface SortType {
-    initial?: Map<string, Sort>
+    initial?: Map<string, Sort>;
 }
 
 export const enum Sort {
@@ -34,27 +34,27 @@ const build = (sort: Map<string, Sort>) => {
         i++;
     }
     return sortString;
-}
+};
 
-export const useSort = ({initial = new Map()}: SortType): SortProps => {
-    const [sort, setSort] = useState<Map<string, Sort>>(initial);
+export const useSort = ({ initial }: SortType): SortProps => {
+    const [sort, setSort] = useState<Map<string, Sort>>(initial || new Map());
     const [sortBuild, setSortBuild] = useState<string>(build(sort));
     const countRef = useRef<number>(0);
 
     const set = (key: string, value: Sort) => {
         setSort(new Map(sort).set(key, value));
-    }
+    };
 
     const remove = (key: string) => {
         setSort(prev => {
             prev.delete(key);
             return new Map(prev);
-        })
-    }
+        });
+    };
 
     const is = (key: string, value: Sort) => {
         return sort.get(key) === value;
-    }
+    };
 
     const toggle = (key: string) => {
         const value = sort.get(key);
@@ -63,7 +63,7 @@ export const useSort = ({initial = new Map()}: SortType): SortProps => {
         } else if (value === Sort.DESC) {
             set(key, Sort.ASC);
         }
-    }
+    };
 
     useEffect(() => {
         if (countRef.current > 0) {
@@ -72,11 +72,5 @@ export const useSort = ({initial = new Map()}: SortType): SortProps => {
         ++countRef.current;
     }, [sort]);
 
-    return {
-        sortSet: set,
-        sortRemove: remove,
-        sortIs: is,
-        sortToggle: toggle,
-        sortBuild,
-    }
-}
+    return { sortSet: set, sortRemove: remove, sortIs: is, sortToggle: toggle, sortBuild };
+};

@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { useBoardInnerContext } from '../BoardInner';
 import { For, HStack, IconButton, VStack, Text } from '@chakra-ui/react';
 import { ToggleTip } from '@ui/toggle-tip';
@@ -9,17 +8,15 @@ import { CELL_MAX_USERS } from '../Board';
 
 export const CellsPlayers = () => {
     const { usersByCellIndex } = useBoardInnerContext();
-    const cellTooltips = useMemo(() => {
-        const cellsWithoutSpace = new Map<number, UserRecord[]>();
-        for (const [cellIndex, users] of usersByCellIndex) {
-            if (users.length <= CELL_MAX_USERS) continue;
-            cellsWithoutSpace.set(cellIndex, users);
-        }
-        return cellsWithoutSpace;
-    }, [usersByCellIndex]);
+
+    const cellsWithoutSpace = new Map<number, UserRecord[]>();
+    for (const [cellIndex, users] of usersByCellIndex) {
+        if (users.length <= CELL_MAX_USERS) continue;
+        cellsWithoutSpace.set(cellIndex, users);
+    }
 
     return (
-        <For each={[...cellTooltips.entries()]}>
+        <For each={[...cellsWithoutSpace.entries()]}>
             {([cellIndex, users]) => (
                 <CellPlayers key={cellIndex} cellIndex={cellIndex} users={users} />
             )}
@@ -34,10 +31,7 @@ interface CellTooltipProps {
 
 const CellPlayers = ({ cellIndex, users }: CellTooltipProps) => {
     const { rows, cols, cellWidth, cellHeight } = useBoardInnerContext();
-    const position = useMemo(
-        () => BoardHelper.getCoords(rows, cols, cellIndex),
-        [rows, cols, cellIndex],
-    );
+    const position = BoardHelper.getCoords(rows, cols, cellIndex);
 
     const x = cellWidth * position.col + cellWidth / 2;
     const y = -(cellHeight * position.row) - cellHeight / 2;

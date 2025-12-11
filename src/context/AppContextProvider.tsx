@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 import PocketBase, { ClientResponseError } from 'pocketbase';
 import type { UserRecord } from '@shared/types/user';
 import { useQuery } from '@tanstack/react-query';
@@ -14,10 +14,19 @@ type AppProviderType = AppContextAuth | AppContextGuest;
 
 type AppContextProviderProps = { children: ReactNode };
 
-const AppContext = createContext<AppProviderType>({} as AppProviderType);
+const pb = new PocketBase(import.meta.env.VITE_PB_URL);
+
+const AppContext = createContext<AppProviderType>({
+    pb,
+    availableActions: [],
+    logout: function (): void {
+        throw new Error('Function not implemented.');
+    },
+    isAuth: false,
+    user: null,
+});
 
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
-    const pb = useMemo(() => new PocketBase(import.meta.env.VITE_PB_URL), []);
     const [isAuth, setIsAuth] = useState<boolean>(pb.authStore.isValid);
     const logout = () => {
         pb.authStore.clear();

@@ -1,6 +1,6 @@
 import { Button } from '@ui/button';
 import { ButtonGroup, CloseButton, Dialog, Flex, Portal } from '@chakra-ui/react';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { Content } from '@tiptap/react';
 import { useAppContext } from '@context/AppContextProvider';
 import { LuNotebookPen } from 'react-icons/lu';
@@ -15,17 +15,14 @@ export const DoneModal = () => {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [titleConfirm, setTitleConfirm] = useState('');
 
-    const handleDone = useCallback(
-        async (actionType: string) => {
-            const res = await doneRequest(pb.authStore.token, actionType, content);
+    const handleDone = async (actionType: string) => {
+        const res = await doneRequest(pb.authStore.token, actionType, content);
 
-            if (!res.success) return;
+        if (!res.success) return;
 
-            await invalidateAllActions();
-            await invalidateUser();
-        },
-        [pb, content],
-    );
+        await invalidateAllActions();
+        await invalidateUser();
+    };
 
     return (
         <Dialog.Root lazyMount size="xl">

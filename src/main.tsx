@@ -1,13 +1,13 @@
+import './main.css';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router/router';
-import './main.css';
 import { ChakraProvider, createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
-import { ColorModeProvider } from '@ui/color-mode';
 import { AppContextProvider } from '@context/AppContextProvider';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { queryClient } from '@shared/queryClient';
+import { ThemeProvider } from 'next-themes';
 
 const colorModeConfig = { forcedTheme: 'dark' };
 const themeConfig = defineConfig({
@@ -29,7 +29,7 @@ const system = createSystem(defaultConfig, themeConfig);
 
 createRoot(document.getElementById('root')!).render(
     <ChakraProvider value={system}>
-        <ColorModeProvider {...colorModeConfig} />
+        <ThemeProvider attribute="class" disableTransitionOnChange {...colorModeConfig} />
         <QueryClientProvider client={queryClient}>
             <AppContextProvider>
                 <RouterProvider router={router} />

@@ -23,6 +23,7 @@ import { InfoTip } from '@ui/toggle-tip';
 import { Button } from '@ui/button';
 import { CellInfo } from '../board/cells/CellInfoModal';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
+import { RecordIdString } from '../../shared/types/pocketbase';
 
 type ActionProps = { action: ActionRecord };
 
@@ -49,30 +50,16 @@ export const UserAction = ({ action }: ActionProps) => {
         setError(null);
 
         try {
-            const formData = new FormData();
-            formData.append('action_id', action.id);
-            formData.append('comment', draft);
-
-            const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/update-action`, {
-                method: 'POST',
-                headers: { Authorization: `Bearer ${pb.authStore.token}` },
-                body: formData,
-            });
-            if (!res.ok) {
-                const error = await res
-                    .json()
-                    .then(e => e.error)
-                    .catch(() => '');
-                const text = await res.text().catch(() => '');
-                throw new Error(error || text || `Failed to update action`);
+            const ok = await updateActionRequest(pb.authStore.token, action.id, draft);
+            if (ok) {
+                setComment(draft);
+                setIsEditing(false);
             }
-            setComment(draft);
-            setIsEditing(false);
         } catch (e: any) {
             setError(e?.message ?? 'Unknown error');
-        } finally {
-            setSaving(false);
         }
+
+        setSaving(false);
     };
 
     return (
@@ -188,4 +175,31 @@ export const UserAction = ({ action }: ActionProps) => {
             </Card.Footer>
         </Card.Root>
     );
+};
+
+const updateActionRequest = async (
+    authToken: string,
+    actionId: RecordIdString,
+    comment: string,
+) => {
+    const formData = new FormData();
+    formData.append('action_id', actionId);
+    formData.append('comment', comment);
+
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/update-action`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${authToken}` },
+        body: formData,
+    });
+    if (!res.ok) {
+        const error = await res
+            .json()
+            .then(e => e.error)
+            .catch(() => '');
+        const text = await res.text().catch(() => '');
+        console.log(error || text || `Failed to update action`);
+        return false;
+    }
+
+    return true;
 };

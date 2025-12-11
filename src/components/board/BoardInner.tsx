@@ -35,11 +35,8 @@ export const BoardInner = () => {
         new Map(usersRaw.map(u => [u.id, u])),
     );
 
-    const cellsOrdered = useMemo(() => BoardHelper.buildCells(cells, users), [cells, users]);
-    const cellsOrderedRev = useMemo(
-        () => cellsOrdered.lines.slice().reverse(),
-        [cellsOrdered.lines],
-    );
+    const cellsOrdered = BoardHelper.buildCells(cells, users);
+    const cellsOrderedRev = cellsOrdered.lines.slice().reverse();
 
     // board geometry
     const [boardDimensions, setBoardDimensions] = useState<Dimension>({ width: 0, height: 0 });
@@ -49,11 +46,8 @@ export const BoardInner = () => {
     const cols = rows > 0 ? cellsOrdered.lines[0].length : 0;
 
     // derived cell size in px based on container size
-    const { width: cellWidth, height: cellHeight } = useMemo((): Dimension => {
-        const cellWidth = cols ? Math.floor(boardDimensions.width / Math.max(cols, 1)) : 0;
-        const cellHeight = rows ? Math.floor(boardDimensions.height / Math.max(rows, 1)) : 0;
-        return { width: cellWidth, height: cellHeight };
-    }, [boardDimensions.width, boardDimensions.height, rows, cols]);
+    const cellWidth = cols ? Math.floor(boardDimensions.width / Math.max(cols, 1)) : 0;
+    const cellHeight = rows ? Math.floor(boardDimensions.height / Math.max(rows, 1)) : 0;
 
     // observe board container size and update boardWidth/boardHeight
     useEffect(() => {

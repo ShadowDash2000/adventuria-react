@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Box, Flex, FlexProps, Heading, Image } from '@chakra-ui/react';
 import type { ItemRecord } from '@shared/types/item';
 import { useAppContext } from '@context/AppContextProvider';
@@ -9,7 +8,7 @@ interface WheelItemInfoProps extends FlexProps {
 
 export const WheelItemInfo = ({ item, ...props }: WheelItemInfoProps) => {
     const { pb } = useAppContext();
-    const icon = useMemo(() => pb.files.getURL(item, item.icon), [item.icon]);
+    const icon = pb.files.getURL(item, item.icon);
 
     return (
         <Flex {...props}>

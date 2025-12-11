@@ -1,5 +1,5 @@
 import { Box, Flex, Text, VStack } from '@chakra-ui/react';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 export type WheelItem = {
     key: string;
@@ -54,20 +54,17 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
         // Geometry helpers
         const segAngle = items.length > 0 ? (Math.PI * 2) / items.length : Math.PI * 2;
 
-        const computeCurrentIndex = useCallback(
-            (rot: number) => {
-                if (items.length === 0) return 0;
-                const rel = normalize(-rot); // see derivation in analysis
-                return Math.floor(rel / segAngle) % items.length;
-            },
-            [items.length, segAngle],
-        );
+        const computeCurrentIndex = (rot: number) => {
+            if (items.length === 0) return 0;
+            const rel = normalize(-rot); // see derivation in analysis
+            return Math.floor(rel / segAngle) % items.length;
+        };
 
         // Simple image cache
         const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
 
         // Draw function must be defined before any effects that use it
-        const draw = useCallback(() => {
+        const draw = () => {
             const canvas = canvasRef.current;
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -163,10 +160,10 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
             ctx.strokeStyle = 'rgba(0,0,0,0.25)';
             ctx.lineWidth = Math.max(2, r * 0.02);
             ctx.stroke();
-        }, [items, rotation, segAngle]);
+        };
 
         // Canvas sizing helper: avoid writing 0px on first paint; retry on next frame
-        const updateCanvasSize = useCallback(() => {
+        const updateCanvasSize = () => {
             const canvas = canvasRef.current;
             const wrap = containerRef.current;
             if (!canvas || !wrap) return false;
@@ -181,7 +178,7 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
             if (canvas.style.width !== `${css}px`) canvas.style.width = `${css}px`;
             if (canvas.style.height !== `${css}px`) canvas.style.height = `${css}px`;
             return true;
-        }, []);
+        };
 
         // Resize observer to keep canvas crisp — attach on mount
         useEffect(() => {
@@ -236,54 +233,51 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
 
         const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
-        const spin = useCallback(
-            (opts?: { targetKey?: string; durationMs?: number; spins?: number }) => {
-                if (items.length === 0) return Promise.resolve(0);
-                const duration = Math.max(600, opts?.durationMs ?? 4000);
-                const fullSpins = Math.max(2, opts?.spins ?? 6);
-                const start = performance.now();
-                const startRot = 0;
-                let targetIdx: number | undefined;
-                if (opts?.targetKey != null) {
-                    const byKey = items.findIndex(it => it.key === opts.targetKey);
-                    if (byKey >= 0) targetIdx = byKey;
-                }
-                if (targetIdx == null) {
-                    targetIdx = Math.floor(Math.random() * items.length);
-                }
+        const spin = (opts?: { targetKey?: string; durationMs?: number; spins?: number }) => {
+            if (items.length === 0) return Promise.resolve(0);
+            const duration = Math.max(600, opts?.durationMs ?? 4000);
+            const fullSpins = Math.max(2, opts?.spins ?? 6);
+            const start = performance.now();
+            const startRot = 0;
+            let targetIdx: number | undefined;
+            if (opts?.targetKey != null) {
+                const byKey = items.findIndex(it => it.key === opts.targetKey);
+                if (byKey >= 0) targetIdx = byKey;
+            }
+            if (targetIdx == null) {
+                targetIdx = Math.floor(Math.random() * items.length);
+            }
 
-                // Aim not strictly at the exact center of the winning segment.
-                // Add a small random offset within the segment, staying away from edges.
-                const edgeMargin = Math.min(segAngle * 0.2, (5 * Math.PI) / 180); // <= 5° or 20% of segment
-                const maxOffset = Math.max(0, Math.min(segAngle * 0.35, segAngle / 2 - edgeMargin));
-                const randomOffset = (Math.random() * 2 - 1) * maxOffset; // symmetric around center
-                const targetRelative = targetIdx * segAngle + segAngle / 2 + randomOffset;
-                const endRot = -(targetRelative + fullSpins * Math.PI * 2);
+            // Aim not strictly at the exact center of the winning segment.
+            // Add a small random offset within the segment, staying away from edges.
+            const edgeMargin = Math.min(segAngle * 0.2, (5 * Math.PI) / 180); // <= 5° or 20% of segment
+            const maxOffset = Math.max(0, Math.min(segAngle * 0.35, segAngle / 2 - edgeMargin));
+            const randomOffset = (Math.random() * 2 - 1) * maxOffset; // symmetric around center
+            const targetRelative = targetIdx * segAngle + segAngle / 2 + randomOffset;
+            const endRot = -(targetRelative + fullSpins * Math.PI * 2);
 
-                setSpinning(true);
+            setSpinning(true);
 
-                return new Promise<number>(resolve => {
-                    const tick = (now: number) => {
-                        const t = Math.min(1, (now - start) / duration);
-                        const eased = easeOutCubic(t);
-                        const value = startRot + (endRot - startRot) * eased;
-                        setRotation(value);
-                        // index is derived by effect
-                        if (t < 1) {
-                            rafRef.current = requestAnimationFrame(tick);
-                        } else {
-                            setSpinning(false);
-                            const idx = computeCurrentIndex(value);
-                            setCurrentIndex(idx);
-                            resolve(idx);
-                            onFinish?.(idx, items[idx]);
-                        }
-                    };
-                    rafRef.current = requestAnimationFrame(tick);
-                });
-            },
-            [items, rotation, segAngle, computeCurrentIndex, onFinish],
-        );
+            return new Promise<number>(resolve => {
+                const tick = (now: number) => {
+                    const t = Math.min(1, (now - start) / duration);
+                    const eased = easeOutCubic(t);
+                    const value = startRot + (endRot - startRot) * eased;
+                    setRotation(value);
+                    // index is derived by effect
+                    if (t < 1) {
+                        rafRef.current = requestAnimationFrame(tick);
+                    } else {
+                        setSpinning(false);
+                        const idx = computeCurrentIndex(value);
+                        setCurrentIndex(idx);
+                        resolve(idx);
+                        onFinish?.(idx, items[idx]);
+                    }
+                };
+                rafRef.current = requestAnimationFrame(tick);
+            });
+        };
 
         // Expose imperative API
         useImperativeHandle(

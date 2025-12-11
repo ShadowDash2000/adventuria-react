@@ -1,4 +1,4 @@
-import { type RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { type RefObject, useEffect, useRef, useState } from 'react';
 import { useBoardInnerContext } from '../BoardInner';
 import { useAppContext } from '@context/AppContextProvider';
 import { BoardHelper } from '../BoardHelper';
@@ -35,31 +35,31 @@ export const usePlayerMovement = ({
 
     const isMovingRef = useRef(false);
 
-    const calculateState = useCallback(
-        (row: number, col: number): { position: PlayerPosition; visible: boolean } => {
-            const cell = cellsOrdered[row][col];
-            let userCol = 0;
-            let userRow = 0;
-            let isVisible = true;
+    const calculateState = (
+        row: number,
+        col: number,
+    ): { position: PlayerPosition; visible: boolean } => {
+        const cell = cellsOrdered[row][col];
+        let userCol = 0;
+        let userRow = 0;
+        let isVisible = true;
 
-            if (cell.players) {
-                const index = cell.players.findIndex(player => player.id === user.id);
-                if (index !== -1) {
-                    userCol = index % CELL_MAX_USERS_LINE;
-                    userRow = Math.floor(index / CELL_MAX_USERS_LINE);
-                }
-                isVisible = cell.players.length <= CELL_MAX_USERS;
+        if (cell.players) {
+            const index = cell.players.findIndex(player => player.id === user.id);
+            if (index !== -1) {
+                userCol = index % CELL_MAX_USERS_LINE;
+                userRow = Math.floor(index / CELL_MAX_USERS_LINE);
             }
+            isVisible = cell.players.length <= CELL_MAX_USERS;
+        }
 
-            const x = cellWidth * col;
-            const y = -(cellHeight * row) - cellHeight;
-            const offsetX = 50 + 100 * userCol;
-            const offsetY = 130 + 100 * userRow;
+        const x = cellWidth * col;
+        const y = -(cellHeight * row) - cellHeight;
+        const offsetX = 50 + 100 * userCol;
+        const offsetY = 130 + 100 * userRow;
 
-            return { position: { x, y, offsetX, offsetY }, visible: isVisible };
-        },
-        [cellWidth, cellHeight, cellsOrdered, user.id],
-    );
+        return { position: { x, y, offsetX, offsetY }, visible: isVisible };
+    };
 
     const [initialState] = useState(() => {
         const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
@@ -69,22 +69,19 @@ export const usePlayerMovement = ({
     const [position, setPosition] = useState<PlayerPosition>(initialState.position);
     const [visible, setVisible] = useState<boolean>(initialState.visible);
 
-    const move = useCallback(
-        (row: number, col: number) => {
-            const newState = calculateState(row, col);
-            setPosition(newState.position);
-            setVisible(newState.visible);
-        },
-        [calculateState],
-    );
+    const move = (row: number, col: number) => {
+        const newState = calculateState(row, col);
+        setPosition(newState.position);
+        setVisible(newState.visible);
+    };
 
-    const scrollToUser = useCallback(() => {
+    const scrollToUser = () => {
         playerRef.current?.scrollIntoView({
             behavior: 'instant',
             block: 'center',
             inline: 'center',
         });
-    }, [playerRef]);
+    };
 
     useEffect(() => {
         if (moving || paths) return;
@@ -94,13 +91,9 @@ export const usePlayerMovement = ({
 
     useEffect(() => {
         const abortController = new AbortController();
-        document.addEventListener(
-            `player.scroll.${user.id}`,
-            () => {
-                scrollToUser();
-            },
-            { signal: abortController.signal },
-        );
+        document.addEventListener(`player.scroll.${user.id}`, scrollToUser, {
+            signal: abortController.signal,
+        });
         return () => {
             abortController.abort();
         };

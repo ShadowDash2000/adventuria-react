@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type { GameRecord } from '@shared/types/game';
 import { ButtonGroup, DataList, Flex, FlexProps, Heading, Image } from '@chakra-ui/react';
 import { formatDateLocalized } from '@shared/helpers/helper';
@@ -10,28 +9,17 @@ interface WheelGameInfoProps extends FlexProps {
 }
 
 export const WheelGameInfo = ({ game, ...props }: WheelGameInfoProps) => {
-    const platforms = useMemo(
-        () => (game.expand?.platforms ? game.expand?.platforms?.map(p => p.name).join(', ') : '-'),
-        [game.expand?.platforms],
-    );
-    const developers = useMemo(
-        () =>
-            game.expand?.developers ? game.expand?.developers?.map(d => d.name).join(', ') : '-',
-        [game.expand?.developers],
-    );
-    const publishers = useMemo(
-        () =>
-            game.expand?.publishers ? game.expand?.publishers?.map(c => c.name).join(', ') : '-',
-        [game.expand?.publishers],
-    );
-    const genres = useMemo(
-        () => (game.expand?.genres ? game.expand?.genres?.map(g => g.name).join(', ') : '-'),
-        [game.expand?.genres],
-    );
-    const tags = useMemo(
-        () => (game.expand?.tags ? game.expand?.tags?.map(t => t.name).join(', ') : '-'),
-        [game.expand?.tags],
-    );
+    const platforms = game.expand?.platforms
+        ? game.expand?.platforms?.map(p => p.name).join(', ')
+        : '-';
+    const developers = game.expand?.developers
+        ? game.expand?.developers?.map(d => d.name).join(', ')
+        : '-';
+    const publishers = game.expand?.publishers
+        ? game.expand?.publishers?.map(c => c.name).join(', ')
+        : '-';
+    const genres = game.expand?.genres ? game.expand?.genres?.map(g => g.name).join(', ') : '-';
+    const tags = game.expand?.tags ? game.expand?.tags?.map(t => t.name).join(', ') : '-';
 
     return (
         <Flex {...props}>

@@ -3,7 +3,7 @@ import type { CellRecord } from '@shared/types/cell';
 import { useAppAuthContext } from '@context/AppContextProvider';
 import { useBoardInnerContext } from '@components/board/BoardInner';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
-import { type RefObject, useCallback, useEffect, useState } from 'react';
+import { type RefObject, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { BoardHelper, type CellPosition } from '@components/board/BoardHelper';
@@ -40,7 +40,8 @@ const diceRollRequest = async (authToken: string) => {
             .json()
             .then(res => res.error)
             .catch(() => '');
-        throw new Error(error || (await res.text()) || 'Failed to roll dice');
+        console.log(error || (await res.text()) || 'Failed to roll dice');
+        return null;
     }
     return (await res.json()) as RollDiceResult;
 };
@@ -71,62 +72,60 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
         queryKey: ['roll-dice-audio-preset'],
     });
 
-    const roll = useCallback(async () => {
+    const roll = async () => {
         if (isRolling) return;
         setIsRolling(true);
 
-        try {
-            const res = await diceRollRequest(pb.authStore.token);
-            if (!res.success) return;
-
-            const newDices: DiceFactoryItem[] = [];
-            const rollValues: number[] = [];
-
-            for (const [i, diceRoll] of res.data.dice_rolls.entries()) {
-                newDices.push(DiceFactory.create(diceRoll.type, { key: `${diceRoll.type}-${i}` }));
-                rollValues.push(diceRoll.roll);
-            }
-
-            let duration = DEFAULT_ANIMATION_DURATION;
-            if (audioPreset.isSuccess && audioPreset.data.expand?.audio?.length) {
-                const randIndex = Math.floor(Math.random() * audioPreset.data.expand.audio.length);
-                const randAudio = audioPreset.data.expand.audio[randIndex];
-                duration = randAudio.duration;
-
-                const audioUrl = pb.files.getURL(randAudio, randAudio.audio);
-                await play(audioUrl);
-            }
-
-            setAnimationDuration(duration);
-            setDices(newDices);
-            setPendingRolls(rollValues);
-
-            const paths: CellPosition[] = [];
-            for (const move of res.data.path) {
-                paths.push(
-                    ...BoardHelper.createPath(rows, cols, move.prev_total_steps, move.total_steps),
-                );
-            }
-            addPaths(paths);
-            setMoveTime(duration / paths.length);
-
-            setTimeout(() => {
-                if (diceSceneRef.current) {
-                    performFadeOut(diceSceneRef.current, FADEOUT_DURATION);
-                }
-                setTimeout(async () => {
-                    setDices(null);
-                    setPendingRolls(null);
-                    setIsRolling(false);
-                    await invalidateAllActions();
-                    await invalidateUser();
-                }, FADEOUT_DURATION * 1000);
-            }, duration * 1000);
-        } catch (e: any) {
-            console.error(e?.message ?? 'Unknown error');
+        const res = await diceRollRequest(pb.authStore.token);
+        if (!res || !res.success) {
             setIsRolling(false);
+            return;
         }
-    }, [pb, isRolling, setIsRolling, audioPreset, play, addPaths, rows, cols, diceSceneRef]);
+
+        const newDices: DiceFactoryItem[] = [];
+        const rollValues: number[] = [];
+
+        for (const [i, diceRoll] of res.data.dice_rolls.entries()) {
+            newDices.push(DiceFactory.create(diceRoll.type, { key: `${diceRoll.type}-${i}` }));
+            rollValues.push(diceRoll.roll);
+        }
+
+        let duration = DEFAULT_ANIMATION_DURATION;
+        if (audioPreset.isSuccess && audioPreset.data.expand?.audio?.length) {
+            const randIndex = Math.floor(Math.random() * audioPreset.data.expand.audio.length);
+            const randAudio = audioPreset.data.expand.audio[randIndex];
+            duration = randAudio.duration;
+
+            const audioUrl = pb.files.getURL(randAudio, randAudio.audio);
+            await play(audioUrl);
+        }
+
+        setAnimationDuration(duration);
+        setDices(newDices);
+        setPendingRolls(rollValues);
+
+        const paths: CellPosition[] = [];
+        for (const move of res.data.path) {
+            paths.push(
+                ...BoardHelper.createPath(rows, cols, move.prev_total_steps, move.total_steps),
+            );
+        }
+
+        addPaths(paths);
+        setMoveTime(duration / paths.length);
+        setTimeout(() => {
+            if (diceSceneRef.current) {
+                performFadeOut(diceSceneRef.current, FADEOUT_DURATION);
+            }
+            setTimeout(async () => {
+                setDices(null);
+                setPendingRolls(null);
+                setIsRolling(false);
+                await invalidateAllActions();
+                await invalidateUser();
+            }, FADEOUT_DURATION * 1000);
+        }, duration * 1000);
+    };
 
     useEffect(() => {
         if (!dices || !pendingRolls) return;
