@@ -5,7 +5,7 @@ import { CollectionListInfiniteProvider } from '@context/CollectionListInfiniteC
 import { Sort } from '@shared/hook/useSort';
 import { Board } from '../board/Board';
 
-export const Main = () => {
+const Main = () => {
     const { pb } = useAppContext();
 
     return (
@@ -26,3 +26,5 @@ export const Main = () => {
         </>
     );
 };
+
+export default Main;

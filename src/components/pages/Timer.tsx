@@ -3,7 +3,7 @@ import PocketBase from 'pocketbase';
 import { useParams } from 'react-router-dom';
 import { TimerSimple } from '@components/timer/TimerSimple';
 
-export const Timer = () => {
+const Timer = () => {
     const pb = useMemo(() => new PocketBase(import.meta.env.VITE_PB_URL), []);
     const userId = useParams().userId;
 
@@ -13,3 +13,5 @@ export const Timer = () => {
         <TimerSimple collection={pb.collection('timers')} userId={userId} realtimeUpdate={true} />
     );
 };
+
+export default Timer;

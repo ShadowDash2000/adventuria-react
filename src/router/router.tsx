@@ -1,34 +1,52 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { type CSSProperties, lazy, Suspense } from 'react';
+import { LuLoader } from 'react-icons/lu';
+
+const Layout = lazy(() => import('@components/Layout'));
+const Main = lazy(() => import('@components/pages/Main'));
+const Profile = lazy(() => import('@components/pages/Profile'));
+const Timer = lazy(() => import('@components/pages/Timer'));
+
+const loaderStyle = {
+    position: 'fixed',
+    left: '50%',
+    top: '10%',
+    transform: 'translate(-50%,-10%)',
+} as CSSProperties;
 
 export const router = createBrowserRouter([
     {
         path: '/',
-        async lazy() {
-            const { Layout } = await import('../components/Layout');
-            return { Component: Layout };
-        },
+        element: (
+            <Suspense fallback={<LuLoader style={loaderStyle} />}>
+                <Layout />
+            </Suspense>
+        ),
         children: [
             {
                 index: true,
-                async lazy() {
-                    const { Main } = await import('../components/pages/Main');
-                    return { Component: Main };
-                },
+                element: (
+                    <Suspense fallback={<LuLoader style={loaderStyle} />}>
+                        <Main />
+                    </Suspense>
+                ),
             },
             {
                 path: '/profile/:login',
-                async lazy() {
-                    const { Profile } = await import('../components/pages/Profile');
-                    return { Component: Profile };
-                },
+                element: (
+                    <Suspense fallback={<LuLoader style={loaderStyle} />}>
+                        <Profile />
+                    </Suspense>
+                ),
             },
         ],
     },
     {
         path: '/timer/:userId',
-        async lazy() {
-            const { Timer } = await import('../components/pages/Timer');
-            return { Component: Timer };
-        },
+        element: (
+            <Suspense fallback={<LuLoader style={loaderStyle} />}>
+                <Timer />
+            </Suspense>
+        ),
     },
 ]);

@@ -7,7 +7,7 @@ import { CollectionOneFilterProvider } from '@context/CollectionOneFilterContext
 import { Flex } from '@chakra-ui/react';
 import { UserProfile } from '../profile/UserProfile';
 
-export const Profile = () => {
+const Profile = () => {
     const { pb } = useAppContext();
     const login = useParams().login;
 
@@ -31,3 +31,5 @@ export const Profile = () => {
         </Flex>
     );
 };
+
+export default Profile;
