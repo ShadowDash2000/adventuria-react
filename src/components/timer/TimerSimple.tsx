@@ -1,20 +1,19 @@
 import { useRef } from 'react';
 import { Text } from '@chakra-ui/react';
 import { useTimer } from './useTimer';
-import type { RecordService } from 'pocketbase';
-import type { TimerRecord } from '@shared/types/timer';
 import type { RecordIdString } from '@shared/types/pocketbase';
+import { useAppContext } from '../../context/AppContextProvider';
 
 interface TimerSimpleProps {
-    collection: RecordService<TimerRecord>;
     userId: RecordIdString;
     realtimeUpdate?: boolean;
 }
 
-export const TimerSimple = ({ collection, userId, realtimeUpdate = false }: TimerSimpleProps) => {
+export const TimerSimple = ({ userId, realtimeUpdate = false }: TimerSimpleProps) => {
+    const { pb } = useAppContext();
     const timerRef = useRef<HTMLParagraphElement | null>(null);
     useTimer({
-        collection: collection,
+        collection: pb.collection('timers'),
         userId: userId,
         realtimeUpdate: realtimeUpdate,
         onValueChange: value => {

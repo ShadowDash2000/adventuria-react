@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CloseButton, Dialog, Flex, Image, Portal } from '@chakra-ui/react';
 import { Button } from '@ui/button';
 import { useAppContext } from '@context/AppContextProvider';
@@ -14,9 +14,9 @@ interface InventoryItemProps {
 
 export const InventoryItem = ({ invItem, showControlButtons = false }: InventoryItemProps) => {
     const { pb } = useAppContext();
-    const item = useMemo(() => invItem.expand!.item, [invItem.expand!.item]);
-    const icon = useMemo(() => pb.files.getURL(item, item.icon), [item.icon]);
     const [isActive, setIsActive] = useState<boolean>(invItem.isActive);
+    const item = invItem.expand!.item;
+    const icon = pb.files.getURL(item, item.icon);
 
     useEffect(() => {
         setIsActive(invItem.isActive);
@@ -24,20 +24,17 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
 
     const handleSubmit = async (formData: FormData) => {
         try {
-            await useItemRequest(pb.authStore.token, invItem.id, Object.fromEntries(formData));
+            await itemUseRequest(pb.authStore.token, invItem.id, Object.fromEntries(formData));
             setIsActive(true);
         } catch (_) {}
     };
 
-    const effects = useMemo(
-        () =>
-            item.expand?.effects.entries()!.reduce((prev, [_, effect]) => {
-                const effectFactory = EffectFactory.get(effect.type);
-                if (effectFactory === null) return prev;
-                return [...prev, effectFactory];
-            }, [] as Type_Effect_Creator[]) || [],
-        [],
-    );
+    const effects =
+        item.expand?.effects.entries()!.reduce((prev, [_, effect]) => {
+            const effectFactory = EffectFactory.get(effect.type);
+            if (effectFactory === null) return prev;
+            return [...prev, effectFactory];
+        }, [] as Type_Effect_Creator[]) || [];
 
     const needModal = effects.length > 0;
 
@@ -85,7 +82,7 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
                                 colorPalette="green"
                                 onClick={async () => {
                                     try {
-                                        await useItemRequest(pb.authStore.token, invItem.id);
+                                        await itemUseRequest(pb.authStore.token, invItem.id);
                                         setIsActive(true);
                                     } catch (_) {}
                                 }}
@@ -100,7 +97,7 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
     );
 };
 
-const useItemRequest = async (
+const itemUseRequest = async (
     authToken: string,
     itemId: RecordIdString,
     data?: Record<string, any>,

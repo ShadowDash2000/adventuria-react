@@ -4,7 +4,7 @@
     padding: 1.5rem;
     outline: 1px solid grey;
 
-    :first-child {
+    &:first-child {
         margin-top: 0;
     }
 
@@ -29,8 +29,8 @@
         &[data-resize-handle='top-right'],
         &[data-resize-handle='bottom-left'],
         &[data-resize-handle='bottom-right'] {
-            width: .5vw;
-            height: .5vw;
+            width: 0.5vw;
+            height: 0.5vw;
         }
 
         &[data-resize-handle='top-left'] {

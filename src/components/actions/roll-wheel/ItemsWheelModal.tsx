@@ -1,5 +1,5 @@
 import { useAppAuthContext } from '@context/AppContextProvider';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import type { WheelOFortuneHandle } from './WheelOFortune';
 import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
@@ -55,7 +55,7 @@ export const ItemsWheelModal = () => {
         queryKey: ['roll-items-audio-preset'],
     });
 
-    const handleSpin = useCallback(async () => {
+    const handleSpin = async () => {
         const ref = wheelOFortuneRef.current;
         if (!ref) return;
 
@@ -80,19 +80,15 @@ export const ItemsWheelModal = () => {
             },
         );
         setSpinning(true);
-    }, [wheelOFortuneRef, audioPreset, play]);
+    };
 
-    const wheelItems = useMemo(
-        () =>
-            items.data
-                ? items.data.map(item => ({
-                      key: item.id,
-                      image: pb.files.getURL(item, item.icon),
-                      title: item.name,
-                  }))
-                : [],
-        [items.data],
-    );
+    const wheelItems = items.data
+        ? items.data.map(item => ({
+              key: item.id,
+              image: pb.files.getURL(item, item.icon),
+              title: item.name,
+          }))
+        : [];
 
     if (items.isPending || audioPreset.isPending) return <LuLoader />;
     if (items.isError) return <Text>Error: {items.error?.message}</Text>;

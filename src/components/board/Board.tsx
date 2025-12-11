@@ -3,6 +3,8 @@ import { LuArrowBigDown, LuArrowBigUp } from 'react-icons/lu';
 import { createContext, RefObject, useContext, useRef } from 'react';
 import { BoardInner } from './BoardInner';
 import { BoardDataProvider } from './BoardDataContext';
+import BuildingImage from '/building.png';
+import WallsImage from '/walls.png';
 
 type BoardContextType = {
     boardRef: RefObject<HTMLDivElement | null>;
@@ -52,7 +54,7 @@ export const Board = () => {
                 <LuArrowBigUp />
             </Button>
             <Image
-                src="/src/assets/building.png"
+                src={BuildingImage}
                 rounded="3rem"
                 width="100%"
                 zIndex={1}
@@ -60,7 +62,7 @@ export const Board = () => {
                 userSelect="none"
             />
             <Image
-                src="/src/assets/walls.png"
+                src={WallsImage}
                 position="absolute"
                 width="80vw"
                 zIndex={20}
