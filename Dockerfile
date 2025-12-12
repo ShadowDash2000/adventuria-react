@@ -1,4 +1,4 @@
-FROM node:22-alpine AS builder
+FROM oven/bun:1 AS builder
 
 WORKDIR /app
 
@@ -7,13 +7,13 @@ ARG VITE_PB_URL
 ENV VITE_PB_URL=$VITE_PB_URL
 
 COPY package.json ./
-COPY package-lock.json ./
+COPY bun.lock ./
 
-RUN npm install
+RUN bun install --frozen-lockfile
 
 COPY . .
 
-RUN npm run build
+RUN bun run build
 
 FROM nginx:stable-alpine
 
