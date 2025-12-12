@@ -80,7 +80,7 @@ export const UserAction = ({ action }: ActionProps) => {
         >
             <Card.Body pb={0}>
                 <Stack
-                    align={{ base: 'flex-start"', mdDown: 'center' }}
+                    align={{ base: 'flex-start', mdDown: 'center' }}
                     direction={{ base: 'row', mdDown: 'column' }}
                 >
                     <VStack>
