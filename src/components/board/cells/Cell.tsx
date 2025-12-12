@@ -19,8 +19,10 @@ export const Cell = ({ cell, width, height, ...rest }: CellProps) => {
                 <Box
                     top={0}
                     position="absolute"
-                    borderWidth=".2vw"
-                    borderColor={{ base: 'transparent', _hover: 'border.inverted' }}
+                    outlineWidth=".2vw"
+                    outlineOffset="-.3vw"
+                    outlineStyle="solid"
+                    outlineColor={{ base: 'transparent', _hover: 'border.inverted' }}
                     width={width}
                     height={height}
                 >

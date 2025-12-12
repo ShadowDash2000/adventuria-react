@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { Players } from './players/Players';
 import type { UserRecord } from '@shared/types/user';
 import { useAppContext } from '@context/AppContextProvider';

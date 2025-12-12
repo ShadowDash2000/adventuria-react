@@ -8,11 +8,11 @@ export const Cells = () => {
     return (
         <For each={cellsOrderedRev}>
             {(lineElements, lineNum) => (
-                <Grid key={lineNum} autoFlow="column">
+                <Grid key={lineNum} autoFlow="column" gapX="6.6px">
                     <For each={lineElements}>
                         {(cell, cellNum) => (
                             <GridItem key={cellNum}>
-                                <Cell cell={cell} width="9.45vw" height="6.2vw" zIndex={10} />
+                                <Cell cell={cell} width="188px" height="126px" zIndex={10} />
                             </GridItem>
                         )}
                     </For>

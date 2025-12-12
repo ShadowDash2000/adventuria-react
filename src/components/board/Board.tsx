@@ -31,9 +31,9 @@ export const Board = () => {
             id="board"
             justify="center"
             align="flex-end"
-            maxWidth="80vw"
+            w="1642px"
+            h="2426px"
             position="relative"
-            overflow="hidden"
         >
             <Button
                 onClick={() => scrollTo('end')}
@@ -55,6 +55,7 @@ export const Board = () => {
             </Button>
             <Image
                 src={BuildingImage}
+                position="absolute"
                 rounded="3rem"
                 width="100%"
                 zIndex={1}
@@ -64,7 +65,7 @@ export const Board = () => {
             <Image
                 src={WallsImage}
                 position="absolute"
-                width="80vw"
+                width="100%"
                 zIndex={20}
                 pointerEvents="none"
                 userSelect="none"
@@ -74,9 +75,11 @@ export const Board = () => {
                 justify="flex-end"
                 direction="column"
                 position="absolute"
-                ml="1.1%"
+                left={0}
+                bottom={0}
+                ml="151px"
                 mb="4.6%"
-                gap=".47vw"
+                gapY="10.6px"
             >
                 <BoardContext.Provider value={{ boardRef, boardInnerRef }}>
                     <BoardDataProvider>
