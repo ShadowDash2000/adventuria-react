@@ -4,7 +4,12 @@ import type { UserRecord } from '@shared/types/user';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 
-type AppContextBase = { pb: PocketBase; availableActions: string[]; logout: () => void };
+type AppContextBase = {
+    pb: PocketBase;
+    availableActions: string[];
+    login: () => void;
+    logout: () => void;
+};
 
 type AppContextAuth = AppContextBase & { isAuth: true; user: UserRecord };
 
@@ -19,6 +24,9 @@ const pb = new PocketBase(import.meta.env.VITE_PB_URL);
 const AppContext = createContext<AppProviderType>({
     pb,
     availableActions: [],
+    login: function (): void {
+        throw new Error('Function not implemented.');
+    },
     logout: function (): void {
         throw new Error('Function not implemented.');
     },
@@ -28,6 +36,9 @@ const AppContext = createContext<AppProviderType>({
 
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     const [isAuth, setIsAuth] = useState<boolean>(pb.authStore.isValid);
+    const login = () => {
+        setIsAuth(true);
+    };
     const logout = () => {
         pb.authStore.clear();
         setIsAuth(false);
@@ -59,6 +70,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     const ctx = {
         pb,
         user: isAuth ? user : null,
+        login,
         logout,
         isAuth,
         availableActions,

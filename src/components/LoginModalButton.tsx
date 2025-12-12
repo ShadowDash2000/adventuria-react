@@ -9,7 +9,7 @@ import { invalidateUser } from '@shared/queryClient';
 type LoginFormValues = { login: string; password: string };
 
 export const LoginModalButton = () => {
-    const { pb } = useAppContext();
+    const { pb, login } = useAppContext();
     const {
         register,
         handleSubmit,
@@ -23,6 +23,7 @@ export const LoginModalButton = () => {
 
         if (authResult.token) {
             await invalidateUser();
+            login();
         }
     };
 
