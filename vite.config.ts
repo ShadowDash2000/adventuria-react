@@ -4,7 +4,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import { resolve } from 'node:path';
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
     return {
         plugins: [react({ babel: { plugins: ['babel-plugin-react-compiler'] } }), tsconfigPaths()],
         resolve: {

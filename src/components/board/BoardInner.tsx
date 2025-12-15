@@ -1,31 +1,17 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Players } from './players/Players';
 import type { UserRecord } from '@shared/types/user';
-import { useAppContext } from '@context/AppContextProvider';
+import { useAppContext } from '@context/AppContext';
 import { Cells } from './cells/Cells';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { BoardHelper, type CellBoard } from './BoardHelper';
-import { useBoardDataContext } from './BoardDataContext';
-import { useBoardContext } from './Board';
+import { BoardHelper } from './BoardHelper';
 import { CellsPlayers } from './cells/CellsPlayers';
 import { UserActionMenu } from '@components/UserActionMenu';
 import { usePlayersStore } from '@components/board/players/usePlayersStore';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
-
-type BoardInnerContextType = {
-    cellsOrdered: CellBoard[][];
-    cellsOrderedRev: CellBoard[][];
-    usersByCellIndex: Map<number, UserRecord[]>;
-    users: Map<RecordIdString, UserRecord>;
-    rows: number;
-    cols: number;
-    cellWidth: number;
-    cellHeight: number;
-};
+import { BoardInnerContext, useBoardContext, useBoardDataContext } from '.';
 
 type Dimension = { width: number; height: number };
-
-export const BoardInnerContext = createContext<BoardInnerContextType>({} as BoardInnerContextType);
 
 export const BoardInner = () => {
     const { pb, isAuth, user } = useAppContext();
@@ -140,6 +126,3 @@ export const BoardInner = () => {
         </BoardInnerContext.Provider>
     );
 };
-
-export const useBoardInnerContext: () => BoardInnerContextType = () =>
-    useContext(BoardInnerContext);

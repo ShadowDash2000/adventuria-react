@@ -1,16 +1,12 @@
 import {
-    Box,
-    HStack,
     IconButton,
     Input,
     InputGroup,
-    Stack,
     mergeRefs,
     useControllableState,
     type InputProps,
     type BoxProps,
     type IconButtonProps,
-    type StackProps,
 } from '@chakra-ui/react';
 import { type ReactNode, type Ref, useRef } from 'react';
 import { LuEye, LuEyeOff } from 'react-icons/lu';
@@ -83,49 +79,3 @@ const VisibilityTrigger = (props: VisibilityTriggerProps) => {
         />
     );
 };
-
-export interface PasswordStrengthMeterProps extends StackProps {
-    max: number;
-    value: number;
-    colorPalette?: string;
-    label?: ReactNode;
-    rootProps?: StackProps;
-    barsProps?: BoxProps;
-    ref?: Ref<HTMLDivElement>;
-}
-
-export const PasswordStrengthMeter = ({ max = 4, value, ...props }: PasswordStrengthMeterProps) => {
-    const percent = (value / max) * 100;
-    const { label, colorPalette } = getColorPalette(percent);
-
-    return (
-        <Stack align="flex-end" gap="1" ref={props.ref} {...props}>
-            <HStack width="full" ref={props.ref} {...props}>
-                {Array.from({ length: max }).map((_, index) => (
-                    <Box
-                        key={index}
-                        height="1"
-                        flex="1"
-                        rounded="sm"
-                        data-selected={index < value ? '' : undefined}
-                        layerStyle="fill.subtle"
-                        colorPalette="gray"
-                        _selected={{ colorPalette, layerStyle: 'fill.solid' }}
-                    />
-                ))}
-            </HStack>
-            {label && <HStack textStyle="xs">{label}</HStack>}
-        </Stack>
-    );
-};
-
-function getColorPalette(percent: number) {
-    switch (true) {
-        case percent < 33:
-            return { label: 'Low', colorPalette: 'red' };
-        case percent < 66:
-            return { label: 'Medium', colorPalette: 'orange' };
-        default:
-            return { label: 'High', colorPalette: 'green' };
-    }
-}

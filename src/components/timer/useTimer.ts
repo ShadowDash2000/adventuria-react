@@ -85,14 +85,18 @@ export const useTimer = ({
             try {
                 await startTimer(authToken);
                 setIsActive(true);
-            } catch (e) {}
+            } catch (e) {
+                console.error(e);
+            }
         },
         stopTimer: async () => {
             if (!authToken) return;
             try {
                 await stopTimer(authToken);
                 setIsActive(false);
-            } catch (e) {}
+            } catch (e) {
+                console.error(e);
+            }
         },
     };
 };

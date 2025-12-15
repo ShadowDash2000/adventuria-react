@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Image, Blockquote, Stack, DataList, Dialog, Portal, CloseButton } from '@chakra-ui/react';
 import HTMLReactParser from 'html-react-parser';
-import { useAppContext } from '@context/AppContextProvider';
+import { useAppContext } from '@context/AppContext';
 import type { CellRecord } from '@shared/types/cell';
 import { DialogContent } from '@ui/dialog-content';
 

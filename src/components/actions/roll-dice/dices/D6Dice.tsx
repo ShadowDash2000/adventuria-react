@@ -4,7 +4,7 @@ import { performRoll, performRotation } from './roll';
 
 type D6DiceProps = { sizePx?: number };
 
-export const D6Dice = forwardRef<DiceRef, D6DiceProps>(({ sizePx = 200 }, ref) => {
+export const D6Dice = forwardRef<DiceRef, D6DiceProps>(function D6Dice({ sizePx = 200 }, ref) {
     const rotateRef = useRef<HTMLDivElement | null>(null);
     const [rollRes, setRollRes] = useState<RollResult | null>(null);
 

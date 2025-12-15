@@ -1,6 +1,6 @@
 import { For } from '@chakra-ui/react';
 import { Player } from './Player';
-import { useBoardInnerContext } from '../BoardInner';
+import { useBoardInnerContext } from '@components/board';
 
 export const Players = () => {
     const { users } = useBoardInnerContext();

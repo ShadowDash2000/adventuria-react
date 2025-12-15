@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Text } from '@chakra-ui/react';
 import { useTimer } from './useTimer';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { useAppContext } from '../../context/AppContextProvider';
+import { useAppContext } from '@context/AppContext';
 
 interface TimerSimpleProps {
     userId: RecordIdString;

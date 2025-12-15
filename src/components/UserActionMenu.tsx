@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useAppContext } from '@context/AppContextProvider';
+import { useAppContext } from '@context/AppContext';
 import { ActionFactory } from './actions/action-factory';
 import { Flex, For } from '@chakra-ui/react';
 

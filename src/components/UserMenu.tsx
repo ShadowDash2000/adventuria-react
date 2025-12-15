@@ -4,7 +4,7 @@ import { Tooltip } from '@ui/tooltip';
 import { ItemsWheelModal } from '@components/actions/roll-wheel/ItemsWheelModal';
 import { RadioPlayerButton } from './RadioPlayerButton';
 import { PiCoinVerticalFill } from 'react-icons/pi';
-import { useAppAuthContext } from '@context/AppContextProvider';
+import { useAppAuthContext } from '@context/AppContext';
 import { Timer } from '@components/timer/Timer';
 
 export const UserMenu = () => {
@@ -22,7 +22,7 @@ export const UserMenu = () => {
                     </HStack>
                 </Tooltip>
                 <HStack justify="center" align="start">
-                    <PlayerInventoryButton userId={user?.id!} kbd={true} />
+                    <PlayerInventoryButton userId={user?.id} kbd={true} />
                     <ItemsWheelModal />
                     <RadioPlayerButton />
                 </HStack>

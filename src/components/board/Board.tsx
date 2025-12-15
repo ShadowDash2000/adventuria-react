@@ -1,20 +1,14 @@
 import { Button, Flex, Image } from '@chakra-ui/react';
 import { LuArrowBigDown, LuArrowBigUp } from 'react-icons/lu';
-import { createContext, RefObject, useContext, useRef } from 'react';
+import { useRef } from 'react';
 import { BoardInner } from './BoardInner';
 import { BoardDataProvider } from './BoardDataContext';
 import BuildingImage from '/building.png';
 import WallsImage from '/walls.png';
-
-type BoardContextType = {
-    boardRef: RefObject<HTMLDivElement | null>;
-    boardInnerRef: RefObject<HTMLDivElement | null>;
-};
+import { BoardContext } from '.';
 
 export const CELL_MAX_USERS_LINE = 3;
 export const CELL_MAX_USERS = 6;
-
-export const BoardContext = createContext<BoardContextType>({} as BoardContextType);
 
 export const Board = () => {
     // board container refs
@@ -90,5 +84,3 @@ export const Board = () => {
         </Flex>
     );
 };
-
-export const useBoardContext: () => BoardContextType = () => useContext(BoardContext);

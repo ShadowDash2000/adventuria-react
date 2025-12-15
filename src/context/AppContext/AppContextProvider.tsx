@@ -1,38 +1,10 @@
-import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
-import PocketBase, { ClientResponseError } from 'pocketbase';
+import { useEffect, useState } from 'react';
+import { ClientResponseError } from 'pocketbase';
 import type { UserRecord } from '@shared/types/user';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
-
-type AppContextBase = {
-    pb: PocketBase;
-    availableActions: string[];
-    login: () => void;
-    logout: () => void;
-};
-
-type AppContextAuth = AppContextBase & { isAuth: true; user: UserRecord };
-
-type AppContextGuest = AppContextBase & { isAuth: false; user: null };
-
-type AppProviderType = AppContextAuth | AppContextGuest;
-
-type AppContextProviderProps = { children: ReactNode };
-
-const pb = new PocketBase(import.meta.env.VITE_PB_URL);
-
-const AppContext = createContext<AppProviderType>({
-    pb,
-    availableActions: [],
-    login: function (): void {
-        throw new Error('Function not implemented.');
-    },
-    logout: function (): void {
-        throw new Error('Function not implemented.');
-    },
-    isAuth: false,
-    user: null,
-});
+import { AppProviderType, AppContextProviderProps } from './types';
+import { AppContext, pb } from './index';
 
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     const [isAuth, setIsAuth] = useState<boolean>(pb.authStore.isValid);
@@ -77,16 +49,6 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     } as AppProviderType;
 
     return <AppContext.Provider value={ctx}>{children}</AppContext.Provider>;
-};
-
-export const useAppContext: () => AppProviderType = () => useContext(AppContext);
-
-export const useAppAuthContext = (): AppContextAuth => {
-    const ctx = useContext(AppContext);
-    if (!ctx.isAuth) {
-        throw new Error('useAppAuthContext must be used within an authorized user session');
-    }
-    return ctx;
 };
 
 const fetchAvailableActions = async (authToken: string): Promise<string[]> => {

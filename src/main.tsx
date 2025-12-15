@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router/router';
 import { ChakraProvider, createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
-import { AppContextProvider } from '@context/AppContextProvider';
+import { AppContextProvider } from '@context/AppContext';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { queryClient } from '@shared/queryClient';

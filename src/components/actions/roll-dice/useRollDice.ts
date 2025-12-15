@@ -1,7 +1,7 @@
 import { DiceFactory, type DiceFactoryItem, type DiceType } from './dices';
 import type { CellRecord } from '@shared/types/cell';
-import { useAppAuthContext } from '@context/AppContextProvider';
-import { useBoardInnerContext } from '@components/board/BoardInner';
+import { useAppAuthContext } from '@context/AppContext';
+import { useBoardInnerContext } from '@components/board';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { type RefObject, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';

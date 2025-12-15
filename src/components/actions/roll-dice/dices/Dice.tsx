@@ -16,7 +16,7 @@ const DICE_COMPONENTS: Record<
     ForwardRefExoticComponent<{ sizePx?: number } & RefAttributes<DiceRef>>
 > = { d4: D4Dice, d6: D6Dice };
 
-export const Dice = forwardRef<DiceRef, DiceProps>(function (
+export const Dice = forwardRef<DiceRef, DiceProps>(function Dice(
     { type, sizePx = 200, className, style },
     ref,
 ) {

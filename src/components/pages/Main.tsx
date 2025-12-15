@@ -1,4 +1,4 @@
-import { useAppContext } from '@context/AppContextProvider';
+import { useAppContext } from '@context/AppContext';
 import { Box, Spacer } from '@chakra-ui/react';
 import { LatestActions } from '../LatestActions';
 import { CollectionListInfiniteProvider } from '@context/CollectionListInfiniteContext';

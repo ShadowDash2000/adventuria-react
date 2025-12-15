@@ -1,9 +1,9 @@
 import { Flex } from '@chakra-ui/react';
-import { useAppContext } from '@context/AppContextProvider';
+import { useAppContext } from '@context/AppContext';
 import { LoginModalButton } from './LoginModalButton';
 import { Button } from '@ui/button';
 import { Link } from 'react-router-dom';
-import { CollectionListAllProvider } from '@context/CollectionListAllContext';
+import { CollectionListAllProvider } from '@context/CollectionListAllContext/CollectionListAllContext';
 import { PlayersFloatingList } from './PlayersFloatingList';
 import { Settings } from './settings/Settings';
 import { UserMenu } from './UserMenu';

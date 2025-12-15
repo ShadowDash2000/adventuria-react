@@ -1,4 +1,4 @@
-import { useAppAuthContext } from '@context/AppContextProvider';
+import { useAppAuthContext } from '@context/AppContext';
 import { useRef, useState } from 'react';
 import type { WheelOFortuneHandle } from './WheelOFortune';
 import { useQuery } from '@tanstack/react-query';

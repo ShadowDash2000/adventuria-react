@@ -1,6 +1,6 @@
 import { Box, type BoxProps, Image } from '@chakra-ui/react';
 import { CellRecord } from '@shared/types/cell';
-import { useAppContext } from '@context/AppContextProvider';
+import { useAppContext } from '@context/AppContext';
 import { CellTooltip } from './CellTooltip';
 import { CellInfo } from './CellInfoModal';
 

@@ -1,4 +1,4 @@
-import { useBoardInnerContext } from '../BoardInner';
+import { useBoardInnerContext } from '@components/board';
 import { For, HStack, IconButton, VStack, Text } from '@chakra-ui/react';
 import { ToggleTip } from '@ui/toggle-tip';
 import { BoardHelper } from '../BoardHelper';

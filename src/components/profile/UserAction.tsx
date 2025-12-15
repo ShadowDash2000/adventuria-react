@@ -13,7 +13,7 @@ import { LuPencil } from 'react-icons/lu';
 import HTMLReactParser from 'html-react-parser';
 import { useEffect, useState } from 'react';
 import { type ActionRecord } from '@shared/types/action';
-import { useAppContext } from '@context/AppContextProvider';
+import { useAppContext } from '@context/AppContext';
 import { formatDateLocalized } from '@shared/helpers/helper';
 import { ActionFactory } from '../actions/action-factory';
 import { Avatar } from '../Avatar';
@@ -23,7 +23,7 @@ import { InfoTip } from '@ui/toggle-tip';
 import { Button } from '@ui/button';
 import { CellInfo } from '../board/cells/CellInfoModal';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
-import { RecordIdString } from '../../shared/types/pocketbase';
+import type { RecordIdString } from '@shared/types/pocketbase';
 
 type ActionProps = { action: ActionRecord };
 
@@ -55,8 +55,9 @@ export const UserAction = ({ action }: ActionProps) => {
                 setComment(draft);
                 setIsEditing(false);
             }
-        } catch (e: any) {
-            setError(e?.message ?? 'Unknown error');
+        } catch (e: unknown) {
+            const message = e instanceof Error ? e.message : 'Unknown error';
+            setError(message);
         }
 
         setSaving(false);
@@ -142,7 +143,7 @@ export const UserAction = ({ action }: ActionProps) => {
                         </Card.Description>
                     </VStack>
                     <VStack position="absolute" right="5%">
-                        <Avatar user={action.expand?.user!} />
+                        <Avatar user={action.expand!.user!} />
                         <Text>{action.expand?.user.name}</Text>
                     </VStack>
                 </Stack>

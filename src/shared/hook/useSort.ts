@@ -25,7 +25,7 @@ const build = (sort: Map<string, Sort>) => {
     let i = 0;
     let sortString = '';
     for (const [key, sortType] of sort) {
-        let sortValue = sortType === Sort.DESC ? '-' : '';
+        const sortValue = sortType === Sort.DESC ? '-' : '';
         let newValue = sortValue + key;
         if (i + 1 !== sort.size) {
             newValue += ',';

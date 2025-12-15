@@ -2,7 +2,7 @@ import { Button } from '@ui/button';
 import { ButtonGroup, CloseButton, Dialog, Flex, Portal } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Content } from '@tiptap/react';
-import { useAppContext } from '@context/AppContextProvider';
+import { useAppContext } from '@context/AppContext';
 import { LuNotebookPen } from 'react-icons/lu';
 import { DialogContent } from '@ui/dialog-content';
 import { ActionTextEditor } from '@components/profile/ActionTextEditor';

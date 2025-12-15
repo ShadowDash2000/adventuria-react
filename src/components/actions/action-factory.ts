@@ -21,7 +21,7 @@ export class ActionFactory {
 
     static getAvailableActions(actionsTypes: string[]): ActionDispenser[] {
         const actions: ActionDispenser[] = [];
-        for (let actionType of actionsTypes) {
+        for (const actionType of actionsTypes) {
             const action = this.actions[actionType];
             if (!action) {
                 continue;

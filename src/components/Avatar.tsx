@@ -1,7 +1,7 @@
 import { type RefObject } from 'react';
 import { Avatar as ChakraAvatar, type AvatarRootProps } from '@chakra-ui/react/avatar';
 import type { UserRecord } from '@shared/types/user';
-import { useAppContext } from '@context/AppContextProvider';
+import { useAppContext } from '@context/AppContext';
 
 interface AvatarProps extends AvatarRootProps {
     ref?: RefObject<HTMLDivElement | null>;

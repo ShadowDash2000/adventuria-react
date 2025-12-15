@@ -1,10 +1,11 @@
 import { type RefObject, useEffect, useRef, useState } from 'react';
-import { useBoardInnerContext } from '../BoardInner';
-import { useAppContext } from '@context/AppContextProvider';
+import { useBoardInnerContext } from '@components/board';
+import { useAppContext } from '@context/AppContext';
 import { BoardHelper } from '../BoardHelper';
 import type { UserRecord } from '@shared/types/user';
 import { CELL_MAX_USERS, CELL_MAX_USERS_LINE } from '../Board';
 import { usePlayer } from '@components/board/players/usePlayer';
+import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 
 type PlayerPosition = { x: number; y: number; offsetX: number; offsetY: number };
 
@@ -84,7 +85,7 @@ export const usePlayerMovement = ({
     };
 
     useEffect(() => {
-        if (moving || paths) return;
+        if (moving || paths || useRollDiceStore.getState().isRolling) return;
         const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
         move(pos.row, pos.col);
     }, [cellWidth, cellHeight, cellsOrdered]);

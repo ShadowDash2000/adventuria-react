@@ -1,35 +1,12 @@
-import type { Context, ReactNode } from 'react';
-import { useContext, createContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { LuLoader } from 'react-icons/lu';
 import { Text } from '@chakra-ui/react';
-import type { RecordModel, RecordService } from 'pocketbase';
+import type { RecordModel } from 'pocketbase';
 import type { ClientResponseError } from 'pocketbase';
-import NotFound from '../components/pages/404';
-import { Sort, useSort } from '@shared/hook/useSort';
-
-interface CollectionListAllProviderProps<T extends RecordModel> {
-    collection: RecordService<T>;
-    initialSort?: Map<string, Sort>;
-    filter?: string;
-    expand?: string;
-    fields?: string;
-    skipTotal?: boolean;
-    refetchOnWindowFocus?: boolean;
-    children: ReactNode;
-}
-
-interface CollectionListAllProviderType<T extends RecordModel> {
-    data: T[];
-    sortSet: (key: string, value: Sort) => void;
-    sortIs: (key: string, value: Sort) => boolean;
-
-    sortToggle(key: string): void;
-}
-
-export const CollectionListAllContext = createContext(
-    {} as CollectionListAllProviderType<RecordModel>,
-);
+import NotFound from '@components/pages/404';
+import { useSort } from '@shared/hook/useSort';
+import { CollectionListAllProviderProps } from './types';
+import { CollectionListAllContext } from '.';
 
 export const CollectionListAllProvider = <T extends RecordModel>({
     collection,
@@ -47,7 +24,7 @@ export const CollectionListAllProvider = <T extends RecordModel>({
         queryFn: async () =>
             await collection.getFullList<T>({ sort: sortBuild, filter, expand, fields, skipTotal }),
         refetchOnWindowFocus: refetchOnWindowFocus,
-        retry: (failureCount, e: any) => {
+        retry: (failureCount, e: unknown) => {
             const error = e as ClientResponseError;
             if (error.status === 404) return false;
             return failureCount < 10;
@@ -62,7 +39,7 @@ export const CollectionListAllProvider = <T extends RecordModel>({
         const e = error as ClientResponseError;
         if (e.status === 404) return <NotFound />;
 
-        return <Text>Error: {error.message}</Text>;
+        return <Text>Error: {e.message}</Text>;
     }
 
     return (
@@ -71,8 +48,3 @@ export const CollectionListAllProvider = <T extends RecordModel>({
         </CollectionListAllContext.Provider>
     );
 };
-
-export const useCollectionListAll = <T extends RecordModel>() =>
-    useContext<CollectionListAllProviderType<T>>(
-        CollectionListAllContext as unknown as Context<CollectionListAllProviderType<T>>,
-    );

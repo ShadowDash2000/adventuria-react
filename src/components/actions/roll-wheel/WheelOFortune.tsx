@@ -20,7 +20,7 @@ type WheelOFortuneProps = {
 };
 
 export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>(
-    ({ items: initialItems, onFinish }, ref) => {
+    function WheelOFortune({ items: initialItems, onFinish }, ref) {
         const [items, setItems] = useState<WheelItem[]>(
             initialItems && initialItems.length > 1
                 ? initialItems

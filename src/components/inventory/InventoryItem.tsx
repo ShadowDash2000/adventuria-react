@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CloseButton, Dialog, Flex, Image, Portal } from '@chakra-ui/react';
 import { Button } from '@ui/button';
-import { useAppContext } from '@context/AppContextProvider';
+import { useAppContext } from '@context/AppContext';
 import { EffectFactory, Type_Effect_Creator } from '@components/inventory/effects/effect-factory';
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
 import { RecordIdString } from '@shared/types/pocketbase';
@@ -26,11 +26,13 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
         try {
             await itemUseRequest(pb.authStore.token, invItem.id, Object.fromEntries(formData));
             setIsActive(true);
-        } catch (_) {}
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     const effects =
-        item.expand?.effects.entries()!.reduce((prev, [_, effect]) => {
+        item.expand?.effects.entries()!.reduce((prev, [, effect]) => {
             const effectFactory = EffectFactory.get(effect.type);
             if (effectFactory === null) return prev;
             return [...prev, effectFactory];
@@ -84,7 +86,9 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
                                     try {
                                         await itemUseRequest(pb.authStore.token, invItem.id);
                                         setIsActive(true);
-                                    } catch (_) {}
+                                    } catch (e) {
+                                        console.error(e);
+                                    }
                                 }}
                             >
                                 Использовать
@@ -100,7 +104,7 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
 const itemUseRequest = async (
     authToken: string,
     itemId: RecordIdString,
-    data?: Record<string, any>,
+    data?: Record<string, unknown>,
 ) => {
     const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/use-item`, {
         method: 'POST',
