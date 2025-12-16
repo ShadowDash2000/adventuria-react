@@ -4,6 +4,8 @@ import type { PlatformRecord } from '@shared/types/platform';
 import type { CompanyRecord } from '@shared/types/company';
 import type { GenreRecord } from '@shared/types/genre';
 import type { TagRecord } from '@shared/types/tag';
+import { SteamSpyRecord } from '@shared/types/steam-spy';
+import { HowLongToBeatRecord } from '@shared/types/howlongtobeat';
 
 export type GameRecord = {
     created: IsoDateString;
@@ -17,10 +19,9 @@ export type GameRecord = {
     publishers: RecordIdString[];
     genres: RecordIdString[];
     tags: RecordIdString[];
+    steam_spy: RecordIdString;
+    hltb: RecordIdString;
     steam_app_id: number;
-    steam_app_price: number;
-    hltb_id: number;
-    campaign_time: number;
     cover: string;
     checksum: string;
     expand?: GameRecordExpand;
@@ -32,4 +33,6 @@ export type GameRecordExpand = Partial<{
     publishers: CompanyRecord[];
     genres: GenreRecord[];
     tags: TagRecord[];
+    steam_spy: SteamSpyRecord;
+    hltb: HowLongToBeatRecord;
 }>;
