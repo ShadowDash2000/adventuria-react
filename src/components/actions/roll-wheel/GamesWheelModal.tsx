@@ -42,7 +42,7 @@ export const GamesWheelModal = () => {
                 .collection('games')
                 .getFullList<GameRecord>({
                     filter: action.data!.items_list.map(id => `id="${id}"`).join('||'),
-                    expand: 'platforms,developers,publishers,genres,tags,steam_spy,hltb',
+                    expand: 'platforms,developers,publishers,genres,tags',
                 }),
         refetchOnWindowFocus: false,
         enabled: action.isSuccess,

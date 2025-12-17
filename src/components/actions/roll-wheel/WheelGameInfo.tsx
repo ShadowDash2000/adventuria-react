@@ -37,13 +37,13 @@ export const WheelGameInfo = ({ game, ...props }: WheelGameInfoProps) => {
                 <DataList.Item pt="4">
                     <DataList.ItemLabel>Стоимость</DataList.ItemLabel>
                     <DataList.ItemValue>
-                        {game.steam_spy ? `${game.expand!.steam_spy!.price / 100} $` : '-'}
+                        {game.steam_app_id > 0 ? `${game.steam_app_price / 100} $` : '-'}
                     </DataList.ItemValue>
                 </DataList.Item>
                 <DataList.Item pt="4">
                     <DataList.ItemLabel>Время прохождения</DataList.ItemLabel>
                     <DataList.ItemValue>
-                        {game.hltb ? `${game.expand!.hltb!.campaign} ч.` : '-'}
+                        {game.hltb_id ? `${game.hltb_campaign_time} ч.` : '-'}
                     </DataList.ItemValue>
                 </DataList.Item>
                 <DataList.Item pt="4">
@@ -78,12 +78,9 @@ export const WheelGameInfo = ({ game, ...props }: WheelGameInfoProps) => {
                         </Link>
                     </Button>
                 )}
-                {game.hltb && (
+                {game.hltb_id > 0 && (
                     <Button asChild>
-                        <Link
-                            to={`https://howlongtobeat.com/game/${game.expand!.hltb!.id}`}
-                            target="_blank"
-                        >
+                        <Link to={`https://howlongtobeat.com/game/${game.hltb_id}`} target="_blank">
                             HLTB
                         </Link>
                     </Button>
