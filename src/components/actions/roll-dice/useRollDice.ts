@@ -106,9 +106,13 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
 
         const paths: CellPosition[] = [];
         for (const move of res.data.path) {
-            paths.push(
-                ...BoardHelper.createPath(rows, cols, move.prev_total_steps, move.total_steps),
-            );
+            if (paths.length > 0) {
+                paths.push(BoardHelper.getCoords(rows, cols, move.total_steps));
+            } else {
+                paths.push(
+                    ...BoardHelper.createPath(rows, cols, move.prev_total_steps, move.total_steps),
+                );
+            }
         }
 
         addPaths(paths);

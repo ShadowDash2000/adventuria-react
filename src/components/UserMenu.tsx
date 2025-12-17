@@ -2,7 +2,7 @@ import { HStack, Icon, Text, VStack } from '@chakra-ui/react';
 import { PlayerInventoryButton } from './inventory/PlayerInventoryButton';
 import { Tooltip } from '@ui/tooltip';
 import { ItemsWheelModal } from '@components/actions/roll-wheel/ItemsWheelModal';
-import { RadioPlayerButton } from './RadioPlayerButton';
+import { RadioButton } from '@components/radio/RadioButton';
 import { PiCoinVerticalFill } from 'react-icons/pi';
 import { useAppAuthContext } from '@context/AppContext';
 import { Timer } from '@components/timer/Timer';
@@ -24,7 +24,7 @@ export const UserMenu = () => {
                 <HStack justify="center" align="start">
                     <PlayerInventoryButton userId={user?.id} kbd={true} />
                     <ItemsWheelModal />
-                    <RadioPlayerButton />
+                    <RadioButton />
                 </HStack>
             </VStack>
             <HStack

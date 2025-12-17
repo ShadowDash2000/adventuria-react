@@ -85,7 +85,7 @@ export const usePlayerMovement = ({
     };
 
     useEffect(() => {
-        if (moving || paths || useRollDiceStore.getState().isRolling) return;
+        if (moving || paths || (useRollDiceStore.getState().isRolling && isCurrentUser)) return;
         const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
         move(pos.row, pos.col);
     }, [cellWidth, cellHeight, cellsOrdered]);

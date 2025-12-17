@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { CloseButton, Drawer, IconButton, Kbd, Portal, VStack } from '@chakra-ui/react';
 import { FaRadio } from 'react-icons/fa6';
 import { Tooltip } from '@ui/tooltip';
+import { Radio } from '@components/radio/Radio';
 
-export const RadioPlayerButton = () => {
+export const RadioButton = () => {
     const [open, setOpen] = useState<boolean>(false);
 
     useEffect(() => {
@@ -30,6 +31,7 @@ export const RadioPlayerButton = () => {
             lazyMount
             unmountOnExit
             placement="bottom"
+            preventScroll={false}
         >
             <VStack>
                 <Tooltip content="Радиопопия">
@@ -42,16 +44,11 @@ export const RadioPlayerButton = () => {
                 <Kbd>P</Kbd>
             </VStack>
             <Portal>
-                <Drawer.Backdrop />
                 <Drawer.Positioner>
-                    <Drawer.Content>
-                        <Drawer.Header>
-                            <Drawer.Title>Test</Drawer.Title>
-                        </Drawer.Header>
-                        <Drawer.Body></Drawer.Body>
-                        <Drawer.CloseTrigger asChild>
-                            <CloseButton size="sm" />
-                        </Drawer.CloseTrigger>
+                    <Drawer.Content bg="rgba(0,0,0,0.5)" backdropFilter="blur({sizes.12})">
+                        <Drawer.Body>
+                            <Radio />
+                        </Drawer.Body>
                     </Drawer.Content>
                 </Drawer.Positioner>
             </Portal>

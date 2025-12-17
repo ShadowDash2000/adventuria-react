@@ -6,6 +6,7 @@ export const queryKeys = {
     user: ['user'],
     actions: ['actions'],
     availableActions: ['available-actions'],
+    radioAudioPreset: ['radio-audio-preset'],
 } as const;
 
 export const invalidateUser = async () => {
@@ -22,4 +23,8 @@ export const invalidateAvailableActions = async () => {
 
 export const invalidateAllActions = async () => {
     await Promise.all([invalidateActions(), invalidateAvailableActions()]);
+};
+
+export const invalidateRadioAudioPreset = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.radioAudioPreset });
 };
