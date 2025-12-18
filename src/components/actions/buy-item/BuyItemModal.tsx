@@ -2,7 +2,7 @@ import { Box, Dialog, For, Grid, GridItem, Image, Portal, Text } from '@chakra-u
 import { Button } from '@ui/button';
 import { LuLoader, LuShoppingCart } from 'react-icons/lu';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import ShopImage from '/shop.png';
+import ShopImage from '/shop.gif';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import { useAppAuthContext } from '@context/AppContext';

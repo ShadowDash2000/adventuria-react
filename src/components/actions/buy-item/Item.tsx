@@ -5,7 +5,7 @@ import { Button } from '@ui/button';
 import { PiCoinVerticalFill } from 'react-icons/pi';
 import { Tooltip } from '@ui/tooltip';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { invalidateLatestAction } from '@shared/queryClient';
+import { invalidateAvailableActions, invalidateLatestAction } from '@shared/queryClient';
 
 interface ItemProps {
     item: ItemRecord;
@@ -20,6 +20,7 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
     const handleBuy = async () => {
         try {
             await buyItemRequest(pb.authStore.token, item.id);
+            await invalidateAvailableActions();
             await invalidateLatestAction();
         } catch (e) {
             console.error(e);
@@ -45,7 +46,7 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
             <Text color="black" fontSize="1.2vw">
                 {item.name}
             </Text>
-            {/*<Button
+            <Button
                 colorPalette="#87ad3c"
                 hoverColorPalette="#9fcb49"
                 disabled={user.balance < item.price}
@@ -55,7 +56,7 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
                 <Icon size="xl" color="yellow.400">
                     <PiCoinVerticalFill />
                 </Icon>
-            </Button>*/}
+            </Button>
         </VStack>
     );
 };

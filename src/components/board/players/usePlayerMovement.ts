@@ -45,7 +45,7 @@ export const usePlayerMovement = ({
         let userRow = 0;
         let isVisible = true;
 
-        if (cell.players) {
+        if (cell && cell.players) {
             const index = cell.players.findIndex(player => player.id === user.id);
             if (index !== -1) {
                 userCol = index % CELL_MAX_USERS_LINE;
