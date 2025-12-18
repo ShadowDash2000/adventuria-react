@@ -1,7 +1,7 @@
 import { HStack, Text, VStack } from '@chakra-ui/react';
 import { PlayerInventoryButton } from './inventory/PlayerInventoryButton';
 import { Tooltip } from '@ui/tooltip';
-import { ItemsWheelModal } from '@components/actions/roll-wheel/ItemsWheelModal';
+import { ItemsWheelModal } from '@components/actions/roll-wheel/items-wheel/ItemsWheelModal';
 import { RadioButton } from '@components/radio/RadioButton';
 import { useAppAuthContext } from '@context/AppContext';
 import { Timer } from '@components/timer/Timer';

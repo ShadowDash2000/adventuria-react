@@ -1,7 +1,7 @@
 import { Status } from '@chakra-ui/react';
 import { type ReactElement } from 'react';
 import { ActionDispenser } from '../action-base';
-import { GamesWheelModal } from './GamesWheelModal';
+import { GamesWheelModal } from './games-wheel/GamesWheelModal';
 
 export class RollWheel extends ActionDispenser {
     buttonNode(): ReactElement {
