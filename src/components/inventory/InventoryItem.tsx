@@ -6,6 +6,7 @@ import { EffectFactory, Type_Effect_Creator } from '@components/inventory/effect
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
 import { RecordIdString } from '@shared/types/pocketbase';
 import { DialogContent } from '@ui/dialog-content';
+import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
 
 interface InventoryItemProps {
     invItem: InventoryItemRecord;
@@ -14,6 +15,7 @@ interface InventoryItemProps {
 
 export const InventoryItem = ({ invItem, showControlButtons = false }: InventoryItemProps) => {
     const { pb } = useAppContext();
+    const setKbdBlocked = useKbdSettingsStore(state => state.setBlockedAll);
     const [isActive, setIsActive] = useState<boolean>(invItem.isActive);
     const item = invItem.expand!.item;
     const icon = pb.files.getURL(item, item.icon);
@@ -26,6 +28,7 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
         try {
             await itemUseRequest(pb.authStore.token, invItem.id, Object.fromEntries(formData));
             setIsActive(true);
+            setKbdBlocked(false);
         } catch (e) {
             console.error(e);
         }
@@ -50,11 +53,22 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
             <Card.Footer flexDirection="column">
                 {showControlButtons && (
                     <>
-                        <Button colorPalette="red">Выбросить</Button>
+                        <Button colorPalette="{colors.red}" hoverColorPalette="{colors.red.hover}">
+                            Выбросить
+                        </Button>
                         {needModal && !isActive ? (
-                            <Dialog.Root lazyMount unmountOnExit>
+                            <Dialog.Root
+                                lazyMount
+                                unmountOnExit
+                                onOpenChange={e => setKbdBlocked(e.open)}
+                            >
                                 <Dialog.Trigger asChild>
-                                    <Button colorPalette="green">Использовать</Button>
+                                    <Button
+                                        colorPalette="{colors.green}"
+                                        hoverColorPalette="{colors.green.hover}"
+                                    >
+                                        Использовать
+                                    </Button>
                                 </Dialog.Trigger>
                                 <Portal>
                                     <Dialog.Backdrop></Dialog.Backdrop>
@@ -65,7 +79,11 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
                                                 <form action={handleSubmit}>
                                                     {effects.map((effect, i) => effect(i))}
                                                     <Flex justifyContent="center" pt={5}>
-                                                        <Button type="submit" colorPalette="green">
+                                                        <Button
+                                                            type="submit"
+                                                            colorPalette="{colors.green}"
+                                                            hoverColorPalette="{colors.green.hover}"
+                                                        >
                                                             Сохранить
                                                         </Button>
                                                     </Flex>
@@ -81,7 +99,8 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
                         ) : (
                             <Button
                                 disabled={isActive}
-                                colorPalette="green"
+                                colorPalette="{colors.green}"
+                                hoverColorPalette="{colors.green.hover}"
                                 onClick={async () => {
                                     try {
                                         await itemUseRequest(pb.authStore.token, invItem.id);

@@ -4,6 +4,7 @@ import { Inventory } from './Inventory';
 import { Tooltip } from '@ui/tooltip';
 import { CloseButton, Drawer, IconButton, Kbd, Portal, VStack } from '@chakra-ui/react';
 import { GiSwapBag } from 'react-icons/gi';
+import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
 
 interface PlayerInventoryButtonProps {
     userId: RecordIdString;
@@ -12,6 +13,7 @@ interface PlayerInventoryButtonProps {
 
 export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryButtonProps) => {
     const [open, setOpen] = useState<boolean>(false);
+    const { isBlocked } = useKbdSettings(KbdKey.inventory);
 
     useEffect(() => {
         if (!kbd) return;
@@ -21,7 +23,7 @@ export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryBu
         window.addEventListener(
             'keydown',
             e => {
-                if (e.code !== 'KeyI') return;
+                if (e.code !== KbdKey.inventory || isBlocked) return;
                 setOpen(prev => !prev);
             },
             { signal: abortController.signal },
@@ -30,7 +32,7 @@ export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryBu
         return () => {
             abortController.abort();
         };
-    }, [kbd]);
+    }, [kbd, isBlocked]);
 
     return (
         <Drawer.Root

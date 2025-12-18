@@ -1,4 +1,4 @@
-import { createAddGameTag } from './add-game-tag';
+import { createAddGameTag } from './add-game-tag/add-game-tag';
 import { type JSX, Key } from 'react';
 
 export type Type_Effect_Creator = (key?: Key) => JSX.Element;

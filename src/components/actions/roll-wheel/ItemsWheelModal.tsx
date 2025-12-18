@@ -33,9 +33,7 @@ export const ItemsWheelModal = () => {
 
     const items = useQuery({
         queryFn: () =>
-            pb
-                .collection('items')
-                .getFullList<ItemRecord>({ filter: `type = "buff" && isRollable = true` }),
+            pb.collection('items').getFullList<ItemRecord>({ filter: `isRollable = true` }),
         refetchOnWindowFocus: false,
         queryKey: ['items'],
     });

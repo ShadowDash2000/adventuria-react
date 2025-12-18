@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { CloseButton, Drawer, IconButton, Kbd, Portal, VStack } from '@chakra-ui/react';
+import { Drawer, IconButton, Kbd, Portal, VStack } from '@chakra-ui/react';
 import { FaRadio } from 'react-icons/fa6';
 import { Tooltip } from '@ui/tooltip';
 import { Radio } from '@components/radio/Radio';
+import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
 
 export const RadioButton = () => {
     const [open, setOpen] = useState<boolean>(false);
+    const { isBlocked } = useKbdSettings(KbdKey.radio);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -13,7 +15,7 @@ export const RadioButton = () => {
         window.addEventListener(
             'keydown',
             e => {
-                if (e.code !== 'KeyP') return;
+                if (e.code !== KbdKey.radio || isBlocked) return;
                 setOpen(prev => !prev);
             },
             { signal: abortController.signal },
@@ -22,7 +24,7 @@ export const RadioButton = () => {
         return () => {
             abortController.abort();
         };
-    }, []);
+    }, [isBlocked]);
 
     return (
         <Drawer.Root
