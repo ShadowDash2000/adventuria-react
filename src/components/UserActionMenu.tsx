@@ -12,8 +12,8 @@ export const UserActionMenu = () => {
     return (
         <Flex
             position="fixed"
-            left={0}
-            right={0}
+            left="50%"
+            transform="translateX(-50%)"
             bottom={0}
             zIndex={100}
             mb={10}

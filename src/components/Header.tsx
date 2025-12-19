@@ -5,8 +5,7 @@ import { Button } from '@ui/button';
 import { Link } from 'react-router-dom';
 import { CollectionListAllProvider } from '@context/CollectionListAllContext/CollectionListAllContext';
 import { PlayersFloatingList } from './PlayersFloatingList';
-import { Settings } from './settings/Settings';
-import { UserMenu } from './UserMenu';
+import { UserMenu } from '@components/user-menu/UserMenu';
 
 export const Header = () => {
     const { pb } = useAppContext();
@@ -36,7 +35,6 @@ export const Header = () => {
                 refetchOnWindowFocus={false}
             >
                 <PlayersFloatingList />
-                {isAuth && <Settings />}
             </CollectionListAllProvider>
             {isAuth && <UserMenu />}
         </>

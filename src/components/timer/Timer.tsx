@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { VStack, Text, ButtonGroup, IconButton, Box, Float, Clipboard } from '@chakra-ui/react';
+import { VStack, Text, ButtonGroup, IconButton, Box, Clipboard } from '@chakra-ui/react';
 import { FaCopy, FaPause, FaPlay } from 'react-icons/fa6';
 import { Tooltip } from '@ui/tooltip';
 import { useAppContext } from '@context/AppContext';
@@ -25,22 +25,29 @@ export const Timer = ({ userId }: TimerProps) => {
     });
 
     return (
-        <VStack>
-            <Box>
-                <Text fontSize="4xl" ref={timerRef}>
+        <VStack minW={200}>
+            <Box w="full">
+                <Text
+                    position="relative"
+                    fontSize="4xl"
+                    ref={timerRef}
+                    bgImage="linear-gradient(rgb(6, 9, 59), rgb(13, 34, 137))"
+                    border="{spacing.0.5} solid rgb(198, 198, 198)"
+                    borderRadius={12}
+                    px={4}
+                    _before={{
+                        content: '""',
+                        pointerEvents: 'none',
+                        inset: 0,
+                        position: 'absolute',
+                        border: '{spacing.1} solid white',
+                        borderRadius: 10,
+                        width: '100%',
+                        height: '100%',
+                    }}
+                >
                     00:00:00
                 </Text>
-                <Tooltip content="Ссылка для OBS">
-                    <Float placement="top-start" offset={-2}>
-                        <Clipboard.Root value={`${window.location.origin}/timer/${userId}`}>
-                            <Clipboard.Trigger asChild>
-                                <IconButton size="xs" variant="surface">
-                                    <FaCopy />
-                                </IconButton>
-                            </Clipboard.Trigger>
-                        </Clipboard.Root>
-                    </Float>
-                </Tooltip>
             </Box>
             <ButtonGroup>
                 <IconButton disabled={!isActive} _hover={{ bg: 'red' }} onClick={stopTimer}>
@@ -49,6 +56,15 @@ export const Timer = ({ userId }: TimerProps) => {
                 <IconButton disabled={isActive} _hover={{ bg: 'green' }} onClick={startTimer}>
                     <FaPlay />
                 </IconButton>
+                <Tooltip content="Ссылка для OBS">
+                    <IconButton _hover={{ bg: 'orange' }}>
+                        <Clipboard.Root value={`${window.location.origin}/timer/${userId}`}>
+                            <Clipboard.Trigger asChild>
+                                <FaCopy />
+                            </Clipboard.Trigger>
+                        </Clipboard.Root>
+                    </IconButton>
+                </Tooltip>
             </ButtonGroup>
         </VStack>
     );

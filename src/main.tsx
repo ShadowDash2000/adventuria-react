@@ -11,9 +11,28 @@ import { ThemeProvider } from 'next-themes';
 
 const colorModeConfig = { forcedTheme: 'dark' };
 const themeConfig = defineConfig({
+    globalCss: { body: { fontSize: 'sm' } },
     theme: {
         semanticTokens: { colors: { bg: { panel: { value: '#303e54' } } } },
         tokens: {
+            fonts: {
+                body: { value: 'PlayStation, system-ui' },
+                heading: { value: 'PlayStation, system-ui' },
+            },
+            fontSizes: {
+                '2xs': { value: '0.625rem' },
+                xs: { value: '0.75rem' },
+                sm: { value: '0.975rem' },
+                md: { value: '1rem' },
+                lg: { value: '1.125rem' },
+                xl: { value: '2.25rem' },
+                '2xl': { value: '2.5rem' },
+                '3xl': { value: '2.875rem' },
+                '4xl': { value: '3.25rem' },
+                '5xl': { value: '3rem' },
+                '6xl': { value: '3.75rem' },
+                '7xl': { value: '4.5rem' },
+            },
             zIndex: { dropdown: { value: 1600 } },
             colors: {
                 red: { DEFAULT: { value: '#B62F28' }, hover: { value: '#E93F36' } },

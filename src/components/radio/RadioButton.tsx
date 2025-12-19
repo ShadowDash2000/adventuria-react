@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Drawer, IconButton, Kbd, Portal, VStack } from '@chakra-ui/react';
+import { Drawer, Float, HStack, IconButton, Kbd, Portal } from '@chakra-ui/react';
 import { FaRadio } from 'react-icons/fa6';
 import { Tooltip } from '@ui/tooltip';
 import { Radio } from '@components/radio/Radio';
@@ -35,7 +35,7 @@ export const RadioButton = () => {
             placement="bottom"
             preventScroll={false}
         >
-            <VStack>
+            <HStack position="relative">
                 <Tooltip content="Радиопопия">
                     <Drawer.Trigger asChild>
                         <IconButton _hover={{ bg: 'green' }}>
@@ -43,8 +43,10 @@ export const RadioButton = () => {
                         </IconButton>
                     </Drawer.Trigger>
                 </Tooltip>
-                <Kbd>P</Kbd>
-            </VStack>
+                <Float pl={2} translate="100% 50%">
+                    <Kbd>P</Kbd>
+                </Float>
+            </HStack>
             <Portal>
                 <Drawer.Positioner>
                     <Drawer.Content bg="rgba(0,0,0,0.5)" backdropFilter="blur({sizes.12})">

@@ -68,7 +68,6 @@ export const BuyItemModal = () => {
                             <Grid
                                 templateColumns="repeat(3, 1fr)"
                                 gapX={4}
-                                gapY={3}
                                 position="absolute"
                                 w="full"
                                 pr="20%"

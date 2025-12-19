@@ -24,6 +24,9 @@ export const ItemsWheelModal = () => {
             <Tooltip content="Колесо предметов">
                 <Dialog.Trigger asChild>
                     <IconButton
+                        w="full"
+                        flexDir="column"
+                        gap={0}
                         disabled={user.itemWheelsCount === 0}
                         colorPalette="{colors.purple}"
                         _hover={{ bg: '{colors.purple.hover}' }}

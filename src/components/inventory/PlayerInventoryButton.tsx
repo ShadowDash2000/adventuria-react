@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { Inventory } from './Inventory';
 import { Tooltip } from '@ui/tooltip';
-import { CloseButton, Drawer, IconButton, Kbd, Portal, VStack } from '@chakra-ui/react';
+import { CloseButton, Drawer, Float, HStack, IconButton, Kbd, Portal } from '@chakra-ui/react';
 import { GiSwapBag } from 'react-icons/gi';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
 
@@ -42,16 +42,18 @@ export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryBu
             open={open}
             onOpenChange={e => setOpen(e.open)}
         >
-            <VStack>
-                <Tooltip content="Радиопопия">
+            <HStack position="relative">
+                <Tooltip content="Инвентарь">
                     <Drawer.Trigger asChild>
                         <IconButton _hover={{ bg: 'blue' }}>
                             <GiSwapBag />
                         </IconButton>
                     </Drawer.Trigger>
                 </Tooltip>
-                {kbd && <Kbd>I</Kbd>}
-            </VStack>
+                <Float pl={2} translate="100% 50%">
+                    {kbd && <Kbd>I</Kbd>}
+                </Float>
+            </HStack>
             <Portal>
                 <Drawer.Backdrop />
                 <Drawer.Positioner>

@@ -66,6 +66,7 @@ export const ItemsWheelContent = () => {
                         value={volume}
                         setValue={val => setVolume(val)}
                         label="Громкость"
+                        colorPalette="orange"
                     />
                 </ChakraFlex>
             </ChakraFlex>

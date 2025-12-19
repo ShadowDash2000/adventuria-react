@@ -1,11 +1,12 @@
 import type { ItemRecord } from '@shared/types/item';
-import { Image, VStack, Text, Icon, ImageProps } from '@chakra-ui/react';
+import { Image, VStack, Text, ImageProps, Float, Flex } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
-import { Button } from '@ui/button';
-import { PiCoinVerticalFill } from 'react-icons/pi';
 import { Tooltip } from '@ui/tooltip';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { invalidateAvailableActions, invalidateLatestAction } from '@shared/queryClient';
+import PriceBadgeImage from '@public/price-badge.png';
+import { Coin } from '@shared/components/Coin';
+import { useState } from 'react';
 
 interface ItemProps {
     item: ItemRecord;
@@ -13,9 +14,13 @@ interface ItemProps {
     imageWidth?: string;
 }
 
+const IMAGE_ROTATION = 'rotate(-20deg)';
+const BADGE_ROTATION = 'rotate(35deg)';
+
 export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
-    const { pb, user } = useAppAuthContext();
+    const { pb } = useAppAuthContext();
     const icon = pb.files.getURL(item, item.icon);
+    const [hovered, setHovered] = useState(false);
 
     const handleBuy = async () => {
         try {
@@ -31,11 +36,18 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
         src: icon,
         w: imageWidth,
         h: imageHeight,
-        transform: 'rotate(-20deg)',
+        transform: IMAGE_ROTATION,
     };
 
     return (
-        <VStack>
+        <VStack
+            position="relative"
+            _hover={{ cursor: 'pointer' }}
+            filter={hovered ? 'brightness(1.1) drop-shadow(0 0 0.5rem black)' : ''}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            onClick={handleBuy}
+        >
             {item.description ? (
                 <Tooltip content={<div dangerouslySetInnerHTML={{ __html: item.description }} />}>
                     <Image {...imageProps} />
@@ -43,20 +55,36 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
             ) : (
                 <Image {...imageProps} />
             )}
-            <Text color="black" fontSize="1.2vw">
+            <Float translate="15% 50%">
+                <Image src={PriceBadgeImage} w="8vw" h="8vw" />
+                <Flex
+                    transform={`translateX(1vw) translateY(0.5vw) ${BADGE_ROTATION}`}
+                    position="absolute"
+                    align="center"
+                    gap={2}
+                >
+                    <Text
+                        color="white"
+                        fontSize="1.5vw"
+                        style={{ WebkitTextStroke: '0.05vw black' }}
+                    >
+                        {item.price}
+                    </Text>
+                    <Coin w="2vw" h="2vw" />
+                </Flex>
+            </Float>
+            <Text
+                color="white"
+                fontSize="2vw"
+                bg="black"
+                p={2}
+                borderRadius="0.3vw"
+                maxW="10vw"
+                textAlign="center"
+                lineHeight="0.8"
+            >
                 {item.name}
             </Text>
-            <Button
-                colorPalette="#87ad3c"
-                hoverColorPalette="#9fcb49"
-                disabled={user.balance < item.price}
-                onClick={handleBuy}
-            >
-                Купить {item.price}
-                <Icon size="xl" color="yellow.400">
-                    <PiCoinVerticalFill />
-                </Icon>
-            </Button>
         </VStack>
     );
 };
