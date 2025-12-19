@@ -14,7 +14,7 @@ export type KbdSettingsStoreState = {
     setBlockedAll: (isBlocked: boolean) => void;
 };
 
-export const useKbdSettingsStore = create<KbdSettingsStoreState>()((set, get) => ({
+export const useKbdSettingsStore = create<KbdSettingsStoreState>()(set => ({
     kbds: {} as Record<KbdKey, KbdState>,
 
     setBlocked: (key, isBlocked) =>

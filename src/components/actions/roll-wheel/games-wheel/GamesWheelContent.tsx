@@ -12,7 +12,6 @@ import { useWheel, type SpinResult } from '../useWheel';
 import { Button } from '@ui/button';
 import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
-import { useRollWheelStore } from '@components/actions/roll-wheel/useRollWheelStore';
 
 export const GamesWheelContent = () => {
     const { pb, user } = useAppAuthContext();
