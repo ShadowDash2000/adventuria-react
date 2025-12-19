@@ -10,6 +10,7 @@ export const Flex = chakra(ChakraFlex, {
 
         _before: {
             content: '""',
+            zIndex: 5,
             pointerEvents: 'none',
             inset: 0,
             position: 'absolute',

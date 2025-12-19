@@ -307,7 +307,14 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
         return (
             <Flex align="center" justify="center">
                 <VStack gap="6" w="full" h="full">
-                    <Text fontSize="2xl" fontWeight="bold" color="white.800">
+                    <Text
+                        fontSize="2xl"
+                        fontWeight="bold"
+                        color="white.800"
+                        w={500}
+                        textAlign="center"
+                        lineHeight={1}
+                    >
                         {headerText}
                     </Text>
                     <Box

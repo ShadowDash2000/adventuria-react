@@ -13,7 +13,7 @@ export const WheelItemInfo = ({ item, ...props }: WheelItemInfoProps) => {
     return (
         <Flex {...props}>
             <Flex direction="column" align="center">
-                <Heading>{item.name}</Heading>
+                <Heading textAlign="center">{item.name}</Heading>
                 <Image src={icon} />
             </Flex>
             <Box dangerouslySetInnerHTML={{ __html: item.description }} />

@@ -12,6 +12,8 @@ import {
     Float,
     Circle,
     VStack,
+    ButtonGroup,
+    Text,
 } from '@chakra-ui/react';
 import { Flex } from '@ui/flex';
 import { LuChevronUp } from 'react-icons/lu';
@@ -28,11 +30,12 @@ export const PlayersFloatingList = () => {
         <ChakraFlex
             zIndex={60}
             position="fixed"
+            top={0}
             left={0}
             pl={4}
             visibility={{ base: 'visible', lgDown: 'hidden' }}
         >
-            <Collapsible.Root defaultOpen minW="18rem">
+            <Collapsible.Root defaultOpen minW="14rem" maxW="16.5rem">
                 <Collapsible.Trigger
                     w="100%"
                     py={3}
@@ -51,16 +54,21 @@ export const PlayersFloatingList = () => {
                 </Collapsible.Trigger>
                 <Collapsible.Content>
                     <Flex>
-                        <VStack p={5} maxH={96} overflowY="auto">
+                        <VStack p={4} maxH={96} overflowY="auto" w="full" scrollbarWidth="none">
                             <For each={users}>
                                 {user => (
                                     <Box key={user.id} w="full">
-                                        <HStack minH={16}>
-                                            <ChakraLink w="full" asChild>
+                                        <HStack minH={14} justify="space-between" align="center">
+                                            <ChakraLink asChild minW={0}>
                                                 <Link to={`/profile/${user.name}`}>
-                                                    <HStack gap={4}>
+                                                    <HStack gap={4} minW={0}>
                                                         <Box pos="relative">
-                                                            <Avatar user={user} />
+                                                            <Avatar
+                                                                user={user}
+                                                                w={8}
+                                                                h={8}
+                                                                outlineWidth="0.20vw"
+                                                            />
                                                             {user.is_stream_live && (
                                                                 <Float placement="bottom-end">
                                                                     <Circle
@@ -71,23 +79,27 @@ export const PlayersFloatingList = () => {
                                                                 </Float>
                                                             )}
                                                         </Box>
-                                                        {user.name}
+                                                        <Text truncate>{user.name}</Text>
                                                     </HStack>
                                                 </Link>
                                             </ChakraLink>
-                                            <PlayerInventoryButton userId={user.id} />
-                                            <Tooltip content="Показать игрока">
-                                                <IconButton
-                                                    _hover={{ bg: 'orange' }}
-                                                    onClick={() =>
-                                                        document.dispatchEvent(
-                                                            new Event(`player.scroll.${user.id}`),
-                                                        )
-                                                    }
-                                                >
-                                                    <TfiTarget />
-                                                </IconButton>
-                                            </Tooltip>
+                                            <ButtonGroup size="xs">
+                                                <PlayerInventoryButton userId={user.id} />
+                                                <Tooltip content="Показать игрока">
+                                                    <IconButton
+                                                        _hover={{ bg: 'orange' }}
+                                                        onClick={() =>
+                                                            document.dispatchEvent(
+                                                                new Event(
+                                                                    `player.scroll.${user.id}`,
+                                                                ),
+                                                            )
+                                                        }
+                                                    >
+                                                        <TfiTarget />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </ButtonGroup>
                                         </HStack>
                                         <Separator size="md" borderColor="white" variant="dashed" />
                                     </Box>

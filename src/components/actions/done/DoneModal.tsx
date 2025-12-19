@@ -7,9 +7,11 @@ import { LuNotebookPen } from 'react-icons/lu';
 import { DialogContent } from '@ui/dialog-content';
 import { ActionTextEditor } from '@components/profile/ActionTextEditor';
 import { invalidateAllActions, invalidateUser } from '@shared/queryClient';
+import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
 
 export const DoneModal = () => {
     const { pb, availableActions } = useAppContext();
+    const setKbdBlocked = useKbdSettingsStore(state => state.setBlockedAll);
     const [content, setContent] = useState<Content | undefined>(null);
     const [actionType, setActionType] = useState<string>('');
     const [openConfirm, setOpenConfirm] = useState(false);
@@ -22,10 +24,11 @@ export const DoneModal = () => {
 
         await invalidateAllActions();
         await invalidateUser();
+        setKbdBlocked(false);
     };
 
     return (
-        <Dialog.Root lazyMount size="xl">
+        <Dialog.Root lazyMount size="xl" onOpenChange={e => setKbdBlocked(e.open)}>
             <Dialog.Trigger asChild>
                 <Button colorPalette="{colors.green}" hoverColorPalette="{colors.green.hover}">
                     <LuNotebookPen />

@@ -45,8 +45,8 @@ const CellPlayers = ({ cellIndex, users }: CellTooltipProps) => {
                 <VStack p={2} gap={4} align="stretch">
                     <For each={users}>
                         {user => (
-                            <HStack key={user.id}>
-                                <Avatar user={user} size="xs" />
+                            <HStack key={user.id} gap={4}>
+                                <Avatar user={user} size="xs" outlineWidth="0.20vw" />
                                 <Text>{user.name}</Text>
                             </HStack>
                         )}

@@ -24,7 +24,7 @@ export const WheelGameInfo = ({ game, ...props }: WheelGameInfoProps) => {
     return (
         <Flex {...props}>
             <Flex direction="column" align="center">
-                <Heading>{game.name}</Heading>
+                <Heading textAlign="center">{game.name}</Heading>
                 <Image src={game.cover} />
             </Flex>
             <DataList.Root orientation="horizontal" divideY="1px" maxW="md" overflowY="auto">

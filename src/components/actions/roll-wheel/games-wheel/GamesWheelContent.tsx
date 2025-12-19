@@ -67,7 +67,7 @@ export const GamesWheelContent = () => {
 
     return (
         <>
-            <Flex h="vh" minW={450} justify="center">
+            <Flex h="vh" w={500} justify="center" pt={2}>
                 <WheelGameInfo
                     game={games.data[currentItemIndex]}
                     direction="column"
