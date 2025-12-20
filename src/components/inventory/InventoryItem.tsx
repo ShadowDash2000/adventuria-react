@@ -7,6 +7,8 @@ import type { InventoryItemRecord } from '@shared/types/inventory-item';
 import { RecordIdString } from '@shared/types/pocketbase';
 import { DialogContent } from '@ui/dialog-content';
 import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
+import { Tooltip } from '@ui/tooltip';
+import parse from 'html-react-parser';
 
 interface InventoryItemProps {
     invItem: InventoryItemRecord;
@@ -46,9 +48,10 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
     return (
         <Card.Root>
             <Card.Body gap="2">
-                <Image src={icon} width="100%" height="100%" />
+                <Tooltip content={parse(item.description)} contentProps={{ fontSize: 'lg' }}>
+                    <Image src={icon} width="100%" height="100%" />
+                </Tooltip>
                 <Card.Title mt="2">{item.name}</Card.Title>
-                <Card.Description dangerouslySetInnerHTML={{ __html: item.description }} minH={5} />
             </Card.Body>
             <Card.Footer flexDirection="column">
                 {showControlButtons && (

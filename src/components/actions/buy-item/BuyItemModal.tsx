@@ -19,7 +19,7 @@ export const BuyItemModal = () => {
             pb
                 .collection('actions')
                 .getFirstListItem<ActionRecord>(`user = "${user.id}"`, { sort: '-created' }),
-        queryKey: queryKeys.latestAction,
+        queryKey: [...queryKeys.latestAction, 'buy-item'],
         refetchOnWindowFocus: false,
     });
 
