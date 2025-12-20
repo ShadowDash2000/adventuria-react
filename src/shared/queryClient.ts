@@ -9,6 +9,7 @@ export const queryKeys = {
     availableActions: ['available-actions'],
     radioAudioPreset: ['radio-audio-preset'],
     games: ['games'],
+    items: ['items'],
 } as const;
 
 export const invalidateUser = async () => {

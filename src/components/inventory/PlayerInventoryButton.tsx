@@ -45,7 +45,7 @@ export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryBu
             <HStack position="relative">
                 <Tooltip content="Инвентарь">
                     <Drawer.Trigger asChild>
-                        <IconButton _hover={{ bg: 'blue' }}>
+                        <IconButton disabled={isBlocked} _hover={{ bg: 'blue' }}>
                             <GiSwapBag />
                         </IconButton>
                     </Drawer.Trigger>

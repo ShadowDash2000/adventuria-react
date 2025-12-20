@@ -40,52 +40,55 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
     };
 
     return (
-        <VStack
-            position="relative"
-            _hover={{ cursor: 'pointer' }}
-            filter={hovered ? 'brightness(1.1) drop-shadow(0 0 0.5rem black)' : ''}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            onClick={handleBuy}
+        <Tooltip
+            content={<div dangerouslySetInnerHTML={{ __html: item.description }} />}
+            contentProps={{ fontSize: 'lg' }}
+            disabled={!item.description}
+            openDelay={100}
         >
-            {item.description ? (
-                <Tooltip content={<div dangerouslySetInnerHTML={{ __html: item.description }} />}>
-                    <Image {...imageProps} />
-                </Tooltip>
-            ) : (
-                <Image {...imageProps} />
-            )}
-            <Float translate="15% 50%">
-                <Image src={PriceBadgeImage} w="8vw" h="8vw" />
-                <Flex
-                    transform={`translateX(1vw) translateY(0.5vw) ${BADGE_ROTATION}`}
-                    position="absolute"
-                    align="center"
-                    gap={2}
-                >
-                    <Text
-                        color="white"
-                        fontSize="1.5vw"
-                        style={{ WebkitTextStroke: '0.05vw black' }}
-                    >
-                        {item.price}
-                    </Text>
-                    <Coin w="2vw" h="2vw" />
-                </Flex>
-            </Float>
-            <Text
-                color="white"
-                fontSize="2vw"
-                bg="black"
-                p={2}
-                borderRadius="0.3vw"
-                maxW="10vw"
-                textAlign="center"
-                lineHeight="0.8"
+            <VStack
+                position="relative"
+                _hover={{ cursor: 'pointer' }}
+                filter={hovered ? 'brightness(1.1) drop-shadow(0 0 0.5rem black)' : ''}
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
+                onClick={handleBuy}
             >
-                {item.name}
-            </Text>
-        </VStack>
+                <Image {...imageProps} />
+                <Float translate="15% 50%">
+                    <Image src={PriceBadgeImage} w="8vw" h="8vw" />
+                    <Flex
+                        transform={`translateX(1vw) translateY(0.5vw) ${BADGE_ROTATION}`}
+                        position="absolute"
+                        align="center"
+                        gap={2}
+                    >
+                        <Text
+                            color="white"
+                            fontSize="1.5vw"
+                            style={{ WebkitTextStroke: '0.05vw black' }}
+                        >
+                            {item.price}
+                        </Text>
+                        <Coin w="2vw" h="2vw" />
+                    </Flex>
+                </Float>
+                <Text
+                    position="absolute"
+                    bottom={0}
+                    color="white"
+                    fontSize="1.2vw"
+                    bg="black"
+                    p={2}
+                    borderRadius="0.3vw"
+                    maxW="10vw"
+                    textAlign="center"
+                    lineHeight="0.8"
+                >
+                    {item.name}
+                </Text>
+            </VStack>
+        </Tooltip>
     );
 };
 

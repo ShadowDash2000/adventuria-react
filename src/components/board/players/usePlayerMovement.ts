@@ -6,6 +6,7 @@ import type { UserRecord } from '@shared/types/user';
 import { CELL_MAX_USERS, CELL_MAX_USERS_LINE } from '../Board';
 import { usePlayer } from '@components/board/players/usePlayer';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
+import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
 
 type PlayerPosition = { x: number; y: number; offsetX: number; offsetY: number };
 
@@ -31,6 +32,7 @@ export const usePlayerMovement = ({
     const { rows, cols, cellWidth, cellHeight, cellsOrdered } = useBoardInnerContext();
     const isCurrentUser = userAuth ? user.id === userAuth.id : false;
     const [moving, setMoving] = useState<boolean>(false);
+    const { setBlocked: setInventoryBlocked } = useKbdSettings(KbdKey.inventory);
 
     const { pullPath, paths, moveTime, clearMoveTime } = usePlayer(user.id);
 
@@ -104,6 +106,7 @@ export const usePlayerMovement = ({
         if (!paths || isMovingRef.current) return;
 
         setMoving(true);
+        setInventoryBlocked(true);
         isMovingRef.current = true;
 
         let scrollInterval: number | null = null;
@@ -120,6 +123,7 @@ export const usePlayerMovement = ({
                 document.body.style.overflow = 'auto';
             }
             setMoving(false);
+            setInventoryBlocked(false);
             clearMoveTime();
             isMovingRef.current = false;
         };

@@ -9,6 +9,7 @@ import { DialogContent } from '@ui/dialog-content';
 import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
 import { Tooltip } from '@ui/tooltip';
 import parse from 'html-react-parser';
+import { invalidateAllActions } from '@shared/queryClient';
 
 interface InventoryItemProps {
     invItem: InventoryItemRecord;
@@ -31,6 +32,7 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
             await itemUseRequest(pb.authStore.token, invItem.id, Object.fromEntries(formData));
             setIsActive(true);
             setKbdBlocked(false);
+            await invalidateAllActions();
         } catch (e) {
             console.error(e);
         }
@@ -48,7 +50,12 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
     return (
         <Card.Root>
             <Card.Body gap="2">
-                <Tooltip content={parse(item.description)} contentProps={{ fontSize: 'lg' }}>
+                <Tooltip
+                    content={parse(item.description)}
+                    contentProps={{ fontSize: 'lg' }}
+                    disabled={!item.description}
+                    openDelay={100}
+                >
                     <Image src={icon} width="100%" height="100%" />
                 </Tooltip>
                 <Card.Title mt="2">{item.name}</Card.Title>
@@ -108,6 +115,7 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
                                     try {
                                         await itemUseRequest(pb.authStore.token, invItem.id);
                                         setIsActive(true);
+                                        await invalidateAllActions();
                                     } catch (e) {
                                         console.error(e);
                                     }
