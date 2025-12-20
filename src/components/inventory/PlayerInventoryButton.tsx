@@ -5,6 +5,7 @@ import { Tooltip } from '@ui/tooltip';
 import { CloseButton, Drawer, Float, HStack, IconButton, Kbd, Portal } from '@chakra-ui/react';
 import { GiSwapBag } from 'react-icons/gi';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
+import { useRollWheelStore } from '@components/actions/roll-wheel/useRollWheelStore';
 
 interface PlayerInventoryButtonProps {
     userId: RecordIdString;
@@ -14,6 +15,8 @@ interface PlayerInventoryButtonProps {
 export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryButtonProps) => {
     const [open, setOpen] = useState<boolean>(false);
     const { isBlocked } = useKbdSettings(KbdKey.inventory);
+    const isSpinning = useRollWheelStore(state => state.isSpinning);
+    const disabled = isBlocked || isSpinning;
 
     useEffect(() => {
         if (!kbd) return;
@@ -23,7 +26,7 @@ export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryBu
         window.addEventListener(
             'keydown',
             e => {
-                if (e.code !== KbdKey.inventory || isBlocked) return;
+                if (e.code !== KbdKey.inventory || disabled) return;
                 setOpen(prev => !prev);
             },
             { signal: abortController.signal },
@@ -32,7 +35,7 @@ export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryBu
         return () => {
             abortController.abort();
         };
-    }, [kbd, isBlocked]);
+    }, [kbd, disabled]);
 
     return (
         <Drawer.Root
@@ -45,7 +48,7 @@ export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryBu
             <HStack position="relative">
                 <Tooltip content="Инвентарь">
                     <Drawer.Trigger asChild>
-                        <IconButton disabled={isBlocked} _hover={{ bg: 'blue' }}>
+                        <IconButton disabled={disabled} _hover={{ bg: 'blue' }}>
                             <GiSwapBag />
                         </IconButton>
                     </Drawer.Trigger>

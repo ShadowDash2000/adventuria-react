@@ -5,11 +5,13 @@ import { useState } from 'react';
 import { useAppAuthContext } from '@context/AppContext';
 import { ItemsWheelContent } from './ItemWheelContent';
 import { useRollWheelStore } from '../useRollWheelStore';
+import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 
 export const ItemsWheelModal = () => {
-    const { user } = useAppAuthContext();
+    const { user, availableActions } = useAppAuthContext();
     const [open, setOpen] = useState(false);
     const isSpinning = useRollWheelStore(state => state.isSpinning);
+    const isRolling = useRollDiceStore(state => state.isRolling);
 
     return (
         <Dialog.Root
@@ -27,7 +29,12 @@ export const ItemsWheelModal = () => {
                         w="full"
                         flexDir="column"
                         gap={0}
-                        disabled={user.itemWheelsCount === 0}
+                        disabled={
+                            user.itemWheelsCount === 0 ||
+                            !availableActions.includes('rollItem') ||
+                            isSpinning ||
+                            isRolling
+                        }
                         colorPalette="{colors.purple}"
                         _hover={{ bg: '{colors.purple.hover}' }}
                     >
