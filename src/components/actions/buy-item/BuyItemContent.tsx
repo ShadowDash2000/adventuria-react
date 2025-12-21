@@ -28,7 +28,7 @@ export const BuyItemContent = () => {
                 .getFullList<ItemRecord>({
                     filter: latestAction.data!.items_list.map(id => `id="${id}"`).join('||'),
                 }),
-        queryKey: [...queryKeys.items, latestAction.data?.items_list],
+        queryKey: [...queryKeys.shopItems, latestAction.data?.items_list],
         enabled: latestAction.isSuccess,
         refetchOnWindowFocus: false,
     });

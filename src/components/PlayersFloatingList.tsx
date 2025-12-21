@@ -9,8 +9,6 @@ import {
     IconButton,
     Box,
     Link as ChakraLink,
-    Float,
-    Circle,
     VStack,
     ButtonGroup,
     Text,
@@ -32,26 +30,11 @@ export const PlayersFloatingList = () => {
             position="fixed"
             top={0}
             left={0}
+            mt={10}
             pl={4}
             visibility={{ base: 'visible', lgDown: 'hidden' }}
         >
             <Collapsible.Root defaultOpen minW="14rem" maxW="16.5rem">
-                <Collapsible.Trigger
-                    w="100%"
-                    py={3}
-                    display="flex"
-                    gap={2}
-                    alignItems="center"
-                    justifyContent="start"
-                >
-                    Игроки
-                    <Collapsible.Indicator
-                        transition="transform 0.2s"
-                        _open={{ transform: 'rotate(180deg)' }}
-                    >
-                        <LuChevronUp />
-                    </Collapsible.Indicator>
-                </Collapsible.Trigger>
                 <Collapsible.Content>
                     <Flex>
                         <VStack p={4} maxH={96} overflowY="auto" w="full" scrollbarWidth="none">
@@ -68,16 +51,8 @@ export const PlayersFloatingList = () => {
                                                                 w={8}
                                                                 h={8}
                                                                 outlineWidth="0.20vw"
+                                                                showStreamLive
                                                             />
-                                                            {user.is_stream_live && (
-                                                                <Float placement="bottom-end">
-                                                                    <Circle
-                                                                        bg="red.solid"
-                                                                        w={4}
-                                                                        h={4}
-                                                                    />
-                                                                </Float>
-                                                            )}
                                                         </Box>
                                                         <Text truncate>{user.name}</Text>
                                                     </HStack>
@@ -108,6 +83,23 @@ export const PlayersFloatingList = () => {
                         </VStack>
                     </Flex>
                 </Collapsible.Content>
+                <Collapsible.Trigger
+                    w="100%"
+                    py={3}
+                    display="flex"
+                    gap={2}
+                    alignItems="center"
+                    justifyContent="start"
+                    cursor="pointer"
+                >
+                    Игроки
+                    <Collapsible.Indicator
+                        transition="transform 0.2s"
+                        _open={{ transform: 'rotate(180deg)' }}
+                    >
+                        <LuChevronUp />
+                    </Collapsible.Indicator>
+                </Collapsible.Trigger>
             </Collapsible.Root>
         </ChakraFlex>
     );

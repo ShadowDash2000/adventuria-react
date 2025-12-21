@@ -1,10 +1,12 @@
-import { Input, Field, Flex, Dialog, Portal, CloseButton } from '@chakra-ui/react';
+import { Input, Field, Flex, Dialog, Portal, CloseButton, IconButton } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@ui/password-input';
 import { useAppContext } from '@context/AppContext';
 import { Button } from '@ui/button';
 import { DialogContent } from '@ui/dialog-content';
 import { invalidateUser } from '@shared/queryClient';
+import { Tooltip } from '@ui/tooltip';
+import { FaSignInAlt } from 'react-icons/fa';
 
 type LoginFormValues = { login: string; password: string };
 
@@ -29,15 +31,13 @@ export const LoginModalButton = () => {
 
     return (
         <Dialog.Root lazyMount unmountOnExit>
-            <Dialog.Trigger asChild>
-                <Button
-                    colorPalette="{colors.blue}"
-                    hoverColorPalette="{colors.blue.hover}"
-                    rounded={'lg'}
-                >
-                    Вход
-                </Button>
-            </Dialog.Trigger>
+            <Tooltip content="Вход">
+                <Dialog.Trigger asChild>
+                    <IconButton _hover={{ bg: 'green' }}>
+                        <FaSignInAlt />
+                    </IconButton>
+                </Dialog.Trigger>
+            </Tooltip>
             <Portal>
                 <Dialog.Backdrop></Dialog.Backdrop>
                 <Dialog.Positioner>

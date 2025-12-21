@@ -39,9 +39,9 @@ export const UserMenu = () => {
             <HStack
                 position="fixed"
                 right={0}
-                bottom={0}
+                top={0}
                 pr={4}
-                mb={10}
+                mt={10}
                 zIndex={100}
                 justify="center"
                 align="center"
