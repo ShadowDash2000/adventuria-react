@@ -13,6 +13,9 @@ interface RadioReturn {
     setVolume: (volume: number) => void;
     prevAudio: () => void;
     nextAudio: () => void;
+    seek: (time: number) => void;
+    currentTime: () => number;
+    duration: () => number;
     audioName: string;
     isPending: boolean;
     isError: boolean;
@@ -21,7 +24,16 @@ interface RadioReturn {
 
 export const useRadio = (): RadioReturn => {
     const { pb } = useAppAuthContext();
-    const { volume, setVolume, play: playAudio, pause, isPlaying } = useAudioPlayer(AudioKey.radio);
+    const {
+        volume,
+        setVolume,
+        play: playAudio,
+        pause,
+        isPlaying,
+        seek,
+        currentTime,
+        duration,
+    } = useAudioPlayer(AudioKey.radio);
     const currentAudioIndex = useRef(0);
     const audioCount = useRef(1);
 
@@ -77,6 +89,9 @@ export const useRadio = (): RadioReturn => {
         audioName: audioPreset.data?.expand?.audio[currentAudioIndex.current]?.name ?? '',
         volume,
         setVolume,
+        seek,
+        currentTime,
+        duration,
         isPending: audioPreset.isPending,
         isError: audioPreset.isError,
         error: audioPreset.error,

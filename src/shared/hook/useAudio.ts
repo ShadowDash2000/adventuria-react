@@ -18,13 +18,19 @@ export const getAudioElement = (key: AudioKey): HTMLAudioElement => {
     return el;
 };
 
-export type PlayerState = { volume: number; isPlaying: boolean };
+export type PlayerPersistState = { volume: number };
+
+export type PlayerState = { isPlaying: boolean };
 
 export type AudioStoreState = {
+    playersPersist: Record<AudioKey, PlayerPersistState>;
     players: Record<AudioKey, PlayerState>;
     setVolume: (key: AudioKey, volume: number) => void;
     play: (key: AudioKey, url: string) => Promise<void>;
     pause: (key: AudioKey) => void;
+    seek: (key: AudioKey, time: number) => void;
+    currentTime: (key: AudioKey) => number;
+    duration: (key: AudioKey) => number;
 };
 
 const DEFAULT_VOLUME = 0.2;
@@ -32,6 +38,8 @@ const DEFAULT_VOLUME = 0.2;
 export const useAudioStore = create<AudioStoreState>()(
     persist(
         (set, get) => ({
+            playersPersist: {} as Record<AudioKey, PlayerPersistState>,
+
             players: {} as Record<AudioKey, PlayerState>,
 
             setVolume: (key, volume) => {
@@ -40,27 +48,30 @@ export const useAudioStore = create<AudioStoreState>()(
                 audio.volume = clamped;
 
                 set(state => ({
-                    players: {
-                        ...state.players,
-                        [key]: { ...state.players[key], volume: clamped },
+                    playersPersist: {
+                        ...state.playersPersist,
+                        [key]: { ...state.playersPersist[key], volume: clamped },
                     },
                 }));
             },
 
             play: async (key, url) => {
-                const { players } = get();
-                const volume = players[key]?.volume ?? DEFAULT_VOLUME;
+                const { playersPersist } = get();
+                const volume = playersPersist[key]?.volume ?? DEFAULT_VOLUME;
 
                 const audio = getAudioElement(key);
                 audio.volume = volume;
-                audio.src = url;
+                if (audio.src !== url) {
+                    audio.src = url;
+                }
                 await audio.play();
 
                 set(state => ({
-                    players: {
-                        ...state.players,
-                        [key]: { ...state.players[key], isPlaying: true },
+                    playersPersist: {
+                        ...state.playersPersist,
+                        [key]: { ...state.playersPersist[key] },
                     },
+                    players: { ...state.players, [key]: { isPlaying: true } },
                 }));
             },
 
@@ -69,23 +80,36 @@ export const useAudioStore = create<AudioStoreState>()(
                 audio.pause();
 
                 set(state => ({
-                    players: {
-                        ...state.players,
-                        [key]: { ...state.players[key], isPlaying: false },
+                    playersPersist: {
+                        ...state.playersPersist,
+                        [key]: { ...state.playersPersist[key] },
                     },
+                    players: { ...state.players, [key]: { isPlaying: false } },
                 }));
             },
+
+            seek: (key, time) => {
+                const audio = getAudioElement(key);
+                audio.currentTime = time;
+            },
+
+            currentTime: key => getAudioElement(key).currentTime,
+
+            duration: key => getAudioElement(key).duration,
         }),
-        { name: 'audio-players', partialize: state => ({ players: state.players }) },
+        { name: 'audio-players', partialize: state => ({ playersPersist: state.playersPersist }) },
     ),
 );
 
 export const useAudioPlayer = (key: AudioKey) => {
-    const volume = useAudioStore(state => state.players[key]?.volume ?? 0.3);
+    const volume = useAudioStore(state => state.playersPersist[key]?.volume ?? 0.3);
     const isPlaying = useAudioStore(state => state.players[key]?.isPlaying ?? false);
     const play = useAudioStore(state => state.play);
     const pause = useAudioStore(state => state.pause);
     const setVolumeGlobal = useAudioStore(state => state.setVolume);
+    const seek = useAudioStore(state => state.seek);
+    const currentTime = useAudioStore(state => state.currentTime);
+    const duration = useAudioStore(state => state.duration);
 
     return {
         volume,
@@ -93,5 +117,8 @@ export const useAudioPlayer = (key: AudioKey) => {
         play: (url: string) => play(key, url),
         pause: () => pause(key),
         setVolume: (v: number) => setVolumeGlobal(key, v),
+        seek: (time: number) => seek(key, time),
+        currentTime: () => currentTime(key),
+        duration: () => duration(key),
     };
 };
