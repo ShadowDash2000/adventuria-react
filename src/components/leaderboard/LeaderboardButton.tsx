@@ -1,5 +1,4 @@
 import { CloseButton, Dialog, IconButton, Portal } from '@chakra-ui/react';
-import { DialogContent } from '@ui/dialog-content';
 import { FaTrophy } from 'react-icons/fa6';
 import { Tooltip } from '@ui/tooltip';
 import { LeaderboardContent } from './LeaderboardContent';
@@ -17,7 +16,7 @@ export const LeaderboardButton = () => {
             <Portal>
                 <Dialog.Backdrop></Dialog.Backdrop>
                 <Dialog.Positioner>
-                    <DialogContent>
+                    <Dialog.Content>
                         <Dialog.Header>
                             <Dialog.Title>Таблица лидеров</Dialog.Title>
                         </Dialog.Header>
@@ -27,7 +26,7 @@ export const LeaderboardButton = () => {
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />
                         </Dialog.CloseTrigger>
-                    </DialogContent>
+                    </Dialog.Content>
                 </Dialog.Positioner>
             </Portal>
         </Dialog.Root>

@@ -29,7 +29,7 @@ export const LeaderboardContent = () => {
     }
 
     return (
-        <Table.Root css={{ '& th, & td': { borderColor: 'border.inverted' } }}>
+        <Table.Root w="full">
             <Table.Header>
                 <Table.Row bg="none">
                     <Table.ColumnHeader></Table.ColumnHeader>

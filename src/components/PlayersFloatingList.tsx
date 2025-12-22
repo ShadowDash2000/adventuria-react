@@ -13,13 +13,13 @@ import {
     ButtonGroup,
     Text,
 } from '@chakra-ui/react';
-import { Flex } from '@ui/flex';
 import { LuChevronUp } from 'react-icons/lu';
 import { Avatar } from './Avatar';
 import { PlayerInventoryButton } from './inventory/PlayerInventoryButton';
 import { Link } from 'react-router-dom';
 import { TfiTarget } from 'react-icons/tfi';
 import { Tooltip } from '@ui/tooltip';
+import { Flex } from '@theme/flex';
 
 export const PlayersFloatingList = () => {
     const { data: users } = useCollectionListAll<UserRecord>();
@@ -36,7 +36,7 @@ export const PlayersFloatingList = () => {
         >
             <Collapsible.Root defaultOpen minW="14rem" maxW="16.5rem">
                 <Collapsible.Content>
-                    <Flex>
+                    <Flex variant="solid">
                         <VStack p={4} maxH={96} overflowY="auto" w="full" scrollbarWidth="none">
                             <For each={users}>
                                 {user => (

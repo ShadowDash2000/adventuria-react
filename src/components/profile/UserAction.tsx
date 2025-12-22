@@ -20,10 +20,10 @@ import { Avatar } from '../Avatar';
 import { ActionTextEditor } from './ActionTextEditor';
 import { type HTMLContent } from '@tiptap/react';
 import { InfoTip } from '@ui/toggle-tip';
-import { Button } from '@ui/button';
 import { CellInfo } from '../board/cells/CellInfoModal';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
 import type { RecordIdString } from '@shared/types/pocketbase';
+import { Button } from '@theme/button';
 
 type ActionProps = { action: ActionRecord };
 

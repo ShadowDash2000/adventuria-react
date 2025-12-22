@@ -1,5 +1,4 @@
-import { Flex as ChakraFlex, For, Image, Text } from '@chakra-ui/react';
-import { Flex } from '@ui/flex';
+import { For, HStack, Image, Text, VStack } from '@chakra-ui/react';
 import { LuLoader } from 'react-icons/lu';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
@@ -9,9 +8,10 @@ import { WheelGameInfo } from './WheelGameInfo';
 import { useEffect, useRef, useState } from 'react';
 import { WheelOFortune, type WheelOFortuneHandle } from '../WheelOFortune';
 import { useWheel, type SpinResult } from '../useWheel';
-import { Button } from '@ui/button';
 import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
+import { Button } from '@theme/button';
+import { Flex } from '@theme/flex';
 
 export const GamesWheelContent = () => {
     const { pb, user } = useAppAuthContext();
@@ -67,52 +67,65 @@ export const GamesWheelContent = () => {
 
     return (
         <>
-            <Flex h="vh" w={500} justify="center" pt={2}>
-                <WheelGameInfo
-                    game={games.data[currentItemIndex]}
-                    direction="column"
-                    justifyContent="space-around"
-                    px={4}
-                />
+            <Flex
+                variant="solid"
+                flexDir="column"
+                justifyContent="space-around"
+                h="vh"
+                w={500}
+                pt={2}
+                px={4}
+            >
+                <WheelGameInfo game={games.data[currentItemIndex]} />
             </Flex>
-            <ChakraFlex gap={3} direction="column" justify="center">
+            <VStack gap={3} justify="center">
                 <WheelOFortune ref={wheelRef} items={wheelItems} />
-                <ChakraFlex gap={3} justify="center" direction="column">
+                <VStack w="full" gap={3} justify="center">
                     <Button disabled={spinning || wasSpinned} onClick={handleSpin}>
                         Крутить
                     </Button>
                     <SliderDebounced
+                        w="full"
                         value={volume}
                         setValue={val => setVolume(val)}
                         label="Громкость"
                         colorPalette="orange"
                     />
-                </ChakraFlex>
-            </ChakraFlex>
-            <ChakraFlex h="vh" minW={400} maxW={450} flexDir="column" overflowY="scroll">
-                <Flex flexDir="column" gap={2} py={4}>
+                </VStack>
+            </VStack>
+            <Flex variant="solid" h="vh" overflowY="hidden">
+                <VStack
+                    h="vh"
+                    minW={400}
+                    maxW={450}
+                    gap={2}
+                    py={4}
+                    alignItems="stretch"
+                    overflowY="scroll"
+                >
                     <For each={wheelItems}>
                         {(item, index) => (
-                            <ChakraFlex
+                            <HStack
                                 key={item.key}
+                                data-active={currentItemIndex === index}
                                 h={20}
                                 align="center"
                                 gap={4}
                                 cursor="pointer"
                                 px={4}
+                                _hover={{ bg: 'grey' }}
+                                css={{ '&[data-active=true]': { bg: 'black' } }}
                                 onClick={() => {
                                     setCurrentItemIndex(index);
                                 }}
-                                _hover={{ bg: 'grey' }}
-                                bg={currentItemIndex === index ? 'black' : ''}
                             >
                                 <Image src={item.image} h="100%" pointerEvents="none" />
                                 <Text pointerEvents="none">{item.title}</Text>
-                            </ChakraFlex>
+                            </HStack>
                         )}
                     </For>
-                </Flex>
-            </ChakraFlex>
+                </VStack>
+            </Flex>
         </>
     );
 };

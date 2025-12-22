@@ -15,6 +15,7 @@ export const ItemsWheelModal = () => {
 
     return (
         <Dialog.Root
+            variant="transparent"
             lazyMount
             unmountOnExit
             open={open}

@@ -24,7 +24,7 @@ export const LatestActions = () => {
 
     return (
         <Flex direction="column" gap={5} align="center">
-            <Heading>Последние ходы</Heading>
+            <Heading size="2xl">Последние ходы</Heading>
             <For each={actions.pages}>
                 {list => list.items.map(action => <UserAction key={action.id} action={action} />)}
             </For>

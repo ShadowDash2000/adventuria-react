@@ -1,5 +1,12 @@
 import { Box, Flex, Text, VStack } from '@chakra-ui/react';
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import {
+    type CSSProperties,
+    forwardRef,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from 'react';
 
 export type WheelItem = {
     key: string;
@@ -378,8 +385,14 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                         {hover && !spinning && items[hover.index] && (
                             <Box
                                 position="absolute"
-                                left={`${hover.x}px`}
-                                top={`${hover.y}px`}
+                                left={`var(--left)`}
+                                top={`var(--top)`}
+                                style={
+                                    {
+                                        '--left': `${hover.x}px`,
+                                        '--top': `${hover.y}px`,
+                                    } as CSSProperties
+                                }
                                 transform="translate(12px, -50%)"
                                 pointerEvents="none"
                                 bg="blackAlpha.800"

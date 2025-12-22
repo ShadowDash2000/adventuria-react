@@ -1,14 +1,14 @@
 import type { GameRecord } from '@shared/types/game';
-import { ButtonGroup, DataList, Flex, FlexProps, Heading, Image } from '@chakra-ui/react';
+import { ButtonGroup, DataList, Flex, Heading, Image } from '@chakra-ui/react';
 import { formatDateLocalized } from '@shared/helpers/helper';
-import { Button } from '@ui/button';
 import { Link } from 'react-router-dom';
+import { Button } from '@theme/button';
 
-interface WheelGameInfoProps extends FlexProps {
+interface WheelGameInfoProps {
     game: GameRecord;
 }
 
-export const WheelGameInfo = ({ game, ...props }: WheelGameInfoProps) => {
+export const WheelGameInfo = ({ game }: WheelGameInfoProps) => {
     const platforms = game.expand?.platforms
         ? game.expand?.platforms?.map(p => p.name).join(', ')
         : '-';
@@ -22,7 +22,7 @@ export const WheelGameInfo = ({ game, ...props }: WheelGameInfoProps) => {
     const tags = game.expand?.tags ? game.expand?.tags?.map(t => t.name).join(', ') : '-';
 
     return (
-        <Flex {...props}>
+        <>
             <Flex direction="column" align="center">
                 <Heading textAlign="center">{game.name}</Heading>
                 <Image src={game.cover} />
@@ -91,6 +91,6 @@ export const WheelGameInfo = ({ game, ...props }: WheelGameInfoProps) => {
                     </Link>
                 </Button>
             </ButtonGroup>
-        </Flex>
+        </>
     );
 };

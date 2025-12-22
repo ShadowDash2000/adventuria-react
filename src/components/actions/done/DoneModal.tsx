@@ -1,13 +1,12 @@
-import { Button } from '@ui/button';
 import { ButtonGroup, CloseButton, Dialog, Flex, Portal } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Content } from '@tiptap/react';
 import { useAppContext } from '@context/AppContext';
 import { LuNotebookPen } from 'react-icons/lu';
-import { DialogContent } from '@ui/dialog-content';
 import { ActionTextEditor } from '@components/profile/ActionTextEditor';
 import { invalidateAllActions, invalidateUser } from '@shared/queryClient';
 import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
+import { Button } from '@theme/button';
 
 export const DoneModal = () => {
     const { pb, availableActions } = useAppContext();
@@ -30,7 +29,7 @@ export const DoneModal = () => {
     return (
         <Dialog.Root lazyMount size="xl" onOpenChange={e => setKbdBlocked(e.open)}>
             <Dialog.Trigger asChild>
-                <Button colorPalette="{colors.green}" hoverColorPalette="{colors.green.hover}">
+                <Button colorPalette="green">
                     <LuNotebookPen />
                     Завершить
                 </Button>
@@ -38,7 +37,7 @@ export const DoneModal = () => {
             <Portal>
                 <Dialog.Backdrop></Dialog.Backdrop>
                 <Dialog.Positioner>
-                    <DialogContent>
+                    <Dialog.Content>
                         <Dialog.Header>
                             <Dialog.Title>I tried so hard... И дропнул кал!</Dialog.Title>
                         </Dialog.Header>
@@ -52,8 +51,7 @@ export const DoneModal = () => {
                                 <ButtonGroup>
                                     {availableActions.includes('drop') && (
                                         <Button
-                                            colorPalette="{colors.red}"
-                                            hoverColorPalette="{colors.red.hover}"
+                                            colorPalette="red"
                                             onClick={() => {
                                                 setActionType('drop');
                                                 setTitleConfirm('Вы уверены, что хотите дропнуть?');
@@ -65,8 +63,7 @@ export const DoneModal = () => {
                                     )}
                                     {availableActions.includes('reroll') && (
                                         <Button
-                                            colorPalette="{colors.blue}"
-                                            hoverColorPalette="{colors.blue.hover}"
+                                            colorPalette="blue"
                                             onClick={() => {
                                                 setActionType('reroll');
                                                 setTitleConfirm(
@@ -80,8 +77,7 @@ export const DoneModal = () => {
                                     )}
                                     {availableActions.includes('done') && (
                                         <Button
-                                            colorPalette="{colors.green}"
-                                            hoverColorPalette="{colors.green.hover}"
+                                            colorPalette="green"
                                             onClick={() => {
                                                 setActionType('done');
                                                 setTitleConfirm(
@@ -105,22 +101,20 @@ export const DoneModal = () => {
                                 <Portal>
                                     <Dialog.Backdrop></Dialog.Backdrop>
                                     <Dialog.Positioner>
-                                        <DialogContent>
+                                        <Dialog.Content>
                                             <Dialog.Header>
                                                 <Dialog.Title>{titleConfirm}</Dialog.Title>
                                             </Dialog.Header>
                                             <Dialog.Body>
                                                 <ButtonGroup>
                                                     <Button
-                                                        colorPalette="{colors.red}"
-                                                        hoverColorPalette="{colors.red.hover}"
+                                                        colorPalette="red"
                                                         onClick={() => setOpenConfirm(false)}
                                                     >
                                                         Отмена
                                                     </Button>
                                                     <Button
-                                                        colorPalette="{colors.green}"
-                                                        hoverColorPalette="{colors.green.hover}"
+                                                        colorPalette="green"
                                                         onClick={() => handleDone(actionType)}
                                                     >
                                                         Подтвердить
@@ -130,7 +124,7 @@ export const DoneModal = () => {
                                             <Dialog.CloseTrigger asChild>
                                                 <CloseButton size="sm" />
                                             </Dialog.CloseTrigger>
-                                        </DialogContent>
+                                        </Dialog.Content>
                                     </Dialog.Positioner>
                                 </Portal>
                             </Dialog.Root>
@@ -138,7 +132,7 @@ export const DoneModal = () => {
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />
                         </Dialog.CloseTrigger>
-                    </DialogContent>
+                    </Dialog.Content>
                 </Dialog.Positioner>
             </Portal>
         </Dialog.Root>

@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 import { Flex, For, Portal } from '@chakra-ui/react';
-import { Button } from '@ui/button';
 import { LuDices } from 'react-icons/lu';
 import { useRollDice } from '@components/actions/roll-dice/useRollDice';
+import { Button } from '@theme/button';
 
 export const RollDiceButton = () => {
     const diceSceneRef = useRef<HTMLDivElement>(null);
@@ -10,12 +10,7 @@ export const RollDiceButton = () => {
 
     return (
         <>
-            <Button
-                colorPalette="{colors.purple}"
-                hoverColorPalette="{colors.purple.hover}"
-                disabled={!canRoll}
-                onClick={roll}
-            >
+            <Button colorPalette="purple" disabled={!canRoll} onClick={roll}>
                 <LuDices />
                 Бросить кубики
             </Button>

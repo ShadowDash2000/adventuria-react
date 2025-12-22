@@ -58,7 +58,7 @@ export const BuyItemContent = () => {
             pr="20%"
             pt="8%"
         >
-            {shopItems && (
+            {shopItems.size && (
                 <For each={latestAction.data.items_list}>
                     {(itemId, index) => (
                         <GridItem key={`${itemId}_${index}`}>

@@ -47,9 +47,14 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
             openDelay={100}
         >
             <VStack
+                data-hovered={hovered}
                 position="relative"
                 _hover={{ cursor: 'pointer' }}
-                filter={hovered ? 'brightness(1.1) drop-shadow(0 0 0.5rem black)' : ''}
+                css={{
+                    '&[data-hovered="true"]': {
+                        filter: 'brightness(1.1) drop-shadow(0 0 0.5rem black)',
+                    },
+                }}
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
                 onClick={handleBuy}

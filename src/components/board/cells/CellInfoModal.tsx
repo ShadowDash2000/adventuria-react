@@ -3,7 +3,6 @@ import { Image, Blockquote, Stack, DataList, Dialog, Portal, CloseButton } from 
 import HTMLReactParser from 'html-react-parser';
 import { useAppContext } from '@context/AppContext';
 import type { CellRecord } from '@shared/types/cell';
-import { DialogContent } from '@ui/dialog-content';
 
 type CellInfoProps = { cell: CellRecord; children?: ReactNode };
 
@@ -16,7 +15,7 @@ export const CellInfo = ({ cell, children }: CellInfoProps) => {
             <Portal>
                 <Dialog.Backdrop></Dialog.Backdrop>
                 <Dialog.Positioner>
-                    <DialogContent>
+                    <Dialog.Content>
                         <Dialog.Header>
                             <Dialog.Title>{cell.name}</Dialog.Title>
                         </Dialog.Header>
@@ -32,7 +31,7 @@ export const CellInfo = ({ cell, children }: CellInfoProps) => {
                                         <DataList.ItemValue>{cell.coins}</DataList.ItemValue>
                                     </DataList.Item>
                                 </DataList.Root>
-                                <Blockquote.Root>
+                                <Blockquote.Root variant="solid">
                                     <Blockquote.Content>
                                         {HTMLReactParser(cell.description)}
                                     </Blockquote.Content>
@@ -47,7 +46,7 @@ export const CellInfo = ({ cell, children }: CellInfoProps) => {
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />
                         </Dialog.CloseTrigger>
-                    </DialogContent>
+                    </Dialog.Content>
                 </Dialog.Positioner>
             </Portal>
         </Dialog.Root>

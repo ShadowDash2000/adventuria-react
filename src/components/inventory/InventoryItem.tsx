@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Card, CloseButton, Dialog, Flex, Image, Portal } from '@chakra-ui/react';
-import { Button } from '@ui/button';
 import { useAppContext } from '@context/AppContext';
 import { EffectFactory, Type_Effect_Creator } from '@components/inventory/effects/effect-factory';
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
 import { RecordIdString } from '@shared/types/pocketbase';
-import { DialogContent } from '@ui/dialog-content';
 import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
 import { Tooltip } from '@ui/tooltip';
 import parse from 'html-react-parser';
 import { invalidateAllActions } from '@shared/queryClient';
+import { Button } from '@theme/button';
 
 interface InventoryItemProps {
     invItem: InventoryItemRecord;
@@ -63,9 +62,7 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
             <Card.Footer flexDirection="column">
                 {showControlButtons && (
                     <>
-                        <Button colorPalette="{colors.red}" hoverColorPalette="{colors.red.hover}">
-                            Выбросить
-                        </Button>
+                        <Button colorPalette="red">Выбросить</Button>
                         {needModal && !isActive ? (
                             <Dialog.Root
                                 lazyMount
@@ -73,27 +70,18 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
                                 onOpenChange={e => setKbdBlocked(e.open)}
                             >
                                 <Dialog.Trigger asChild>
-                                    <Button
-                                        colorPalette="{colors.green}"
-                                        hoverColorPalette="{colors.green.hover}"
-                                    >
-                                        Использовать
-                                    </Button>
+                                    <Button colorPalette="green">Использовать</Button>
                                 </Dialog.Trigger>
                                 <Portal>
                                     <Dialog.Backdrop></Dialog.Backdrop>
                                     <Dialog.Positioner>
-                                        <DialogContent>
+                                        <Dialog.Content>
                                             <Dialog.Header />
                                             <Dialog.Body>
                                                 <form action={handleSubmit}>
                                                     {effects.map((effect, i) => effect(i))}
                                                     <Flex justifyContent="center" pt={5}>
-                                                        <Button
-                                                            type="submit"
-                                                            colorPalette="{colors.green}"
-                                                            hoverColorPalette="{colors.green.hover}"
-                                                        >
+                                                        <Button type="submit" colorPalette="green">
                                                             Сохранить
                                                         </Button>
                                                     </Flex>
@@ -102,15 +90,14 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
                                             <Dialog.CloseTrigger asChild>
                                                 <CloseButton size="sm" />
                                             </Dialog.CloseTrigger>
-                                        </DialogContent>
+                                        </Dialog.Content>
                                     </Dialog.Positioner>
                                 </Portal>
                             </Dialog.Root>
                         ) : (
                             <Button
                                 disabled={isActive}
-                                colorPalette="{colors.green}"
-                                hoverColorPalette="{colors.green.hover}"
+                                colorPalette="green"
                                 onClick={async () => {
                                     try {
                                         await itemUseRequest(pb.authStore.token, invItem.id);

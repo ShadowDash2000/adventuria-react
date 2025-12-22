@@ -2,11 +2,10 @@ import { Input, Field, Flex, Dialog, Portal, CloseButton, IconButton } from '@ch
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@ui/password-input';
 import { useAppContext } from '@context/AppContext';
-import { Button } from '@ui/button';
-import { DialogContent } from '@ui/dialog-content';
 import { invalidateUser } from '@shared/queryClient';
 import { Tooltip } from '@ui/tooltip';
 import { FaSignInAlt } from 'react-icons/fa';
+import { Button } from '@theme/button';
 
 type LoginFormValues = { login: string; password: string };
 
@@ -41,7 +40,7 @@ export const LoginModalButton = () => {
             <Portal>
                 <Dialog.Backdrop></Dialog.Backdrop>
                 <Dialog.Positioner>
-                    <DialogContent>
+                    <Dialog.Content>
                         <Dialog.Header>
                             <Dialog.Title>Вход</Dialog.Title>
                         </Dialog.Header>
@@ -72,12 +71,7 @@ export const LoginModalButton = () => {
                                         aria-invalid={errors.password ? 'true' : 'false'}
                                     />
                                 </Field.Root>
-                                <Button
-                                    type={'submit'}
-                                    colorPalette="{colors.blue}"
-                                    hoverColorPalette="{colors.blue.hover}"
-                                    rounded={'lg'}
-                                >
+                                <Button type={'submit'} colorPalette="blue" rounded={'lg'}>
                                     Войти
                                 </Button>
                             </Flex>
@@ -85,7 +79,7 @@ export const LoginModalButton = () => {
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />
                         </Dialog.CloseTrigger>
-                    </DialogContent>
+                    </Dialog.Content>
                 </Dialog.Positioner>
             </Portal>
         </Dialog.Root>

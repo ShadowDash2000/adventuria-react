@@ -1,5 +1,4 @@
 import type { UserRecord } from '@shared/types/user';
-import { Flex } from '@ui/flex';
 import { Avatar } from '../Avatar';
 import { useCollectionOneFilter } from '@context/CollectionOneFilterContext';
 import {
@@ -14,9 +13,10 @@ import {
     For,
     Heading,
 } from '@chakra-ui/react';
-import { Button } from '@ui/button';
 import { LuTwitch, LuYoutube } from 'react-icons/lu';
 import { TimerSimple } from '@components/timer/TimerSimple';
+import { Flex } from '@theme/flex';
+import { Button } from '@theme/button';
 
 export const UserProfile = () => {
     const { data: user } = useCollectionOneFilter<UserRecord>();
@@ -35,7 +35,7 @@ export const UserProfile = () => {
         : [];
 
     return (
-        <Flex align="center" flexDir="column" py={4} gap={2}>
+        <Flex variant="solid" align="center" flexDir="column" py={4} gap={2}>
             <VStack w="40%">
                 <Box pos="relative">
                     <Avatar user={user} />
@@ -74,11 +74,7 @@ export const UserProfile = () => {
             </VStack>
             <ButtonGroup>
                 {user.twitch && (
-                    <Button
-                        colorPalette="{colors.purple}"
-                        hoverColorPalette="{colors.purple.hover}"
-                        asChild
-                    >
+                    <Button colorPalette="purple" asChild>
                         <Link
                             href={`https://www.twitch.tv/${user.twitch}`}
                             target="_blank"
@@ -90,11 +86,7 @@ export const UserProfile = () => {
                     </Button>
                 )}
                 {user.twitch && (
-                    <Button
-                        colorPalette="{colors.red}"
-                        hoverColorPalette="{colors.purple.red}"
-                        asChild
-                    >
+                    <Button colorPalette="red" asChild>
                         <Link
                             href={`https://www.twitch.tv/${user.twitch}`}
                             target="_blank"

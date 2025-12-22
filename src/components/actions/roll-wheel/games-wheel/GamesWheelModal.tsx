@@ -1,10 +1,10 @@
 import { LuFerrisWheel } from 'react-icons/lu';
 import { CloseButton, Dialog, Portal } from '@chakra-ui/react';
-import { Button } from '@ui/button';
 import { useEffect, useState } from 'react';
 import { GamesWheelContent } from './GamesWheelContent';
 import { useRollWheelStore } from '../useRollWheelStore';
 import { invalidateAllActions } from '@shared/queryClient';
+import { Button } from '@theme/button';
 
 export const GamesWheelModal = () => {
     const [open, setOpen] = useState(false);
@@ -19,6 +19,7 @@ export const GamesWheelModal = () => {
 
     return (
         <Dialog.Root
+            variant="transparent"
             lazyMount
             unmountOnExit
             open={open}
@@ -34,7 +35,7 @@ export const GamesWheelModal = () => {
             size="full"
         >
             <Dialog.Trigger asChild>
-                <Button colorPalette="{colors.purple}" hoverColorPalette="{colors.purple.hover}">
+                <Button colorPalette="purple">
                     <LuFerrisWheel />
                     Колесо
                 </Button>

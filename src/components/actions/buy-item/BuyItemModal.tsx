@@ -1,14 +1,14 @@
 import { Box, Dialog, Portal, Image } from '@chakra-ui/react';
-import { Button } from '@ui/button';
 import { LuShoppingCart } from 'react-icons/lu';
 import { BuyItemContent } from './BuyItemContent';
 import ShopImage from '@public/shop.gif';
+import { Button } from '@theme/button';
 
 export const BuyItemModal = () => {
     return (
         <Dialog.Root lazyMount unmountOnExit size="xl">
             <Dialog.Trigger asChild>
-                <Button colorPalette="{colors.purple}" hoverColorPalette="{colors.purple.hover}">
+                <Button colorPalette="purple">
                     <LuShoppingCart />
                     Магаз
                 </Button>

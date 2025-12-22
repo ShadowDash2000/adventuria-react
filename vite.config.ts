@@ -16,6 +16,7 @@ export default defineConfig(() => {
                 { find: '@ui', replacement: resolve(__dirname, 'src', 'components', 'ui') },
                 { find: '@public', replacement: resolve(__dirname, './public') },
                 { find: '@components', replacement: resolve(__dirname, 'src', 'components') },
+                { find: '@theme', replacement: resolve(__dirname, 'src', 'theme', 'recipes') },
             ],
         },
         build: {
