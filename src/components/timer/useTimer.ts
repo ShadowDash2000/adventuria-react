@@ -25,6 +25,7 @@ export const useTimer = ({
     const timerQuery = useQuery({
         queryFn: () => collection.getFirstListItem<TimerRecord>(`user = "${userId}"`),
         queryKey: ['timer', userId],
+        refetchOnWindowFocus: false,
     });
 
     useEffect(() => {
