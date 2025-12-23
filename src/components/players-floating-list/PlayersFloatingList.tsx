@@ -14,15 +14,18 @@ import {
     Text,
 } from '@chakra-ui/react';
 import { LuChevronUp } from 'react-icons/lu';
-import { Avatar } from './Avatar';
-import { PlayerInventoryButton } from './inventory/PlayerInventoryButton';
+import { Avatar } from '@components/Avatar';
+import { PlayerInventoryButton } from '@components/inventory/PlayerInventoryButton';
 import { Link } from 'react-router-dom';
 import { TfiTarget } from 'react-icons/tfi';
 import { Tooltip } from '@ui/tooltip';
 import { Flex } from '@theme/flex';
+import { usePlayerFloatingListStore } from '@components/players-floating-list/usePlayersFloatingListStore';
 
 export const PlayersFloatingList = () => {
     const { data: users } = useCollectionListAll<UserRecord>();
+    const open = usePlayerFloatingListStore(state => state.open);
+    const setOpen = usePlayerFloatingListStore(state => state.setOpen);
 
     return (
         <ChakraFlex
@@ -34,7 +37,12 @@ export const PlayersFloatingList = () => {
             pl={4}
             visibility={{ base: 'visible', lgDown: 'hidden' }}
         >
-            <Collapsible.Root defaultOpen minW="14rem" maxW="16.5rem">
+            <Collapsible.Root
+                open={open}
+                onOpenChange={e => setOpen(e.open)}
+                minW="14rem"
+                maxW="16.5rem"
+            >
                 <Collapsible.Content>
                     <Flex variant="solid">
                         <VStack p={4} maxH={96} overflowY="auto" w="full" scrollbarWidth="none">

@@ -1,6 +1,6 @@
 import { useAppContext } from '@context/AppContext';
 import { CollectionListAllProvider } from '@context/CollectionListAllContext/CollectionListAllContext';
-import { PlayersFloatingList } from './PlayersFloatingList';
+import { PlayersFloatingList } from '@components/players-floating-list/PlayersFloatingList';
 import { UserMenu } from '@components/user-menu/UserMenu';
 import { ControlsMenu } from '@components/ControlsMenu';
 
