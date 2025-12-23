@@ -39,7 +39,7 @@ export type AudioStoreState = {
     subscribeEnded: (key: AudioKey, callback: () => void) => () => void;
 };
 
-const DEFAULT_VOLUME = 0.2;
+export const DEFAULT_VOLUME = 0.2;
 
 export const useAudioStore = create<AudioStoreState>()(
     persist(

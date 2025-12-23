@@ -1,7 +1,7 @@
 import { Float, IconButton, HStack, Box } from '@chakra-ui/react';
-import { FaVolumeUp } from 'react-icons/fa';
+import { FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
 import { SliderDebounced } from '@ui/slider-debounced';
-import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
+import { AudioKey, DEFAULT_VOLUME, useAudioPlayer } from '@shared/hook/useAudio';
 import { useState } from 'react';
 import { Tooltip } from '@ui/tooltip';
 
@@ -34,8 +34,11 @@ export const VolumeButton = () => {
                 </Box>
             </Float>
             <Tooltip content="Громкость">
-                <IconButton _hover={{ bg: 'orange' }}>
-                    <FaVolumeUp />
+                <IconButton
+                    _hover={{ bg: 'orange' }}
+                    onClick={() => setVolume(volume > 0 ? 0 : DEFAULT_VOLUME)}
+                >
+                    {volume > 0 ? <FaVolumeUp /> : <FaVolumeMute />}
                 </IconButton>
             </Tooltip>
         </HStack>
