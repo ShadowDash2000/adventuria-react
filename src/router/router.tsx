@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { type CSSProperties, lazy, Suspense } from 'react';
-import { LuLoader } from 'react-icons/lu';
+import { Spinner } from '@chakra-ui/react';
 
 const Layout = lazy(() => import('@components/Layout'));
 const Main = lazy(() => import('@components/pages/Main'));
@@ -18,7 +18,7 @@ export const router = createBrowserRouter([
     {
         path: '/',
         element: (
-            <Suspense fallback={<LuLoader style={loaderStyle} />}>
+            <Suspense fallback={<Spinner style={loaderStyle} />}>
                 <Layout />
             </Suspense>
         ),
@@ -26,7 +26,7 @@ export const router = createBrowserRouter([
             {
                 index: true,
                 element: (
-                    <Suspense fallback={<LuLoader style={loaderStyle} />}>
+                    <Suspense fallback={<Spinner style={loaderStyle} />}>
                         <Main />
                     </Suspense>
                 ),
@@ -34,7 +34,7 @@ export const router = createBrowserRouter([
             {
                 path: '/profile/:login',
                 element: (
-                    <Suspense fallback={<LuLoader style={loaderStyle} />}>
+                    <Suspense fallback={<Spinner style={loaderStyle} />}>
                         <Profile />
                     </Suspense>
                 ),
@@ -44,7 +44,7 @@ export const router = createBrowserRouter([
     {
         path: '/timer/:userId',
         element: (
-            <Suspense fallback={<LuLoader style={loaderStyle} />}>
+            <Suspense fallback={<Spinner style={loaderStyle} />}>
                 <Timer />
             </Suspense>
         ),

@@ -1,5 +1,4 @@
-import { For, HStack, Image, Text, VStack } from '@chakra-ui/react';
-import { LuLoader } from 'react-icons/lu';
+import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import type { ActionRecord } from '@shared/types/action';
@@ -56,7 +55,7 @@ export const GamesWheelContent = () => {
         }
     }, [spinning]);
 
-    if (action.isPending || games.isPending || audioPreset.isPending) return <LuLoader />;
+    if (action.isPending || games.isPending || audioPreset.isPending) return <Spinner />;
     if (action.isError) return <Text>Error: {action.error?.message}</Text>;
     if (games.isError) return <Text>Error: {games.error?.message}</Text>;
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;

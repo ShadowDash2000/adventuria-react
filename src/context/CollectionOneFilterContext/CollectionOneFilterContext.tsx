@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { LuLoader } from 'react-icons/lu';
-import { Text } from '@chakra-ui/react';
+import { Spinner, Text } from '@chakra-ui/react';
 import type { ClientResponseError, RecordModel } from 'pocketbase';
 import NotFound from '@components/pages/404';
 import { CollectionOneFilterContext, CollectionOneFilterProviderProps } from '.';
@@ -21,7 +20,7 @@ export const CollectionOneFilterProvider = <T extends RecordModel>({
     });
 
     if (isPending) {
-        return <LuLoader />;
+        return <Spinner />;
     }
 
     if (isError) {

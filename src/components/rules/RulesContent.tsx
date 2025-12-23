@@ -1,9 +1,8 @@
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
-import { LuLoader } from 'react-icons/lu';
 import NotFound from '@components/pages/404';
-import { Flex, Text } from '@chakra-ui/react';
+import { Flex, Spinner, Text } from '@chakra-ui/react';
 import type { ClientResponseError } from 'pocketbase';
 import type { RuleRecord } from '@shared/types/rules';
 import { RulesItem } from '@components/rules/RulesItem';
@@ -18,7 +17,7 @@ export const RulesContent = () => {
     });
 
     if (rules.isPending) {
-        return <LuLoader />;
+        return <Spinner />;
     }
 
     if (rules.isError) {

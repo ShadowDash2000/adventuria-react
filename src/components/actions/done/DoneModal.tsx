@@ -1,16 +1,14 @@
-import { ButtonGroup, CloseButton, Dialog, Flex, Portal } from '@chakra-ui/react';
+import { ButtonGroup, CloseButton, Dialog, Flex, Portal, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Content } from '@tiptap/react';
 import { useAppContext } from '@context/AppContext';
 import { LuNotebookPen } from 'react-icons/lu';
 import { ActionTextEditor } from '@components/profile/ActionTextEditor';
 import { invalidateAllActions, invalidateUser } from '@shared/queryClient';
-import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
 import { Button } from '@theme/button';
 
 export const DoneModal = () => {
     const { pb, availableActions } = useAppContext();
-    const setKbdBlocked = useKbdSettingsStore(state => state.setBlockedAll);
     const [content, setContent] = useState<Content | undefined>(null);
     const [actionType, setActionType] = useState<string>('');
     const [openConfirm, setOpenConfirm] = useState(false);
@@ -23,11 +21,10 @@ export const DoneModal = () => {
 
         await invalidateAllActions();
         await invalidateUser();
-        setKbdBlocked(false);
     };
 
     return (
-        <Dialog.Root lazyMount size="xl" onOpenChange={e => setKbdBlocked(e.open)}>
+        <Dialog.Root lazyMount size="xl">
             <Dialog.Trigger asChild>
                 <Button colorPalette="green">
                     <LuNotebookPen />
@@ -42,12 +39,14 @@ export const DoneModal = () => {
                             <Dialog.Title>I tried so hard... И дропнул кал!</Dialog.Title>
                         </Dialog.Header>
                         <Dialog.Body>
-                            <Flex direction="column" w="100%" h="15vw" align="center" gap={4}>
-                                <ActionTextEditor
-                                    placeholder="Введите комментарий..."
-                                    content={content}
-                                    setContent={setContent}
-                                />
+                            <Flex direction="column" w="full" align="center" gap={4}>
+                                <VStack w="full" h="20vw">
+                                    <ActionTextEditor
+                                        placeholder="Введите комментарий..."
+                                        content={content}
+                                        setContent={setContent}
+                                    />
+                                </VStack>
                                 <ButtonGroup>
                                     {availableActions.includes('drop') && (
                                         <Button

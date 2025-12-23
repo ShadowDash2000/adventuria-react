@@ -4,6 +4,7 @@ export const buttonRecipe = defineRecipe({
     className: 'button',
     base: {
         display: 'inline-flex',
+        position: 'relative',
         justifyContent: 'center',
         alignItems: 'center',
         gap: '{spacing.2}',

@@ -1,9 +1,8 @@
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
-import { LuLoader } from 'react-icons/lu';
 import NotFound from '@components/pages/404';
-import { Table, Text } from '@chakra-ui/react';
+import { Spinner, Table, Text } from '@chakra-ui/react';
 import type { ClientResponseError } from 'pocketbase';
 import type { UserRecord } from '@shared/types/user';
 import { LeaderboardItem } from './LeaderboardItem';
@@ -18,7 +17,7 @@ export const LeaderboardContent = () => {
     });
 
     if (users.isPending) {
-        return <LuLoader />;
+        return <Spinner />;
     }
 
     if (users.isError) {

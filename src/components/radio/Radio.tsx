@@ -1,5 +1,5 @@
-import { Box, Flex, HStack, Icon, Slider, Text, VStack } from '@chakra-ui/react';
-import { LuCirclePause, LuCirclePlay, LuLoader, LuSkipBack, LuSkipForward } from 'react-icons/lu';
+import { Box, Flex, HStack, Icon, Slider, Spinner, Text, VStack } from '@chakra-ui/react';
+import { LuCirclePause, LuCirclePlay, LuSkipBack, LuSkipForward } from 'react-icons/lu';
 import { SliderDebounced } from '@ui/slider-debounced';
 import { type ClientResponseError } from 'pocketbase';
 import { useRadio } from '@components/radio/useRadio';
@@ -37,7 +37,7 @@ export const Radio = () => {
     if (isPending) {
         return (
             <Flex justify="center" align="center">
-                <LuLoader />
+                <Spinner />
             </Flex>
         );
     }

@@ -1,29 +1,16 @@
-import {
-    Card,
-    HStack,
-    Box,
-    Text,
-    Image,
-    VStack,
-    DataList,
-    Stack,
-    IconButton,
-} from '@chakra-ui/react';
-import { LuPencil } from 'react-icons/lu';
-import HTMLReactParser from 'html-react-parser';
+import { Card, HStack, Text, Image, VStack, DataList, Stack, IconButton } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { type ActionRecord } from '@shared/types/action';
 import { useAppContext } from '@context/AppContext';
 import { formatDateLocalized } from '@shared/helpers/helper';
 import { ActionFactory } from '../actions/action-factory';
 import { Avatar } from '../Avatar';
-import { ActionTextEditor } from './ActionTextEditor';
-import { type HTMLContent } from '@tiptap/react';
 import { InfoTip } from '@ui/toggle-tip';
 import { CellInfo } from '../board/cells/CellInfoModal';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { Button } from '@theme/button';
+import { UserActionComment } from '@components/profile/UserActionComment';
 
 type ActionProps = { action: ActionRecord };
 
@@ -123,18 +110,13 @@ export const UserAction = ({ action }: ActionProps) => {
                                 </DataList.Item>
                             </DataList.Root>
                         </VStack>
-                        <Card.Description as="div" w="100%">
-                            {isEditing ? (
-                                <Box p={2} w="100%">
-                                    <ActionTextEditor
-                                        content={draft}
-                                        setContent={content => setDraft(content as HTMLContent)}
-                                        editable={isEditing}
-                                    />
-                                </Box>
-                            ) : (
-                                HTMLReactParser(comment)
-                            )}
+                        <Card.Description as="div" w="full">
+                            <UserActionComment
+                                isEditing={isEditing}
+                                comment={comment}
+                                draft={draft}
+                                setDraft={setDraft}
+                            />
                             {!!error && (
                                 <Text color="red.500" mt="2" fontSize="xs">
                                     {error}
@@ -152,15 +134,15 @@ export const UserAction = ({ action }: ActionProps) => {
                 {isEditing ? (
                     <HStack gap="3">
                         <Button
+                            colorPalette="green"
                             onClick={handleSave}
-                            variant="solid"
                             loading={saving}
                             disabled={saving}
                         >
                             Сохранить
                         </Button>
                         <Button
-                            variant="subtle"
+                            colorPalette="red"
                             onClick={() => setIsEditing(false)}
                             disabled={saving}
                         >
@@ -168,8 +150,7 @@ export const UserAction = ({ action }: ActionProps) => {
                         </Button>
                     </HStack>
                 ) : canEdit ? (
-                    <Button variant="subtle" onClick={() => setIsEditing(true)}>
-                        <LuPencil />
+                    <Button colorPalette="blue" onClick={() => setIsEditing(true)}>
                         Изменить
                     </Button>
                 ) : null}

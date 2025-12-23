@@ -1,5 +1,4 @@
-import { For, HStack, Image, Text, VStack } from '@chakra-ui/react';
-import { LuLoader } from 'react-icons/lu';
+import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import type { ItemRecord } from '@shared/types/item';
@@ -34,7 +33,7 @@ export const ItemsWheelContent = () => {
         },
     });
 
-    if (items.isPending || audioPreset.isPending) return <LuLoader />;
+    if (items.isPending || audioPreset.isPending) return <Spinner />;
     if (items.isError) return <Text>Error: {items.error?.message}</Text>;
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
 

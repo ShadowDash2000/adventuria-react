@@ -1,7 +1,6 @@
 import type { InfiniteData } from '@tanstack/react-query';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
-import { LuLoader } from 'react-icons/lu';
-import { Text } from '@chakra-ui/react';
+import { Spinner, Text } from '@chakra-ui/react';
 import type { ListResult, RecordModel } from 'pocketbase';
 import { useSort } from '@shared/hook/useSort';
 import type { ClientResponseError } from 'pocketbase';
@@ -53,7 +52,7 @@ export const CollectionListInfiniteProvider = <T extends RecordModel>({
         });
 
     if (isPending) {
-        return <LuLoader />;
+        return <Spinner />;
     }
 
     if (isError) {

@@ -1,51 +1,63 @@
 import { create } from 'zustand/react';
-import { useEffect } from 'react';
 
-export const enum KbdKey {
+export enum KbdKey {
     inventory = 'KeyI',
     radio = 'KeyP',
 }
 
-export type KbdState = { isBlocked: boolean };
+export type KbdState = { blockedCount: number };
 
 export type KbdSettingsStoreState = {
     kbds: Record<KbdKey, KbdState>;
-    setBlocked: (key: KbdKey, isBlocked: boolean) => void;
-    setBlockedAll: (isBlocked: boolean) => void;
+    incrementBlocked: (key: KbdKey) => void;
+    decrementBlocked: (key: KbdKey) => void;
+    incrementAll: () => void;
+    decrementAll: () => void;
 };
 
 export const useKbdSettingsStore = create<KbdSettingsStoreState>()(set => ({
     kbds: {} as Record<KbdKey, KbdState>,
 
-    setBlocked: (key, isBlocked) =>
-        set(state => ({ kbds: { ...state.kbds, [key]: { isBlocked } } })),
+    incrementBlocked: key =>
+        set(state => ({
+            kbds: {
+                ...state.kbds,
+                [key]: { ...state.kbds[key], blockedCount: state.kbds[key].blockedCount + 1 },
+            },
+        })),
 
-    setBlockedAll: isBlocked => {
+    decrementBlocked: key =>
+        set(state => ({
+            kbds: { ...state.kbds, [key]: { blockedCount: state.kbds[key].blockedCount - 1 } },
+        })),
+
+    incrementAll: () =>
         set(state => {
             const newKbds = { ...state.kbds };
-            (Object.keys(newKbds) as KbdKey[]).forEach(key => {
-                newKbds[key] = { isBlocked };
+            Object.values(KbdKey).forEach(key => {
+                newKbds[key] = { blockedCount: (newKbds[key]?.blockedCount ?? 0) + 1 };
             });
             return { kbds: newKbds };
-        });
-    },
+        }),
+
+    decrementAll: () =>
+        set(state => {
+            const newKbds = { ...state.kbds };
+            Object.values(KbdKey).forEach(key => {
+                newKbds[key] = { blockedCount: Math.max(0, (newKbds[key]?.blockedCount ?? 0) - 1) };
+            });
+            return { kbds: newKbds };
+        }),
 }));
 
 export const useKbdSettings = (key: KbdKey) => {
-    const isBlocked = useKbdSettingsStore(state => state.kbds[key]?.isBlocked ?? false);
-    const setBlocked = useKbdSettingsStore(state => state.setBlocked);
-    const setBlockedAll = useKbdSettingsStore(state => state.setBlockedAll);
-
-    useEffect(() => {
-        const store = useKbdSettingsStore.getState();
-        if (!(key in store.kbds)) {
-            setBlocked(key, false);
-        }
-    }, [key, setBlocked]);
+    const isBlocked = useKbdSettingsStore(state => state.kbds[key]?.blockedCount > 0);
+    const incrementBlocked = useKbdSettingsStore(state => state.incrementBlocked);
+    const decrementBlocked = useKbdSettingsStore(state => state.decrementBlocked);
 
     return {
         isBlocked,
-        setBlocked: (isBlocked: boolean) => setBlocked(key, isBlocked),
-        setBlockedAll,
+        incrementBlocked: () => incrementBlocked(key),
+        decrementBlocked: () => decrementBlocked(key),
     };
 };

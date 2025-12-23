@@ -32,7 +32,7 @@ export const usePlayerMovement = ({
     const { rows, cols, cellWidth, cellHeight, cellsOrdered } = useBoardInnerContext();
     const isCurrentUser = userAuth ? user.id === userAuth.id : false;
     const [moving, setMoving] = useState<boolean>(false);
-    const { setBlocked: setInventoryBlocked } = useKbdSettings(KbdKey.inventory);
+    const { incrementBlocked, decrementBlocked } = useKbdSettings(KbdKey.inventory);
 
     const { pullPath, paths, moveTime, clearMoveTime } = usePlayer(user.id);
 
@@ -106,7 +106,7 @@ export const usePlayerMovement = ({
         if (!paths || isMovingRef.current) return;
 
         setMoving(true);
-        setInventoryBlocked(true);
+        incrementBlocked();
         isMovingRef.current = true;
 
         let scrollInterval: number | null = null;
@@ -123,7 +123,7 @@ export const usePlayerMovement = ({
                 document.body.style.overflow = 'auto';
             }
             setMoving(false);
-            setInventoryBlocked(false);
+            decrementBlocked();
             clearMoveTime();
             isMovingRef.current = false;
         };

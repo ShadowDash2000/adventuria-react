@@ -3,6 +3,7 @@ import { Image, Blockquote, Stack, DataList, Dialog, Portal, CloseButton } from 
 import HTMLReactParser from 'html-react-parser';
 import { useAppContext } from '@context/AppContext';
 import type { CellRecord } from '@shared/types/cell';
+import { Coin } from '@shared/components/Coin';
 
 type CellInfoProps = { cell: CellRecord; children?: ReactNode };
 
@@ -28,7 +29,13 @@ export const CellInfo = ({ cell, children }: CellInfoProps) => {
                                     </DataList.Item>
                                     <DataList.Item>
                                         <DataList.ItemLabel>Монет за клетку</DataList.ItemLabel>
-                                        <DataList.ItemValue>{cell.coins}</DataList.ItemValue>
+                                        <DataList.ItemValue
+                                            display="flex"
+                                            alignItems="center"
+                                            gap={2}
+                                        >
+                                            {cell.coins} <Coin w={6} />
+                                        </DataList.ItemValue>
                                     </DataList.Item>
                                 </DataList.Root>
                                 <Blockquote.Root variant="solid">

@@ -1,10 +1,9 @@
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
-import { For, Grid, Text } from '@chakra-ui/react';
+import { For, Grid, Spinner, Text } from '@chakra-ui/react';
 import { InventoryItem } from './InventoryItem';
 import { type RecordIdString } from '@shared/types/pocketbase';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { LuLoader } from 'react-icons/lu';
 
 interface InventoryProps {
     userId: RecordIdString;
@@ -24,7 +23,7 @@ export const Inventory = ({ userId }: InventoryProps) => {
         queryKey: ['inventory', userId],
     });
 
-    if (inventory.isPending) return <LuLoader />;
+    if (inventory.isPending) return <Spinner />;
     if (inventory.isError) return <Text>Error: {inventory.error?.message}</Text>;
     if (inventory.data.length === 0) return <Text>Пусто</Text>;
 

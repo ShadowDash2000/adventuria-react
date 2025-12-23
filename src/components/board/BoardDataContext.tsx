@@ -3,8 +3,7 @@ import type { UserRecord } from '@shared/types/user';
 import type { CellRecord } from '@shared/types/cell';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { LuLoader } from 'react-icons/lu';
-import { Text } from '@chakra-ui/react';
+import { Spinner, Text } from '@chakra-ui/react';
 import { BoardDataContext } from '.';
 
 export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
@@ -31,7 +30,7 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
         queryKey: ['cells'],
     });
 
-    if (users.isPending || cells.isPending) return <LuLoader />;
+    if (users.isPending || cells.isPending) return <Spinner />;
     if (users.isError) return <Text>Error: {users.error?.message}</Text>;
     if (cells.isError) return <Text>Error: {cells.error?.message}</Text>;
 

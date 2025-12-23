@@ -17,7 +17,8 @@ interface InventoryItemProps {
 
 export const InventoryItem = ({ invItem, showControlButtons = false }: InventoryItemProps) => {
     const { pb } = useAppContext();
-    const setKbdBlocked = useKbdSettingsStore(state => state.setBlockedAll);
+    const incrementKbdBlock = useKbdSettingsStore(state => state.incrementAll);
+    const decrementKbdBlock = useKbdSettingsStore(state => state.decrementAll);
     const [isActive, setIsActive] = useState<boolean>(invItem.isActive);
     const item = invItem.expand!.item;
     const icon = pb.files.getURL(item, item.icon);
@@ -30,7 +31,7 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
         try {
             await itemUseRequest(pb.authStore.token, invItem.id, Object.fromEntries(formData));
             setIsActive(true);
-            setKbdBlocked(false);
+            decrementKbdBlock();
             await invalidateAllActions();
         } catch (e) {
             console.error(e);
@@ -67,7 +68,9 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
                             <Dialog.Root
                                 lazyMount
                                 unmountOnExit
-                                onOpenChange={e => setKbdBlocked(e.open)}
+                                onOpenChange={e =>
+                                    e.open ? incrementKbdBlock() : decrementKbdBlock()
+                                }
                             >
                                 <Dialog.Trigger asChild>
                                     <Button colorPalette="green">Использовать</Button>

@@ -3,10 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import type { ActionRecord } from '@shared/types/action';
 import { queryKeys } from '@shared/queryClient';
 import type { ItemRecord } from '@shared/types/item';
-import { LuLoader } from 'react-icons/lu';
 import type { ClientResponseError } from 'pocketbase';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { For, Grid, GridItem, Text } from '@chakra-ui/react';
+import { For, Grid, GridItem, Spinner, Text } from '@chakra-ui/react';
 import { Item } from '@components/actions/buy-item/Item';
 
 export const BuyItemContent = () => {
@@ -34,7 +33,7 @@ export const BuyItemContent = () => {
     });
 
     if (latestAction.isPending || items.isPending) {
-        return <LuLoader />;
+        return <Spinner />;
     }
 
     if (latestAction.isError) {

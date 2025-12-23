@@ -1,9 +1,8 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useAppContext } from '@context/AppContext';
 import type { TagRecord } from '@shared/types/tag';
-import { Combobox, Portal, Text, useListCollection } from '@chakra-ui/react';
+import { Combobox, Portal, Spinner, Text, useListCollection } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { LuLoader } from 'react-icons/lu';
 import { useDebounce } from '@uidotdev/usehooks';
 import { ComboboxHiddenInput } from '@ui/combobox-hidden-input';
 
@@ -51,7 +50,7 @@ export const GameTagSelect = () => {
                 <Combobox.Positioner>
                     <Combobox.Content>
                         {tags.isPending ? (
-                            <LuLoader />
+                            <Spinner />
                         ) : tags.isError ? (
                             <Text>Error: {tags.error?.message}</Text>
                         ) : (
