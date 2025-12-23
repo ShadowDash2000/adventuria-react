@@ -5,14 +5,17 @@ import { type ClientResponseError } from 'pocketbase';
 import { useRadio } from '@components/radio/useRadio';
 import { useState } from 'react';
 import { useIntervalWhen } from '@shared/hook/useIntervalWhen';
+import { RadioTrackList } from '@components/radio/RadioTrackList';
 
 export const Radio = () => {
     const {
         play,
+        playById,
         pause,
         isPlaying,
         prevAudio,
         nextAudio,
+        audioId,
         audioName,
         volume,
         setVolume,
@@ -22,6 +25,7 @@ export const Radio = () => {
         isPending,
         isError,
         error,
+        audio,
     } = useRadio();
 
     const [isDragging, setIsDragging] = useState(false);
@@ -48,8 +52,10 @@ export const Radio = () => {
     }
 
     return (
-        <Flex justify="space-around" align="center">
-            <Box w="{sizes.48}" />
+        <Flex h="{sizes.32}" justify="space-around" align="center" overflowY="hidden">
+            <Box w="{sizes.48}" maxH="full" overflowY="auto">
+                <RadioTrackList audioId={audioId} audio={audio} onTrackChange={playById} />
+            </Box>
             <VStack>
                 <Text>{audioName || '-'}</Text>
                 <VStack>

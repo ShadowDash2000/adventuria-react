@@ -1,12 +1,13 @@
 import { useAppAuthContext } from '@context/AppContext';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
-import { useQuery } from '@tanstack/react-query';
-import type { AudioPresetRecord } from '@shared/types/audio-preset';
-import { queryKeys } from '@shared/queryClient';
-import { useEffect, useRef } from 'react';
+import type { AudioRecord } from '@shared/types/audio';
+import type { RecordIdString } from '@shared/types/pocketbase';
+import { useRadioStore } from './useRadioStore';
+import { useRadioPreset } from './useRadioPreset';
 
 interface RadioReturn {
     play: () => Promise<void>;
+    playById: (id: RecordIdString) => Promise<void>;
     pause: () => void;
     volume: number;
     isPlaying: boolean;
@@ -16,10 +17,12 @@ interface RadioReturn {
     seek: (time: number) => void;
     currentTime: () => number;
     duration: () => number;
+    audioId: RecordIdString;
     audioName: string;
     isPending: boolean;
     isError: boolean;
     error: Error | null;
+    audio: AudioRecord[];
 }
 
 export const useRadio = (): RadioReturn => {
@@ -33,68 +36,59 @@ export const useRadio = (): RadioReturn => {
         seek,
         currentTime,
         duration,
-        onEnded,
     } = useAudioPlayer(AudioKey.radio);
-    const currentAudioIndex = useRef(0);
-    const audioCount = useRef(1);
+    const { currentAudioIndex, setAudioIndex, prevIndex, nextIndex } = useRadioStore();
 
-    const audioPreset = useQuery({
-        queryFn: async () => {
-            return pb
-                .collection('audio_presets')
-                .getFirstListItem<AudioPresetRecord>('slug = "radio"', { expand: 'audio' });
+    const audioPreset = useRadioPreset();
+
+    const audioByIndex = audioPreset.data?.expand?.audio ?? [];
+    const audioIdToIndex = audioByIndex.reduce<Record<RecordIdString, number>>(
+        (acc, audio, currentIndex) => {
+            acc[audio.id] = currentIndex;
+            return acc;
         },
-        refetchOnWindowFocus: false,
-        queryKey: queryKeys.radioAudioPreset,
-    });
+        {},
+    );
 
     const play = async () => {
-        const currentAudio = audioPreset.data?.expand?.audio[currentAudioIndex.current];
+        const currentAudio = audioByIndex[currentAudioIndex];
         if (!currentAudio) return;
         await playAudio(pb.files.getURL(currentAudio, currentAudio.audio));
     };
 
-    const prevAudio = async () => {
-        currentAudioIndex.current =
-            currentAudioIndex.current - 1 === -1
-                ? audioCount.current - 1
-                : currentAudioIndex.current - 1;
+    const playById = async (id: RecordIdString) => {
+        const audioIndex = audioIdToIndex[id] ?? undefined;
+        if (audioIndex === undefined) return;
+        const currentAudio = audioByIndex[audioIndex];
+        await playAudio(pb.files.getURL(currentAudio, currentAudio.audio));
+        setAudioIndex(audioIndex);
+    };
 
-        const currentAudio = audioPreset.data?.expand?.audio[currentAudioIndex.current];
+    const prevAudio = async () => {
+        prevIndex();
+        const { currentAudioIndex: newIndex } = useRadioStore.getState();
+        const currentAudio = audioByIndex[newIndex];
         if (!currentAudio) return;
         await playAudio(pb.files.getURL(currentAudio, currentAudio.audio));
     };
 
     const nextAudio = async () => {
-        currentAudioIndex.current =
-            currentAudioIndex.current + 1 === audioCount.current
-                ? 0
-                : currentAudioIndex.current + 1;
-
-        const currentAudio = audioPreset.data?.expand?.audio[currentAudioIndex.current];
+        nextIndex();
+        const { currentAudioIndex: newIndex } = useRadioStore.getState();
+        const currentAudio = audioByIndex[newIndex];
         if (!currentAudio) return;
         await playAudio(pb.files.getURL(currentAudio, currentAudio.audio));
     };
 
-    useEffect(() => {
-        if (!audioPreset.data) return;
-        audioCount.current = audioPreset.data.audio.length;
-    }, [audioPreset.data]);
-
-    useEffect(() => {
-        const unsubscribe = onEnded(async () => {
-            await nextAudio();
-        });
-        return () => unsubscribe();
-    }, [onEnded, nextAudio]);
-
     return {
         play,
+        playById,
         pause,
         isPlaying,
         prevAudio,
         nextAudio,
-        audioName: audioPreset.data?.expand?.audio[currentAudioIndex.current]?.name ?? '',
+        audioId: audioByIndex[currentAudioIndex]?.id ?? '',
+        audioName: audioByIndex[currentAudioIndex]?.name ?? '',
         volume,
         setVolume,
         seek,
@@ -103,5 +97,6 @@ export const useRadio = (): RadioReturn => {
         isPending: audioPreset.isPending,
         isError: audioPreset.isError,
         error: audioPreset.error,
+        audio: audioPreset.data?.expand?.audio ?? [],
     };
 };

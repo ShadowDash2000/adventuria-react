@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Drawer, Float, HStack, IconButton, Kbd, Portal } from '@chakra-ui/react';
 import { FaRadio } from 'react-icons/fa6';
 import { Tooltip } from '@ui/tooltip';
-import { Radio } from '@components/radio/Radio';
+import { Radio } from './Radio';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
+import { RadioBackgroundController } from './RadioBackgroundController';
 
 export const RadioButton = () => {
     const [open, setOpen] = useState<boolean>(false);
@@ -34,6 +35,7 @@ export const RadioButton = () => {
             placement="bottom"
             preventScroll={false}
         >
+            <RadioBackgroundController />
             <HStack position="relative">
                 <Tooltip content="Радиопопия">
                     <Drawer.Trigger asChild>
