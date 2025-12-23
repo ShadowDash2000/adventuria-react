@@ -59,7 +59,7 @@ export const PlayersFloatingList = () => {
                                                 </Link>
                                             </ChakraLink>
                                             <ButtonGroup size="xs">
-                                                <PlayerInventoryButton userId={user.id} />
+                                                <PlayerInventoryButton user={user} />
                                                 <Tooltip content="Показать игрока">
                                                     <IconButton
                                                         _hover={{ bg: 'orange' }}

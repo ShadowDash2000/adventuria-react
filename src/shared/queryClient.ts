@@ -1,4 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
+import type { RecordIdString } from '@shared/types/pocketbase';
 
 export const queryClient = new QueryClient();
 
@@ -14,6 +15,7 @@ export const queryKeys = {
     items: ['items'],
     settings: ['settings'],
     rules: ['rules'],
+    inventory: (userId: RecordIdString) => ['inventory', userId],
 } as const;
 
 export const invalidateUser = async () => {
@@ -66,4 +68,8 @@ export const invalidateSettings = async () => {
 
 export const invalidateRules = async () => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.rules });
+};
+
+export const invalidateInventory = async (userId: RecordIdString) => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.inventory(userId) });
 };

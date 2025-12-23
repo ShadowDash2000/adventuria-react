@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import type { RecordIdString } from '@shared/types/pocketbase';
 import { Inventory } from './Inventory';
 import { Tooltip } from '@ui/tooltip';
 import { CloseButton, Drawer, Float, HStack, IconButton, Kbd, Portal } from '@chakra-ui/react';
 import { GiSwapBag } from 'react-icons/gi';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
 import { useRollWheelStore } from '@components/actions/roll-wheel/useRollWheelStore';
+import type { UserRecord } from '@shared/types/user';
 
 interface PlayerInventoryButtonProps {
-    userId: RecordIdString;
+    user: UserRecord;
     kbd?: boolean;
 }
 
-export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryButtonProps) => {
+export const PlayerInventoryButton = ({ user, kbd = false }: PlayerInventoryButtonProps) => {
     const [open, setOpen] = useState<boolean>(false);
     const { isBlocked } = useKbdSettings(KbdKey.inventory);
     const isSpinning = useRollWheelStore(state => state.isSpinning);
@@ -61,9 +61,9 @@ export const PlayerInventoryButton = ({ userId, kbd = false }: PlayerInventoryBu
                 <Drawer.Backdrop />
                 <Drawer.Positioner>
                     <Drawer.Content>
-                        <Drawer.Header />
+                        <Drawer.Header fontSize="xl">{user.name}</Drawer.Header>
                         <Drawer.Body>
-                            <Inventory userId={userId} />
+                            <Inventory userId={user.id} />
                         </Drawer.Body>
                         <Drawer.CloseTrigger asChild>
                             <CloseButton size="sm" />

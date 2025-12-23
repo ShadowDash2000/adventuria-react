@@ -30,7 +30,7 @@ export const UserMenu = () => {
                     </HStack>
                 </Tooltip>
                 <VStack justify="center" align="start">
-                    <PlayerInventoryButton userId={user?.id} kbd={true} />
+                    <PlayerInventoryButton user={user} kbd={true} />
                     <ItemsWheelModal />
                     <RadioButton />
                     <VolumeButton />

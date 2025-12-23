@@ -4,6 +4,7 @@ import { InventoryItem } from './InventoryItem';
 import { type RecordIdString } from '@shared/types/pocketbase';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@shared/queryClient';
 
 interface InventoryProps {
     userId: RecordIdString;
@@ -20,7 +21,7 @@ export const Inventory = ({ userId }: InventoryProps) => {
                     expand: 'item,item.effects',
                 });
         },
-        queryKey: ['inventory', userId],
+        queryKey: queryKeys.inventory(userId),
     });
 
     if (inventory.isPending) return <Spinner />;
