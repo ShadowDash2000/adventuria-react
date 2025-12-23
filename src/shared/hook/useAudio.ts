@@ -13,6 +13,9 @@ export const getAudioElement = (key: AudioKey): HTMLAudioElement => {
     let el = audioElements.get(key);
     if (!el) {
         el = new Audio();
+        el.onended = () => {
+            useAudioStore.getState().onTrackEnded(key);
+        };
         audioElements.set(key, el);
     }
     return el;
@@ -31,6 +34,9 @@ export type AudioStoreState = {
     seek: (key: AudioKey, time: number) => void;
     currentTime: (key: AudioKey) => number;
     duration: (key: AudioKey) => number;
+    onTrackEnded: (key: AudioKey) => void;
+    onEndedListeners: Record<AudioKey, (() => void)[]>;
+    subscribeEnded: (key: AudioKey, callback: () => void) => () => void;
 };
 
 const DEFAULT_VOLUME = 0.2;
@@ -39,8 +45,8 @@ export const useAudioStore = create<AudioStoreState>()(
     persist(
         (set, get) => ({
             playersPersist: {} as Record<AudioKey, PlayerPersistState>,
-
             players: {} as Record<AudioKey, PlayerState>,
+            onEndedListeners: {} as Record<AudioKey, (() => void)[]>,
 
             setVolume: (key, volume) => {
                 const clamped = Math.min(1, Math.max(0, volume));
@@ -96,6 +102,31 @@ export const useAudioStore = create<AudioStoreState>()(
             currentTime: key => getAudioElement(key).currentTime,
 
             duration: key => getAudioElement(key).duration,
+
+            onTrackEnded: key => {
+                set(state => ({ players: { ...state.players, [key]: { isPlaying: false } } }));
+                const listeners = get().onEndedListeners[key] || [];
+                listeners.forEach(cb => cb());
+            },
+
+            subscribeEnded: (key, callback) => {
+                set(state => ({
+                    onEndedListeners: {
+                        ...state.onEndedListeners,
+                        [key]: [...(state.onEndedListeners[key] || []), callback],
+                    },
+                }));
+                return () => {
+                    set(state => ({
+                        onEndedListeners: {
+                            ...state.onEndedListeners,
+                            [key]: (state.onEndedListeners[key] || []).filter(
+                                cb => cb !== callback,
+                            ),
+                        },
+                    }));
+                };
+            },
         }),
         { name: 'audio-players', partialize: state => ({ playersPersist: state.playersPersist }) },
     ),
@@ -110,6 +141,7 @@ export const useAudioPlayer = (key: AudioKey) => {
     const seek = useAudioStore(state => state.seek);
     const currentTime = useAudioStore(state => state.currentTime);
     const duration = useAudioStore(state => state.duration);
+    const subscribeEnded = useAudioStore(state => state.subscribeEnded);
 
     return {
         volume,
@@ -120,5 +152,6 @@ export const useAudioPlayer = (key: AudioKey) => {
         seek: (time: number) => seek(key, time),
         currentTime: () => currentTime(key),
         duration: () => duration(key),
+        onEnded: (callback: () => void) => subscribeEnded(key, callback),
     };
 };

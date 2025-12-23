@@ -31,7 +31,6 @@ export const RadioButton = () => {
             open={open}
             onOpenChange={e => setOpen(e.open)}
             lazyMount
-            unmountOnExit
             placement="bottom"
             preventScroll={false}
         >

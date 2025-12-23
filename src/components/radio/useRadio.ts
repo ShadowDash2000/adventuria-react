@@ -33,6 +33,7 @@ export const useRadio = (): RadioReturn => {
         seek,
         currentTime,
         duration,
+        onEnded,
     } = useAudioPlayer(AudioKey.radio);
     const currentAudioIndex = useRef(0);
     const audioCount = useRef(1);
@@ -79,6 +80,13 @@ export const useRadio = (): RadioReturn => {
         if (!audioPreset.data) return;
         audioCount.current = audioPreset.data.audio.length;
     }, [audioPreset.data]);
+
+    useEffect(() => {
+        const unsubscribe = onEnded(async () => {
+            await nextAudio();
+        });
+        return () => unsubscribe();
+    }, [onEnded, nextAudio]);
 
     return {
         play,
