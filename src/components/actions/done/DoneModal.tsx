@@ -48,46 +48,38 @@ export const DoneModal = () => {
                                     />
                                 </VStack>
                                 <ButtonGroup>
-                                    {availableActions.includes('drop') && (
-                                        <Button
-                                            colorPalette="red"
-                                            onClick={() => {
-                                                setActionType('drop');
-                                                setTitleConfirm('Вы уверены, что хотите дропнуть?');
-                                                setOpenConfirm(true);
-                                            }}
-                                        >
-                                            Дроп
-                                        </Button>
-                                    )}
-                                    {availableActions.includes('reroll') && (
-                                        <Button
-                                            colorPalette="blue"
-                                            onClick={() => {
-                                                setActionType('reroll');
-                                                setTitleConfirm(
-                                                    'Вы уверены, что хотите рерольнуть?',
-                                                );
-                                                setOpenConfirm(true);
-                                            }}
-                                        >
-                                            Реролл
-                                        </Button>
-                                    )}
-                                    {availableActions.includes('done') && (
-                                        <Button
-                                            colorPalette="green"
-                                            onClick={() => {
-                                                setActionType('done');
-                                                setTitleConfirm(
-                                                    'Вы уверены, что хотите завершить?',
-                                                );
-                                                setOpenConfirm(true);
-                                            }}
-                                        >
-                                            Завершить
-                                        </Button>
-                                    )}
+                                    <Button
+                                        colorPalette="red"
+                                        disabled={!availableActions.includes('drop')}
+                                        onClick={() => {
+                                            setActionType('drop');
+                                            setTitleConfirm('Вы уверены, что хотите дропнуть?');
+                                            setOpenConfirm(true);
+                                        }}
+                                    >
+                                        Дроп
+                                    </Button>
+                                    <Button
+                                        colorPalette="blue"
+                                        disabled={!availableActions.includes('reroll')}
+                                        onClick={() => {
+                                            setActionType('reroll');
+                                            setTitleConfirm('Вы уверены, что хотите рерольнуть?');
+                                            setOpenConfirm(true);
+                                        }}
+                                    >
+                                        Реролл
+                                    </Button>
+                                    <Button
+                                        colorPalette="green"
+                                        onClick={() => {
+                                            setActionType('done');
+                                            setTitleConfirm('Вы уверены, что хотите завершить?');
+                                            setOpenConfirm(true);
+                                        }}
+                                    >
+                                        Завершить
+                                    </Button>
                                 </ButtonGroup>
                             </Flex>
                             <Dialog.Root

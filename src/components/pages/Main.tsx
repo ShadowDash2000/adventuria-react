@@ -15,7 +15,7 @@ const Main = () => {
                 <Spacer h={10} />
                 <CollectionListInfiniteProvider
                     collection={pb.collection('actions')}
-                    expand="game,cell,user"
+                    expand="game,cell,cell.filter.games,user"
                     pageSize={10}
                     initialSort={new Map([['created', Sort.DESC]])}
                     refetchOnWindowFocus={false}

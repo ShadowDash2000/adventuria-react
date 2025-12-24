@@ -1,13 +1,13 @@
 import type { RecordModel } from 'pocketbase';
 import type { IsoDateString, RecordIdString } from '@shared/types/pocketbase';
+import type { FilterRecord } from '@shared/types/filter';
 
 export type CellRecord = {
     created: IsoDateString;
     updated: IsoDateString;
-    isActive: boolean;
     sort: number;
     type: string;
-    preset: RecordIdString;
+    filter: RecordIdString;
     audioPresets: RecordIdString[];
     icon: string;
     name: string;
@@ -19,4 +19,7 @@ export type CellRecord = {
     cantReroll: boolean;
     cantChooseAfterDrop: boolean;
     isSafeDrop: boolean;
+    expand?: FilterRecordExpand;
 } & RecordModel;
+
+export type FilterRecordExpand = Partial<{ filter: FilterRecord }>;

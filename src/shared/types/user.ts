@@ -17,6 +17,7 @@ export type UserRecord = {
     stats?: UserStats;
     balance: number;
     twitch: string;
+    youtube: string;
     is_stream_live: boolean;
 } & AuthRecord;
 

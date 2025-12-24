@@ -88,7 +88,7 @@ export const UserProfile = () => {
                 {user.twitch && (
                     <Button colorPalette="red" asChild>
                         <Link
-                            href={`https://www.twitch.tv/${user.twitch}`}
+                            href={`https://www.youtube.com/@${user.youtube}`}
                             target="_blank"
                             _hover={{ textDecoration: 'none' }}
                         >

@@ -22,13 +22,22 @@ export const useKbdSettingsStore = create<KbdSettingsStoreState>()(set => ({
         set(state => ({
             kbds: {
                 ...state.kbds,
-                [key]: { ...state.kbds[key], blockedCount: state.kbds[key].blockedCount + 1 },
+                [key]: {
+                    ...state.kbds[key],
+                    blockedCount: (state.kbds[key]?.blockedCount ?? 0) + 1,
+                },
             },
         })),
 
     decrementBlocked: key =>
         set(state => ({
-            kbds: { ...state.kbds, [key]: { blockedCount: state.kbds[key].blockedCount - 1 } },
+            kbds: {
+                ...state.kbds,
+                [key]: {
+                    ...state.kbds[key],
+                    blockedCount: Math.max(0, (state.kbds[key]?.blockedCount ?? 0) - 1),
+                },
+            },
         })),
 
     incrementAll: () =>

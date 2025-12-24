@@ -1,5 +1,16 @@
 import type { ReactNode } from 'react';
-import { Image, Blockquote, Stack, DataList, Dialog, Portal, CloseButton } from '@chakra-ui/react';
+import {
+    Image,
+    Blockquote,
+    Stack,
+    DataList,
+    Dialog,
+    Portal,
+    CloseButton,
+    Grid,
+    GridItem,
+    Text,
+} from '@chakra-ui/react';
 import HTMLReactParser from 'html-react-parser';
 import { useAppContext } from '@context/AppContext';
 import type { CellRecord } from '@shared/types/cell';
@@ -9,9 +20,9 @@ type CellInfoProps = { cell: CellRecord; children?: ReactNode };
 
 export const CellInfo = ({ cell, children }: CellInfoProps) => {
     const { pb } = useAppContext();
-
+    console.log(cell);
     return (
-        <Dialog.Root lazyMount unmountOnExit>
+        <Dialog.Root scrollBehavior="inside" lazyMount unmountOnExit>
             <Dialog.Trigger asChild>{children}</Dialog.Trigger>
             <Portal>
                 <Dialog.Backdrop></Dialog.Backdrop>
@@ -48,6 +59,21 @@ export const CellInfo = ({ cell, children }: CellInfoProps) => {
                                     width="100%"
                                     height="100%"
                                 />
+                                {cell.filter && cell.expand?.filter?.games && (
+                                    <Grid templateColumns="repeat(3, 1fr)" gap={2}>
+                                        {cell.expand.filter.expand!.games!.map(game => (
+                                            <GridItem key={game.id} display="flex" flexDir="column">
+                                                <Image
+                                                    src={game.cover}
+                                                    width="100%"
+                                                    aspectRatio="2/3"
+                                                    objectFit="cover"
+                                                />
+                                                <Text>{game.name}</Text>
+                                            </GridItem>
+                                        ))}
+                                    </Grid>
+                                )}
                             </Stack>
                         </Dialog.Body>
                         <Dialog.CloseTrigger asChild>
