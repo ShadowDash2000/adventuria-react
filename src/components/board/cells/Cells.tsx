@@ -8,7 +8,7 @@ export const Cells = () => {
     return (
         <For each={cellsOrderedRev}>
             {(lineElements, lineNum) => (
-                <Grid key={lineNum} autoFlow="column" gapX="6.6px">
+                <Grid key={lineNum} autoFlow="column" justifyContent="start" gapX="6.6px">
                     <For each={lineElements}>
                         {(cell, cellNum) => (
                             <GridItem key={cellNum}>
