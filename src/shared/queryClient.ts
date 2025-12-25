@@ -10,7 +10,7 @@ export const queryKeys = {
     latestAction: ['latest-action'],
     availableActions: ['available-actions'],
     radioAudioPreset: ['radio-audio-preset'],
-    games: ['games'],
+    activities: ['activities'],
     shopItems: ['shop-items'],
     items: ['items'],
     settings: ['settings'],
@@ -50,8 +50,8 @@ export const invalidateRadioAudioPreset = async () => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.radioAudioPreset });
 };
 
-export const invalidateGames = async () => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.games });
+export const invalidateActivities = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.activities });
 };
 
 export const invalidateShopItems = async () => {

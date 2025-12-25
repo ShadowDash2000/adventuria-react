@@ -2,8 +2,8 @@ import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import type { ActionRecord } from '@shared/types/action';
-import type { GameRecord } from '@shared/types/game';
-import { WheelGameInfo } from './WheelGameInfo';
+import type { ActivityRecord } from '@shared/types/activity';
+import { ActivityInfo } from './ActivityInfo';
 import { useEffect, useRef, useState } from 'react';
 import { WheelOFortune, type WheelOFortuneHandle } from '../WheelOFortune';
 import { useWheel, type SpinResult } from '../useWheel';
@@ -12,7 +12,7 @@ import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
 
-export const GamesWheelContent = () => {
+export const ActivitiesWheelContent = () => {
     const { pb, user } = useAppAuthContext();
     const wheelRef = useRef<WheelOFortuneHandle>(null);
     const { volume, setVolume } = useAudioPlayer(AudioKey.music);
@@ -30,11 +30,11 @@ export const GamesWheelContent = () => {
         queryKey: ['action'],
     });
 
-    const games = useQuery({
+    const activities = useQuery({
         queryFn: () =>
             pb
-                .collection('games')
-                .getFullList<GameRecord>({
+                .collection('activities')
+                .getFullList<ActivityRecord>({
                     filter: action.data!.items_list.map(id => `id="${id}"`).join('||'),
                     expand: 'platforms,developers,publishers,genres,tags',
                 }),
@@ -55,14 +55,19 @@ export const GamesWheelContent = () => {
         }
     }, [spinning]);
 
-    if (action.isPending || games.isPending || audioPreset.isPending) return <Spinner />;
+    if (action.isPending || activities.isPending || audioPreset.isPending) return <Spinner />;
     if (action.isError) return <Text>Error: {action.error?.message}</Text>;
-    if (games.isError) return <Text>Error: {games.error?.message}</Text>;
+    if (activities.isError) return <Text>Error: {activities.error?.message}</Text>;
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
 
-    const wheelItems = games.data
-        ? games.data.map(game => ({ key: game.id, image: game.cover, title: game.name }))
+    const wheelItems = activities.data
+        ? activities.data.map(activity => ({
+              key: activity.id,
+              image: activity.cover,
+              title: activity.name,
+          }))
         : [];
+    const currentActivity = activities.data[currentItemIndex];
 
     return (
         <>
@@ -75,7 +80,7 @@ export const GamesWheelContent = () => {
                 pt={2}
                 px={4}
             >
-                <WheelGameInfo game={games.data[currentItemIndex]} />
+                {currentActivity && <ActivityInfo activity={currentActivity} />}
             </Flex>
             <VStack gap={3} justify="center">
                 <WheelOFortune ref={wheelRef} items={wheelItems} />

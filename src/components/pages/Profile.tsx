@@ -22,7 +22,7 @@ const Profile = () => {
                     pageSize={24}
                     initialSort={new Map([['created', Sort.DESC]])}
                     filter={`user.name = "${login}"`}
-                    expand="game,cell,cell.filter.games,user"
+                    expand="activity,cell,cell.filter.activities,user"
                 >
                     <UserProfile />
                     <UserActionsList />

@@ -1,6 +1,6 @@
 import type { RecordModel } from 'pocketbase';
 import type { IsoDateString, RecordIdString } from '@shared/types/pocketbase';
-import type { FilterRecord } from '@shared/types/filter';
+import type { ActivityFilterRecord } from '@shared/types/filter';
 
 export type CellRecord = {
     created: IsoDateString;
@@ -22,4 +22,4 @@ export type CellRecord = {
     expand?: FilterRecordExpand;
 } & RecordModel;
 
-export type FilterRecordExpand = Partial<{ filter: FilterRecord }>;
+export type FilterRecordExpand = Partial<{ filter: ActivityFilterRecord }>;

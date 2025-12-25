@@ -10,12 +10,12 @@ const Main = () => {
 
     return (
         <>
-            <Box position="relative">
+            <Box maxW="1642px" position="relative">
                 <Board />
                 <Spacer h={10} />
                 <CollectionListInfiniteProvider
                     collection={pb.collection('actions')}
-                    expand="game,cell,cell.filter.games,user"
+                    expand="activity,cell,cell.filter.activities,user"
                     pageSize={10}
                     initialSort={new Map([['created', Sort.DESC]])}
                     refetchOnWindowFocus={false}

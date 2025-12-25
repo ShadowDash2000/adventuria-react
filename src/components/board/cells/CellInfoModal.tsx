@@ -21,10 +21,10 @@ type CellInfoProps = { cell: CellRecord; children?: ReactNode };
 export const CellInfo = ({ cell, children }: CellInfoProps) => {
     const { pb } = useAppContext();
 
-    const hasGameFilter = !!(
-        cell.expand?.filter?.expand?.games && cell.expand.filter.expand.games.length > 0
+    const hasActivityFilter = !!(
+        cell.expand?.filter?.expand?.activities && cell.expand.filter.expand.activities.length > 0
     );
-    const games = hasGameFilter ? cell.expand!.filter!.expand!.games : [];
+    const activities = hasActivityFilter ? cell.expand!.filter!.expand!.activities : [];
 
     return (
         <Dialog.Root scrollBehavior="inside" lazyMount unmountOnExit>
@@ -64,17 +64,21 @@ export const CellInfo = ({ cell, children }: CellInfoProps) => {
                                     width="100%"
                                     height="100%"
                                 />
-                                {games && (
+                                {activities && (
                                     <Grid templateColumns="repeat(3, 1fr)" gap={2}>
-                                        {games.map(game => (
-                                            <GridItem key={game.id} display="flex" flexDir="column">
+                                        {activities.map(activity => (
+                                            <GridItem
+                                                key={activity.id}
+                                                display="flex"
+                                                flexDir="column"
+                                            >
                                                 <Image
-                                                    src={game.cover}
+                                                    src={activity.cover}
                                                     width="100%"
                                                     aspectRatio="2/3"
                                                     objectFit="cover"
                                                 />
-                                                <Text>{game.name}</Text>
+                                                <Text>{activity.name}</Text>
                                             </GridItem>
                                         ))}
                                     </Grid>

@@ -22,7 +22,7 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
         queryFn: () =>
             pb
                 .collection('cells')
-                .getFullList<CellRecord>({ sort: 'sort', expand: 'filter.games' }),
+                .getFullList<CellRecord>({ sort: 'sort', expand: 'filter.activities' }),
         refetchOnWindowFocus: false,
         queryKey: ['cells'],
     });

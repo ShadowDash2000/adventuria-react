@@ -68,14 +68,15 @@ export const UserAction = ({ action }: ActionProps) => {
         >
             <Card.Body pb={0}>
                 <Stack
+                    h="full"
                     align={{ base: 'flex-start', mdDown: 'center' }}
                     direction={{ base: 'row', mdDown: 'column' }}
                 >
-                    <VStack>
-                        <Image src={action.expand?.game?.cover} />
-                        <Text>{action.expand?.game?.name}</Text>
+                    <VStack minW="15%">
+                        <Image src={action.expand?.activity?.cover} />
+                        <Text>{action.expand?.activity?.name}</Text>
                     </VStack>
-                    <VStack w="100%" align="start">
+                    <VStack w="full" align="start">
                         <VStack>
                             {actionController.statusNode()}
                             <DataList.Root orientation="horizontal">

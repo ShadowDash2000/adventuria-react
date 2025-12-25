@@ -5,13 +5,20 @@ import type { CompanyRecord } from '@shared/types/company';
 import type { GenreRecord } from '@shared/types/genre';
 import type { TagRecord } from '@shared/types/tag';
 
-export type GameRecord = {
+export const enum ActivityType {
+    Game = 'game',
+    Movie = 'movie',
+    Gym = 'gym',
+}
+
+export type ActivityRecord = {
     created: IsoDateString;
     updated: IsoDateString;
-    id_db: number;
+    id_db: string;
+    type: ActivityType;
     name: string;
     slug: string;
-    release_date: IsoDateString;
+    release_date?: IsoDateString;
     platforms: RecordIdString[];
     developers: RecordIdString[];
     publishers: RecordIdString[];
@@ -23,10 +30,10 @@ export type GameRecord = {
     hltb_campaign_time: number;
     cover: string;
     checksum: string;
-    expand?: GameRecordExpand;
+    expand?: ActivityRecordExpand;
 } & RecordModel;
 
-export type GameRecordExpand = Partial<{
+export type ActivityRecordExpand = Partial<{
     platforms: PlatformRecord[];
     developers: CompanyRecord[];
     publishers: CompanyRecord[];

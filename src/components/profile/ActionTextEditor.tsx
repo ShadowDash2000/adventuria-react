@@ -87,6 +87,7 @@ export const ActionTextEditor = ({
                     '& .ProseMirror': {
                         height: '100%',
                         overflow: 'auto',
+                        wordBreak: 'break-word',
                         padding: '1.5rem',
                         outline: '1px solid grey',
                         '&:first-of-type': { marginTop: 0 },

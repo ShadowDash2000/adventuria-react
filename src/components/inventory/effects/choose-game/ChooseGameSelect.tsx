@@ -4,12 +4,12 @@ import { Portal, Select, useListCollection } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import type { ActionRecord } from '@shared/types/action';
 import { queryKeys } from '@shared/queryClient';
-import type { GameRecord } from '@shared/types/game';
+import type { ActivityRecord } from '@shared/types/activity';
 
 export const ChooseGameSelect = () => {
     const { pb, user } = useAppAuthContext();
 
-    const { collection, set: setCollection } = useListCollection<GameRecord>({
+    const { collection, set: setCollection } = useListCollection<ActivityRecord>({
         initialItems: [],
         itemToString: item => item.name,
         itemToValue: item => item.id,
@@ -27,12 +27,12 @@ export const ChooseGameSelect = () => {
     const games = useQuery({
         queryFn: () =>
             pb
-                .collection('games')
-                .getFullList<GameRecord>({
+                .collection('activities')
+                .getFullList<ActivityRecord>({
                     filter: latestAction.data!.items_list.map(id => `id="${id}"`).join('||'),
                 }),
         enabled: latestAction.isSuccess,
-        queryKey: [...queryKeys.games, latestAction.data],
+        queryKey: [...queryKeys.activities, latestAction.data],
         refetchOnWindowFocus: false,
     });
 

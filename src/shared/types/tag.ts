@@ -4,7 +4,7 @@ import type { IsoDateString } from '@shared/types/pocketbase';
 export type TagRecord = {
     created: IsoDateString;
     updated: IsoDateString;
-    id_db: number;
+    id_db: string;
     name: string;
     checksum: string;
 } & RecordModel;

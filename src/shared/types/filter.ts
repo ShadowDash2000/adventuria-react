@@ -4,11 +4,12 @@ import type { PlatformRecord } from '@shared/types/platform';
 import type { CompanyRecord } from '@shared/types/company';
 import type { GenreRecord } from '@shared/types/genre';
 import type { TagRecord } from '@shared/types/tag';
-import type { GameRecord } from '@shared/types/game';
+import type { ActivityRecord } from '@shared/types/activity';
 
-export type FilterRecord = {
+export type ActivityFilterRecord = {
     created: IsoDateString;
     updated: IsoDateString;
+    type: string;
     name: string;
     platforms: RecordIdString[];
     developers: RecordIdString[];
@@ -21,15 +22,15 @@ export type FilterRecord = {
     release_date_to: IsoDateString;
     min_campaign_time: number;
     max_campaign_time: number;
-    games: RecordIdString[];
-    expand?: FilterRecordExpand;
+    activities: RecordIdString[];
+    expand?: ActivityFilterRecordExpand;
 } & RecordModel;
 
-export type FilterRecordExpand = Partial<{
+export type ActivityFilterRecordExpand = Partial<{
     platforms: PlatformRecord[];
     developers: CompanyRecord[];
     publishers: CompanyRecord[];
     genres: GenreRecord[];
     tags: TagRecord[];
-    games: GameRecord[];
+    activities: ActivityRecord[];
 }>;

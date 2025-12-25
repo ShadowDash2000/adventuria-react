@@ -12,6 +12,8 @@ interface UserActionCommentProps {
     setDraft: (content: HTMLContent) => void;
 }
 
+const COMMENT_MAX_LENGTH = 1000;
+
 export const UserActionComment = ({
     isEditing,
     comment,
@@ -29,34 +31,32 @@ export const UserActionComment = ({
                         editable={isEditing}
                     />
                 </VStack>
-            ) : (
-                <Collapsible.Root collapsedHeight={250}>
-                    {comment.length > 0 && (
-                        <>
-                            <Collapsible.Content
-                                _closed={{
-                                    shadow: 'inset 0 -12px 12px -12px var(--shadow-color)',
-                                    shadowColor: 'blackAlpha.500',
-                                }}
+            ) : comment.length > COMMENT_MAX_LENGTH ? (
+                <Collapsible.Root collapsedHeight={200}>
+                    <Collapsible.Content
+                        _closed={{
+                            shadow: 'inset 0 -12px 12px -12px var(--shadow-color)',
+                            shadowColor: 'blackAlpha.500',
+                        }}
+                    >
+                        <Stack wordBreak="break-word">{HTMLReactParser(comment)}</Stack>
+                    </Collapsible.Content>
+                    <Collapsible.Trigger asChild mt="4">
+                        <Button>
+                            <Collapsible.Context>
+                                {ctx => (ctx.open ? 'Скрыть' : 'Показать')}
+                            </Collapsible.Context>
+                            <Collapsible.Indicator
+                                transition="transform 0.2s"
+                                _open={{ transform: 'rotate(180deg)' }}
                             >
-                                <Stack>{HTMLReactParser(comment)}</Stack>
-                            </Collapsible.Content>
-                            <Collapsible.Trigger asChild mt="4">
-                                <Button>
-                                    <Collapsible.Context>
-                                        {ctx => (ctx.open ? 'Скрыть' : 'Показать')}
-                                    </Collapsible.Context>
-                                    <Collapsible.Indicator
-                                        transition="transform 0.2s"
-                                        _open={{ transform: 'rotate(180deg)' }}
-                                    >
-                                        <LuChevronDown />
-                                    </Collapsible.Indicator>
-                                </Button>
-                            </Collapsible.Trigger>
-                        </>
-                    )}
+                                <LuChevronDown />
+                            </Collapsible.Indicator>
+                        </Button>
+                    </Collapsible.Trigger>
                 </Collapsible.Root>
+            ) : (
+                <Stack wordBreak="break-word">{HTMLReactParser(comment)}</Stack>
             )}
         </>
     );
