@@ -6,7 +6,7 @@ import { Button } from '@theme/button';
 
 export const BuyItemModal = () => {
     return (
-        <Dialog.Root lazyMount unmountOnExit size="xl">
+        <Dialog.Root variant="transparent" lazyMount unmountOnExit size="xl">
             <Dialog.Trigger asChild>
                 <Button colorPalette="purple">
                     <LuShoppingCart />
