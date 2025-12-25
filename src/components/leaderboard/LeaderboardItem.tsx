@@ -1,6 +1,6 @@
 import type { UserRecord } from '@shared/types/user';
 import { Box, Table, Link as ChakraLink } from '@chakra-ui/react';
-import { Avatar } from '@components/Avatar';
+import { PlayerAvatar } from '@components/PlayerAvatar';
 import { Link } from 'react-router-dom';
 
 interface LeaderboardItemProps {
@@ -12,7 +12,7 @@ export const LeaderboardItem = ({ user }: LeaderboardItemProps) => {
         <Table.Row bg="none">
             <Table.Cell>
                 <Box position="relative" w={12} h={12}>
-                    <Avatar user={user} w="full" h="full" showStreamLive />
+                    <PlayerAvatar user={user} w="full" h="full" showStreamLive />
                 </Box>
             </Table.Cell>
             <Table.Cell>

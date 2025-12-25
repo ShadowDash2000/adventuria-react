@@ -1,6 +1,6 @@
 import { type CSSProperties, useRef } from 'react';
 import type { UserRecord } from '@shared/types/user';
-import { Avatar } from '../../Avatar';
+import { PlayerAvatar } from '../../PlayerAvatar';
 import { type AvatarRootProps } from '@chakra-ui/react/avatar';
 import { usePlayerMovement } from './usePlayerMovement';
 
@@ -18,7 +18,7 @@ export const Player = ({ user, ...rest }: PlayerProps) => {
     const isVisible = visible || moving;
 
     return (
-        <Avatar
+        <PlayerAvatar
             {...rest}
             ref={avatarRef}
             user={user}

@@ -14,7 +14,7 @@ import {
     Text,
 } from '@chakra-ui/react';
 import { LuChevronUp } from 'react-icons/lu';
-import { Avatar } from '@components/Avatar';
+import { PlayerAvatar } from '@components/PlayerAvatar';
 import { PlayerInventoryButton } from '@components/inventory/PlayerInventoryButton';
 import { Link } from 'react-router-dom';
 import { TfiTarget } from 'react-icons/tfi';
@@ -54,7 +54,7 @@ export const PlayersFloatingList = () => {
                                                 <Link to={`/profile/${user.name}`}>
                                                     <HStack gap={4} minW={0}>
                                                         <Box pos="relative">
-                                                            <Avatar
+                                                            <PlayerAvatar
                                                                 user={user}
                                                                 w={8}
                                                                 h={8}

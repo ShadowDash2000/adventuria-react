@@ -38,6 +38,13 @@ const themeConfig = defineConfig({
                 purple: { DEFAULT: { value: '#873ea5' }, hover: { value: '#a149c6' } },
             },
             gradients: { psone: { value: 'linear-gradient(rgb(13, 34, 137), rgb(6, 9, 59))' } },
+            animations: { rainbow: { value: 'rainbow 3s linear infinite' } },
+        },
+        keyframes: {
+            rainbow: {
+                '0%': { backgroundPosition: '0% center' },
+                '100%': { backgroundPosition: '-200% center' },
+            },
         },
         slotRecipes: {
             popover: popoverRecipe,

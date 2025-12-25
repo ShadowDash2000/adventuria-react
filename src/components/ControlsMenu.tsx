@@ -8,6 +8,7 @@ import { LoginModalButton } from '@components/LoginModalButton';
 import { useAppContext } from '@context/AppContext';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { Tooltip } from '@ui/tooltip';
+import { HiCommandLine } from 'react-icons/hi2';
 
 export const ControlsMenu = () => {
     const { isAuth, logout } = useAppContext();
@@ -34,6 +35,13 @@ export const ControlsMenu = () => {
                 <RulesButton />
                 <LeaderboardButton />
                 <GlossaryButton />
+                <Tooltip content="Создатели">
+                    <IconButton asChild>
+                        <Link to="/developers">
+                            <HiCommandLine />
+                        </Link>
+                    </IconButton>
+                </Tooltip>
                 {isAuth ? (
                     <Tooltip content="Выход">
                         <IconButton onClick={() => logout()} _hover={{ bg: 'red' }}>

@@ -6,6 +6,7 @@ const Layout = lazy(() => import('@components/Layout'));
 const Main = lazy(() => import('@components/pages/Main'));
 const Profile = lazy(() => import('@components/pages/Profile'));
 const Timer = lazy(() => import('@components/pages/Timer'));
+const Developers = lazy(() => import('@components/pages/Developers'));
 
 const loaderStyle = {
     position: 'fixed',
@@ -36,6 +37,14 @@ export const router = createBrowserRouter([
                 element: (
                     <Suspense fallback={<Spinner style={loaderStyle} />}>
                         <Profile />
+                    </Suspense>
+                ),
+            },
+            {
+                path: '/developers',
+                element: (
+                    <Suspense fallback={<Spinner style={loaderStyle} />}>
+                        <Developers />
                     </Suspense>
                 ),
             },

@@ -3,7 +3,7 @@ import { For, HStack, IconButton, VStack, Text } from '@chakra-ui/react';
 import { ToggleTip } from '@ui/toggle-tip';
 import { BoardHelper } from '../BoardHelper';
 import type { UserRecord } from '@shared/types/user';
-import { Avatar } from '../../Avatar';
+import { PlayerAvatar } from '../../PlayerAvatar';
 import { CELL_MAX_USERS } from '../Board';
 
 export const CellsPlayers = () => {
@@ -46,7 +46,7 @@ const CellPlayers = ({ cellIndex, users }: CellTooltipProps) => {
                     <For each={users}>
                         {user => (
                             <HStack key={user.id} gap={4}>
-                                <Avatar user={user} size="xs" outlineWidth="0.20vw" />
+                                <PlayerAvatar user={user} size="xs" outlineWidth="0.20vw" />
                                 <Text>{user.name}</Text>
                             </HStack>
                         )}

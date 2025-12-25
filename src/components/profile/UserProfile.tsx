@@ -1,5 +1,5 @@
 import type { UserRecord } from '@shared/types/user';
-import { Avatar } from '../Avatar';
+import { PlayerAvatar } from '../PlayerAvatar';
 import { useCollectionOneFilter } from '@context/CollectionOneFilterContext';
 import {
     Box,
@@ -38,7 +38,7 @@ export const UserProfile = () => {
         <Flex variant="solid" align="center" flexDir="column" py={4} gap={2}>
             <VStack w="40%">
                 <Box pos="relative">
-                    <Avatar user={user} />
+                    <PlayerAvatar user={user} />
                     {user.is_stream_live && (
                         <Float placement="bottom-end">
                             <Circle bg="red.solid" w={4} h={4} />

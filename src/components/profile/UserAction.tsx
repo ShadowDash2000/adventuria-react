@@ -4,7 +4,7 @@ import { type ActionRecord } from '@shared/types/action';
 import { useAppContext } from '@context/AppContext';
 import { formatDateLocalized } from '@shared/helpers/helper';
 import { ActionFactory } from '../actions/action-factory';
-import { Avatar } from '../Avatar';
+import { PlayerAvatar } from '../PlayerAvatar';
 import { InfoTip } from '@ui/toggle-tip';
 import { CellInfo } from '../board/cells/CellInfoModal';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
@@ -126,7 +126,7 @@ export const UserAction = ({ action }: ActionProps) => {
                         </Card.Description>
                     </VStack>
                     <VStack position="absolute" right="5%">
-                        <Avatar user={action.expand!.user!} />
+                        <PlayerAvatar user={action.expand!.user!} />
                         <Text>{action.expand?.user.name}</Text>
                     </VStack>
                 </Stack>

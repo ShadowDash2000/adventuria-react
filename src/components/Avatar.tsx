@@ -1,36 +1,21 @@
-import { type RefObject } from 'react';
-import { Avatar as ChakraAvatar, type AvatarRootProps } from '@chakra-ui/react/avatar';
-import type { UserRecord } from '@shared/types/user';
-import { useAppContext } from '@context/AppContext';
-import { Circle, Float } from '@chakra-ui/react';
+import { Avatar as ChakraAvatar } from '@chakra-ui/react/avatar';
+import type { RefObject } from 'react';
 
-interface AvatarProps extends AvatarRootProps {
+interface AvatarProps extends ChakraAvatar.RootProps {
     ref?: RefObject<HTMLDivElement | null>;
-    user: UserRecord;
-    showStreamLive?: boolean;
+    src?: string;
 }
 
-export const Avatar = ({ user, ref, showStreamLive = false, ...props }: AvatarProps) => {
-    const { pb } = useAppContext();
-    const avatar = pb.files.getURL(user, user.avatar);
-
+export const Avatar = ({ ref, src, ...props }: AvatarProps) => {
     return (
-        <>
-            <ChakraAvatar.Root
-                ref={ref}
-                outlineWidth=".25vw"
-                outlineColor={user.color}
-                outlineOffset="{spacing.0.5}"
-                outlineStyle="solid"
-                {...props}
-            >
-                <ChakraAvatar.Image src={avatar} />
-            </ChakraAvatar.Root>
-            {user.is_stream_live && showStreamLive && (
-                <Float placement="bottom-end">
-                    <Circle bg="red.solid" w={4} h={4} />
-                </Float>
-            )}
-        </>
+        <ChakraAvatar.Root
+            outlineWidth=".25vw"
+            outlineOffset="{spacing.0.5}"
+            outlineStyle="solid"
+            {...props}
+            ref={ref}
+        >
+            <ChakraAvatar.Image src={src} />
+        </ChakraAvatar.Root>
     );
 };
