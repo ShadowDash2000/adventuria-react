@@ -317,10 +317,12 @@ export const WheelOFortune = forwardRef<WheelOFortuneHandle, WheelOFortuneProps>
                     <Text
                         fontSize="2xl"
                         fontWeight="bold"
-                        color="white.800"
+                        color="white"
                         w={500}
+                        h={20}
                         textAlign="center"
                         lineHeight={1}
+                        lineClamp={2}
                     >
                         {headerText}
                     </Text>
