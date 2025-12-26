@@ -6,6 +6,7 @@ import { RollWheel } from '@components/actions/roll-wheel/roll-wheel';
 import { Drop } from './drop/drop';
 import { Reroll } from './reroll/reroll';
 import { BuyItem } from '@components/actions/buy-item/buy-item';
+import { RollItemOnCell } from '@components/actions/roll-item-on-cell/roll-item-on-cell';
 
 type ActionFactoryItem = { order: number; dispenser: ActionDispenser };
 
@@ -17,6 +18,7 @@ export class ActionFactory {
         rollDice: { order: 0, dispenser: new RollDice() },
         rollWheel: { order: 0, dispenser: new RollWheel() },
         buyItem: { order: 5, dispenser: new BuyItem() },
+        rollItemOnCell: { order: 0, dispenser: new RollItemOnCell() },
     };
 
     static get(actionType: string): ActionDispenser {
