@@ -71,9 +71,9 @@ export const Board = () => {
                 position="absolute"
                 left={0}
                 bottom={0}
-                ml="151px"
-                mb="4.6%"
-                gapY="10.6px"
+                ml="152px"
+                mb="655px"
+                gapY="8.3px"
             >
                 <BoardContext.Provider value={{ boardRef, boardInnerRef }}>
                     <BoardDataProvider>
