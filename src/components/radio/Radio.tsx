@@ -52,8 +52,8 @@ export const Radio = () => {
     }
 
     return (
-        <Flex h="{sizes.32}" justify="space-around" align="center" overflowY="hidden">
-            <Box w="{sizes.48}" maxH="full" overflowY="auto">
+        <Flex h="{sizes.32}" justify="space-around" align="center">
+            <Box w="{sizes.48}">
                 <RadioTrackList audioId={audioId} audio={audio} onTrackChange={playById} />
             </Box>
             <VStack>
