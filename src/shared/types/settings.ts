@@ -5,7 +5,7 @@ export type SettingsRecord = {
     created: IsoDateString;
     updated: IsoDateString;
     eventDateStart: IsoDateString;
-    currentWeek?: number;
+    currentWeek: number;
     timerTimeLimit: number;
     limitExceedPenalty: number;
     blockAllActions: boolean;

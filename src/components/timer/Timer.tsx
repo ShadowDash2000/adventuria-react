@@ -5,6 +5,7 @@ import { FaCopy, FaPause, FaPlay } from 'react-icons/fa6';
 import { Tooltip } from '@ui/tooltip';
 import { useAppContext } from '@context/AppContext';
 import { useTimer } from './useTimer';
+import { Flex } from '@theme/flex';
 
 interface TimerProps {
     userId: RecordIdString;
@@ -13,9 +14,8 @@ interface TimerProps {
 export const Timer = ({ userId }: TimerProps) => {
     const { pb } = useAppContext();
     const timerRef = useRef<HTMLParagraphElement | null>(null);
-    const { isActive, startTimer, stopTimer } = useTimer({
+    const { isActive, nextResetDate, startTimer, stopTimer } = useTimer({
         authToken: pb.authStore.token,
-        collection: pb.collection('timers'),
         userId: userId,
         realtimeUpdate: true,
         onValueChange: value => {
@@ -26,29 +26,19 @@ export const Timer = ({ userId }: TimerProps) => {
 
     return (
         <VStack minW={200}>
-            <Box w="full">
-                <Text
-                    position="relative"
-                    fontSize="4xl"
-                    ref={timerRef}
-                    bgImage="linear-gradient(rgb(6, 9, 59), rgb(13, 34, 137))"
-                    border="{spacing.0.5} solid rgb(198, 198, 198)"
-                    borderRadius={12}
-                    px={4}
-                    _before={{
-                        content: '""',
-                        pointerEvents: 'none',
-                        inset: 0,
-                        position: 'absolute',
-                        border: '{spacing.1} solid white',
-                        borderRadius: 10,
-                        width: '100%',
-                        height: '100%',
-                    }}
-                >
+            <Flex
+                variant="solid"
+                w="full"
+                py={4}
+                flexDir="column"
+                align="center"
+                overflowY="hidden"
+            >
+                <Text>{nextResetDate}</Text>
+                <Text lineHeight={1} fontSize="4xl" ref={timerRef}>
                     00:00:00
                 </Text>
-            </Box>
+            </Flex>
             <ButtonGroup>
                 <IconButton disabled={!isActive} _hover={{ bg: 'red' }} onClick={stopTimer}>
                     <FaPause />

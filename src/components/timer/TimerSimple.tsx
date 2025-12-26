@@ -1,19 +1,16 @@
 import { useRef } from 'react';
-import { Text } from '@chakra-ui/react';
+import { Text, type TextProps } from '@chakra-ui/react';
 import { useTimer } from './useTimer';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { useAppContext } from '@context/AppContext';
 
-interface TimerSimpleProps {
+interface TimerSimpleProps extends TextProps {
     userId: RecordIdString;
     realtimeUpdate?: boolean;
 }
 
-export const TimerSimple = ({ userId, realtimeUpdate = false }: TimerSimpleProps) => {
-    const { pb } = useAppContext();
+export const TimerSimple = ({ userId, realtimeUpdate = false, ...rest }: TimerSimpleProps) => {
     const timerRef = useRef<HTMLParagraphElement | null>(null);
     useTimer({
-        collection: pb.collection('timers'),
         userId: userId,
         realtimeUpdate: realtimeUpdate,
         onValueChange: value => {
@@ -23,7 +20,7 @@ export const TimerSimple = ({ userId, realtimeUpdate = false }: TimerSimpleProps
     });
 
     return (
-        <Text fontSize="4xl" ref={timerRef}>
+        <Text lineHeight={1} textAlign="center" {...rest} ref={timerRef}>
             00:00:00
         </Text>
     );

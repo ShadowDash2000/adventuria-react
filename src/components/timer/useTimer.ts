@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import type { TimerRecord } from '@shared/types/timer';
 import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@shared/queryClient';
+import { useAppContext } from '@context/AppContext';
+import type { TimerRecord } from '@shared/types/timer';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import type { RecordService } from 'pocketbase';
+import type { SettingsRecord } from '@shared/types/settings';
+import { formatDateLocalized } from '@shared/helpers/helper';
 
 interface TimerProps {
     authToken?: string;
-    collection: RecordService<TimerRecord>;
     userId: RecordIdString;
     realtimeUpdate?: boolean;
     onValueChange?: (value: string) => void;
@@ -14,17 +16,26 @@ interface TimerProps {
 
 export const useTimer = ({
     authToken,
-    collection,
     userId,
     realtimeUpdate = false,
     onValueChange,
 }: TimerProps) => {
+    const { pb } = useAppContext();
     const [timer, setTimer] = useState<TimerRecord | null>(null);
+    const [nextResetDate, setNextResetDate] = useState('');
     const [isActive, setIsActive] = useState<boolean>(false);
 
+    const timerCollection = pb.collection('timers');
+
     const timerQuery = useQuery({
-        queryFn: () => collection.getFirstListItem<TimerRecord>(`user = "${userId}"`),
+        queryFn: () => timerCollection.getFirstListItem<TimerRecord>(`user = "${userId}"`),
         queryKey: ['timer', userId],
+        refetchOnWindowFocus: false,
+    });
+
+    const settingsQuery = useQuery({
+        queryFn: () => pb.collection('settings').getFirstListItem<SettingsRecord>(''),
+        queryKey: queryKeys.settings,
         refetchOnWindowFocus: false,
     });
 
@@ -38,16 +49,28 @@ export const useTimer = ({
     }, [timerQuery.data]);
 
     useEffect(() => {
+        if (!settingsQuery.isSuccess) return;
+
+        const { eventDateStart, currentWeek } = settingsQuery.data;
+        const startDate = new Date(eventDateStart);
+
+        const weeksOffsetMs = currentWeek * 7 * 24 * 60 * 60 * 1000;
+        const nextReset = new Date(startDate.getTime() + weeksOffsetMs);
+
+        setNextResetDate(formatDateLocalized(nextReset.toISOString()));
+    }, [settingsQuery.data]);
+
+    useEffect(() => {
         if (!realtimeUpdate || !timer) return;
 
-        collection.subscribe<TimerRecord>(timer.id, data => {
+        timerCollection.subscribe<TimerRecord>(timer.id, data => {
             if (data.action !== 'update') return;
             setTimer(data.record);
             setIsActive(data.record.isActive);
         });
 
         return () => {
-            collection.unsubscribe(timer.id);
+            timerCollection.unsubscribe(timer.id);
         };
     }, [realtimeUpdate, timer]);
 
@@ -81,6 +104,7 @@ export const useTimer = ({
 
     return {
         isActive,
+        nextResetDate,
         startTimer: async () => {
             if (!authToken) return;
             try {

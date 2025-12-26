@@ -48,7 +48,7 @@ export const UserProfile = () => {
                 <Text>{user.name}</Text>
                 <VStack gap={0}>
                     <Heading>Таймер</Heading>
-                    <TimerSimple userId={user.id} />
+                    <TimerSimple userId={user.id} fontSize="4xl" />
                 </VStack>
                 <Box
                     w="full"
