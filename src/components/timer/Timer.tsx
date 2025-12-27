@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { VStack, Text, ButtonGroup, IconButton, Box, Clipboard } from '@chakra-ui/react';
+import { VStack, Text, ButtonGroup, IconButton, Clipboard } from '@chakra-ui/react';
 import { FaCopy, FaPause, FaPlay } from 'react-icons/fa6';
 import { Tooltip } from '@ui/tooltip';
 import { useAppContext } from '@context/AppContext';

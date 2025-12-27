@@ -22,6 +22,9 @@ export const ActivityInfo = ({ activity }: ActivityInfoProps) => {
         ? activity.expand?.genres?.map(g => g.name).join(', ')
         : '-';
     const tags = activity.expand?.tags ? activity.expand?.tags?.map(t => t.name).join(', ') : '-';
+    const themes = activity.expand?.themes
+        ? activity.expand?.themes?.map(t => t.name).join(', ')
+        : '-';
 
     return (
         <>
@@ -77,6 +80,10 @@ export const ActivityInfo = ({ activity }: ActivityInfoProps) => {
                         <DataList.Item pt="4">
                             <DataList.ItemLabel>Теги</DataList.ItemLabel>
                             <DataList.ItemValue>{tags}</DataList.ItemValue>
+                        </DataList.Item>
+                        <DataList.Item pt="4">
+                            <DataList.ItemLabel>Темы</DataList.ItemLabel>
+                            <DataList.ItemValue>{themes}</DataList.ItemValue>
                         </DataList.Item>
                     </DataList.Root>
                     <ButtonGroup justify="center" py={4}>

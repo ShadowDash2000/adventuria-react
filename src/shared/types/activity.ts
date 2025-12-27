@@ -4,6 +4,7 @@ import type { PlatformRecord } from '@shared/types/platform';
 import type { CompanyRecord } from '@shared/types/company';
 import type { GenreRecord } from '@shared/types/genre';
 import type { TagRecord } from '@shared/types/tag';
+import type { ThemeRecord } from '@shared/types/theme';
 
 export const enum ActivityType {
     Game = 'game',
@@ -24,6 +25,7 @@ export type ActivityRecord = {
     publishers: RecordIdString[];
     genres: RecordIdString[];
     tags: RecordIdString[];
+    themes: RecordIdString[];
     steam_app_id: number;
     steam_app_price: number;
     hltb_id: number;
@@ -39,4 +41,5 @@ export type ActivityRecordExpand = Partial<{
     publishers: CompanyRecord[];
     genres: GenreRecord[];
     tags: TagRecord[];
+    themes: ThemeRecord[];
 }>;

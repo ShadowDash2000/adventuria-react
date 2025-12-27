@@ -1,6 +1,6 @@
 import { useAppContext } from '@context/AppContext';
 import { Box, Spacer } from '@chakra-ui/react';
-import { LatestActions } from '../LatestActions';
+import { ActionsList } from '../ActionsList';
 import { CollectionListInfiniteProvider } from '@context/CollectionListInfiniteContext';
 import { Sort } from '@shared/hook/useSort';
 import { Board } from '../board/Board';
@@ -20,7 +20,7 @@ const Main = () => {
                     initialSort={new Map([['created', Sort.DESC]])}
                     refetchOnWindowFocus={false}
                 >
-                    <LatestActions />
+                    <ActionsList />
                 </CollectionListInfiniteProvider>
             </Box>
         </>

@@ -1,4 +1,3 @@
-import { UserActionsList } from '../profile/UserActionsList';
 import { useParams } from 'react-router-dom';
 import { CollectionListInfiniteProvider } from '@context/CollectionListInfiniteContext';
 import { useAppContext } from '@context/AppContext';
@@ -6,6 +5,7 @@ import { Sort } from '@shared/hook/useSort';
 import { CollectionOneFilterProvider } from '@context/CollectionOneFilterContext';
 import { Flex } from '@chakra-ui/react';
 import { UserProfile } from '../profile/UserProfile';
+import { ActionsList } from '@components/ActionsList';
 
 const Profile = () => {
     const { pb } = useAppContext();
@@ -19,13 +19,13 @@ const Profile = () => {
             >
                 <CollectionListInfiniteProvider
                     collection={pb.collection('actions')}
-                    pageSize={24}
+                    pageSize={10}
                     initialSort={new Map([['created', Sort.DESC]])}
                     filter={`user.name = "${login}"`}
                     expand="activity,cell,cell.filter.activities,user"
                 >
                     <UserProfile />
-                    <UserActionsList />
+                    <ActionsList />
                 </CollectionListInfiniteProvider>
             </CollectionOneFilterProvider>
         </Flex>

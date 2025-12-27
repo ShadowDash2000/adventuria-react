@@ -36,11 +36,11 @@ export const ActivitiesWheelContent = () => {
                 .collection('activities')
                 .getFullList<ActivityRecord>({
                     filter: action.data!.items_list.map(id => `id="${id}"`).join('||'),
-                    expand: 'platforms,developers,publishers,genres,tags',
+                    expand: 'platforms,developers,publishers,genres,tags,themes',
                 }),
         refetchOnWindowFocus: false,
-        enabled: action.isSuccess,
-        queryKey: [action],
+        enabled: action.isSuccess && action.data?.items_list.length > 0,
+        queryKey: [action.data],
     });
 
     const { spinning, handleSpin, currentItemIndex, setCurrentItemIndex, audioPreset } = useWheel({

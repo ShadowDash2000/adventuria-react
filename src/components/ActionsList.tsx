@@ -4,7 +4,7 @@ import { UserAction } from './profile/UserAction';
 import { Flex, For, Heading } from '@chakra-ui/react';
 import { useInView } from 'react-intersection-observer';
 
-export const LatestActions = () => {
+export const ActionsList = () => {
     const {
         data: actions,
         isFetching,
@@ -23,12 +23,12 @@ export const LatestActions = () => {
     });
 
     return (
-        <Flex direction="column" gap={5} align="center">
+        <Flex direction="column" gap={4} align="center">
             <Heading size="2xl">Последние ходы</Heading>
             <For each={actions.pages}>
                 {list => list.items.map(action => <UserAction key={action.id} action={action} />)}
             </For>
-            <div ref={bottomRef}></div>
+            <div ref={bottomRef} style={{ height: '10px' }}></div>
         </Flex>
     );
 };
