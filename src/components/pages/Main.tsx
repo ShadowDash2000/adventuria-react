@@ -15,7 +15,12 @@ const Main = () => {
                 <Spacer h={10} />
                 <CollectionListInfiniteProvider
                     collection={pb.collection('actions')}
-                    expand="activity,cell,cell.filter.activities,user"
+                    expand={
+                        'activity,cell,user,' +
+                        'cell.filter.platforms,cell.filter.activities,cell.filter.developers,' +
+                        'cell.filter.publishers,cell.filter.genres,cell.filter.tags,' +
+                        'cell.filter.themes'
+                    }
                     pageSize={10}
                     initialSort={new Map([['created', Sort.DESC]])}
                     refetchOnWindowFocus={false}

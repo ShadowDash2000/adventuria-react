@@ -5,6 +5,7 @@ import type { CompanyRecord } from '@shared/types/company';
 import type { GenreRecord } from '@shared/types/genre';
 import type { TagRecord } from '@shared/types/tag';
 import type { ActivityRecord } from '@shared/types/activity';
+import { ThemeRecord } from '@shared/types/theme';
 
 export type ActivityFilterRecord = {
     created: IsoDateString;
@@ -16,6 +17,7 @@ export type ActivityFilterRecord = {
     publishers: RecordIdString[];
     genres: RecordIdString[];
     tags: RecordIdString[];
+    themes: RecordIdString[];
     min_price: number;
     max_price: number;
     release_date_from: IsoDateString;
@@ -32,5 +34,6 @@ export type ActivityFilterRecordExpand = Partial<{
     publishers: CompanyRecord[];
     genres: GenreRecord[];
     tags: TagRecord[];
+    themes: ThemeRecord[];
     activities: ActivityRecord[];
 }>;

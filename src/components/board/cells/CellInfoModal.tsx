@@ -53,6 +53,96 @@ export const CellInfo = ({ cell, children }: CellInfoProps) => {
                                             {cell.coins} <Coin w={6} />
                                         </DataList.ItemValue>
                                     </DataList.Item>
+                                    {cell.expand?.filter && (
+                                        <>
+                                            {cell.expand.filter.expand?.platforms && (
+                                                <DataList.Item>
+                                                    <DataList.ItemLabel>
+                                                        Платформы
+                                                    </DataList.ItemLabel>
+                                                    <DataList.ItemValue>
+                                                        {cell.expand.filter.expand.platforms
+                                                            .map(item => item.name)
+                                                            .join(', ')}
+                                                    </DataList.ItemValue>
+                                                </DataList.Item>
+                                            )}
+                                            {cell.expand.filter.expand?.developers && (
+                                                <DataList.Item>
+                                                    <DataList.ItemLabel>
+                                                        Разработчики
+                                                    </DataList.ItemLabel>
+                                                    <DataList.ItemValue>
+                                                        {cell.expand.filter.expand.developers
+                                                            .map(item => item.name)
+                                                            .join(', ')}
+                                                    </DataList.ItemValue>
+                                                </DataList.Item>
+                                            )}
+                                            {cell.expand.filter.expand?.publishers && (
+                                                <DataList.Item>
+                                                    <DataList.ItemLabel>
+                                                        Издатели
+                                                    </DataList.ItemLabel>
+                                                    <DataList.ItemValue>
+                                                        {cell.expand.filter.expand.publishers
+                                                            .map(item => item.name)
+                                                            .join(', ')}
+                                                    </DataList.ItemValue>
+                                                </DataList.Item>
+                                            )}
+                                            {cell.expand.filter.expand?.genres && (
+                                                <DataList.Item>
+                                                    <DataList.ItemLabel>Жанры</DataList.ItemLabel>
+                                                    <DataList.ItemValue>
+                                                        {cell.expand.filter.expand.genres
+                                                            .map(item => item.name)
+                                                            .join(', ')}
+                                                    </DataList.ItemValue>
+                                                </DataList.Item>
+                                            )}
+                                            {cell.expand.filter.expand?.tags && (
+                                                <DataList.Item>
+                                                    <DataList.ItemLabel>Теги</DataList.ItemLabel>
+                                                    <DataList.ItemValue>
+                                                        {cell.expand.filter.expand.tags
+                                                            .map(item => item.name)
+                                                            .join(', ')}
+                                                    </DataList.ItemValue>
+                                                </DataList.Item>
+                                            )}
+                                            {cell.expand.filter.expand?.themes && (
+                                                <DataList.Item>
+                                                    <DataList.ItemLabel>Темы</DataList.ItemLabel>
+                                                    <DataList.ItemValue>
+                                                        {cell.expand.filter.expand.themes
+                                                            .map(item => item.name)
+                                                            .join(', ')}
+                                                    </DataList.ItemValue>
+                                                </DataList.Item>
+                                            )}
+                                            {cell.expand.filter.min_campaign_time > 0 && (
+                                                <DataList.Item>
+                                                    <DataList.ItemLabel>
+                                                        Мин. время
+                                                    </DataList.ItemLabel>
+                                                    <DataList.ItemValue>
+                                                        {cell.expand.filter.min_campaign_time} ч.
+                                                    </DataList.ItemValue>
+                                                </DataList.Item>
+                                            )}
+                                            {cell.expand.filter.max_campaign_time > 0 && (
+                                                <DataList.Item>
+                                                    <DataList.ItemLabel>
+                                                        Макс. время
+                                                    </DataList.ItemLabel>
+                                                    <DataList.ItemValue>
+                                                        {cell.expand.filter.max_campaign_time} ч.
+                                                    </DataList.ItemValue>
+                                                </DataList.Item>
+                                            )}
+                                        </>
+                                    )}
                                 </DataList.Root>
                                 <Blockquote.Root variant="solid">
                                     <Blockquote.Content>
