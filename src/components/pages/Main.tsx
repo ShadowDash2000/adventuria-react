@@ -10,7 +10,7 @@ const Main = () => {
 
     return (
         <>
-            <Box maxW="1642px" position="relative">
+            <Box maxW="vw">
                 <Board />
                 <Spacer h={10} />
                 <CollectionListInfiniteProvider

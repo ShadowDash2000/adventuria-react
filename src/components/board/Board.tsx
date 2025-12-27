@@ -1,4 +1,4 @@
-import { Button, Flex, Image } from '@chakra-ui/react';
+import { Box, Button, Flex, Image } from '@chakra-ui/react';
 import { LuArrowBigDown, LuArrowBigUp } from 'react-icons/lu';
 import { useRef } from 'react';
 import { BoardInner } from './BoardInner';
@@ -20,67 +20,69 @@ export const Board = () => {
     };
 
     return (
-        <Flex
-            ref={boardRef}
-            id="board"
-            justify="center"
-            align="flex-end"
-            w="1642px"
-            h="2426px"
-            position="relative"
-        >
-            <Button
-                onClick={() => scrollTo('end')}
-                position="absolute"
-                zIndex={2}
-                top="0"
-                rounded="full"
-            >
-                <LuArrowBigDown />
-            </Button>
-            <Button
-                onClick={() => scrollTo('start')}
-                position="absolute"
-                zIndex={2}
-                bottom="0"
-                rounded="full"
-            >
-                <LuArrowBigUp />
-            </Button>
-            <Image
-                src={BuildingImage}
-                position="absolute"
-                rounded="3rem"
-                width="100%"
-                zIndex={1}
-                pointerEvents="none"
-                userSelect="none"
-            />
-            <Image
-                src={WallsImage}
-                position="absolute"
-                width="100%"
-                zIndex={20}
-                pointerEvents="none"
-                userSelect="none"
-            />
+        <Box overflowX="auto">
             <Flex
-                ref={boardInnerRef}
-                justify="flex-end"
-                direction="column"
-                position="absolute"
-                left={0}
-                bottom={0}
-                ml="152px"
-                mb="655px"
-                gapY="8.3px"
+                ref={boardRef}
+                id="board"
+                justify="center"
+                align="flex-end"
+                w="1642px"
+                h="2426px"
+                position="relative"
             >
-                <BoardContext.Provider value={{ boardRef, boardInnerRef }}>
-                    <BoardDataProvider>
-                        <BoardInner />
-                    </BoardDataProvider>
-                </BoardContext.Provider>
+                <Button
+                    onClick={() => scrollTo('end')}
+                    position="absolute"
+                    zIndex={2}
+                    top="0"
+                    rounded="full"
+                >
+                    <LuArrowBigDown />
+                </Button>
+                <Button
+                    onClick={() => scrollTo('start')}
+                    position="absolute"
+                    zIndex={2}
+                    bottom="0"
+                    rounded="full"
+                >
+                    <LuArrowBigUp />
+                </Button>
+                <Image
+                    src={BuildingImage}
+                    position="absolute"
+                    rounded="3rem"
+                    width="100%"
+                    zIndex={1}
+                    pointerEvents="none"
+                    userSelect="none"
+                />
+                <Image
+                    src={WallsImage}
+                    position="absolute"
+                    width="100%"
+                    zIndex={20}
+                    pointerEvents="none"
+                    userSelect="none"
+                />
+                <Flex
+                    ref={boardInnerRef}
+                    justify="flex-end"
+                    direction="column"
+                    position="absolute"
+                    left={0}
+                    bottom={0}
+                    ml="152px"
+                    mb="655px"
+                    gapY="8.3px"
+                >
+                    <BoardContext.Provider value={{ boardRef, boardInnerRef }}>
+                        <BoardDataProvider>
+                            <BoardInner />
+                        </BoardDataProvider>
+                    </BoardContext.Provider>
+                </Flex>
             </Flex>
-        </Flex>
+        </Box>
     );
 };
