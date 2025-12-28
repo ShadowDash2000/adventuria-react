@@ -12,6 +12,7 @@ import type { EffectRecord } from '@shared/types/effect';
 
 interface UseItemButtonProps {
     isActive: boolean;
+    canUse: boolean;
     invItemId: RecordIdString;
     itemEffects: EffectRecord[];
     onItemUse?: () => void;
@@ -19,6 +20,7 @@ interface UseItemButtonProps {
 
 export const UseItemButton = ({
     isActive,
+    canUse,
     invItemId,
     itemEffects,
     onItemUse,
@@ -49,7 +51,7 @@ export const UseItemButton = ({
 
     return (
         <>
-            {needModal && !isActive ? (
+            {needModal && !isActive && canUse ? (
                 <Dialog.Root
                     lazyMount
                     unmountOnExit
@@ -82,7 +84,7 @@ export const UseItemButton = ({
                 </Dialog.Root>
             ) : (
                 <Button
-                    disabled={isActive}
+                    disabled={isActive || !canUse}
                     colorPalette="green"
                     onClick={async () => {
                         try {

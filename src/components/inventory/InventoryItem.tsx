@@ -41,6 +41,7 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
                         <DropItemButton invItemId={invItem.id} />
                         <UseItemButton
                             isActive={isActive}
+                            canUse={invItem.can_use}
                             invItemId={invItem.id}
                             itemEffects={item.expand!.effects}
                             onItemUse={() => setIsActive(true)}

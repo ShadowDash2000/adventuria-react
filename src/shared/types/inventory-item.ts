@@ -10,6 +10,7 @@ export type InventoryItemRecord = {
     user: RecordIdString;
     item: RecordIdString;
     isActive: boolean;
+    can_use: boolean;
     appliedEffects: RecordIdString[];
     expand?: InventoryItemRecordExpand;
 } & RecordModel;
