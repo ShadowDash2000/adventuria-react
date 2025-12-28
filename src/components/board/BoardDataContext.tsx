@@ -19,15 +19,7 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
         queryKey: ['users'],
     });
     const cells = useQuery({
-        queryFn: () =>
-            pb
-                .collection('cells')
-                .getFullList<CellRecord>({
-                    sort: 'sort',
-                    expand:
-                        'filter.platforms,filter.developers,filter.publishers,' +
-                        'filter.genres,filter.tags,filter.themes,filter.activities',
-                }),
+        queryFn: () => pb.collection('cells').getFullList<CellRecord>({ sort: 'sort' }),
         refetchOnWindowFocus: false,
         queryKey: ['cells'],
     });

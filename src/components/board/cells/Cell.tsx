@@ -1,8 +1,6 @@
 import { Box, type BoxProps, Image } from '@chakra-ui/react';
 import { CellRecord } from '@shared/types/cell';
 import { useAppContext } from '@context/AppContext';
-import { CellTooltip } from './CellTooltip';
-import { CellInfo } from './CellInfoModal';
 
 interface CellProps extends BoxProps {
     cell: CellRecord;
@@ -15,22 +13,22 @@ export const Cell = ({ cell, width, height, ...rest }: CellProps) => {
 
     return (
         <Box position="relative" width={width} height={height} {...rest}>
-            <CellInfo cell={cell}>
-                <Box
-                    top={0}
-                    position="absolute"
-                    outlineWidth=".2vw"
-                    outlineOffset="-.3vw"
-                    outlineStyle="solid"
-                    outlineColor={{ base: 'transparent', _hover: 'border.inverted' }}
-                    width={width}
-                    height={height}
-                >
-                    <CellTooltip cell={cell}>
-                        <Image src={pb.files.getURL(cell, cell.icon)} width="100%" height="100%" />
-                    </CellTooltip>
-                </Box>
-            </CellInfo>
+            <Box
+                top={0}
+                position="absolute"
+                outlineWidth=".2vw"
+                outlineOffset="-.3vw"
+                outlineStyle="solid"
+                outlineColor={{ base: 'transparent', _hover: 'border.inverted' }}
+                width={width}
+                height={height}
+            >
+                <Image
+                    src={pb.files.getURL(cell, cell.icon, { thumb: '640x0' })}
+                    width="100%"
+                    height="100%"
+                />
+            </Box>
         </Box>
     );
 };

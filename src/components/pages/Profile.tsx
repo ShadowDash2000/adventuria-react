@@ -4,6 +4,7 @@ import { CollectionOneFilterProvider } from '@context/CollectionOneFilterContext
 import { Flex } from '@chakra-ui/react';
 import { UserProfile } from '../profile/UserProfile';
 import { ActionsList } from '@components/actions-list/ActionsList';
+import { CellInfoModal } from '@components/board/cells/cell-info/CellInfoModal';
 
 const Profile = () => {
     const { pb } = useAppContext();
@@ -17,6 +18,7 @@ const Profile = () => {
             >
                 <UserProfile />
             </CollectionOneFilterProvider>
+            <CellInfoModal />
             <ActionsList userName={login} />
         </Flex>
     );

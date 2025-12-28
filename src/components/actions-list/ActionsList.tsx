@@ -30,11 +30,7 @@ export const ActionsList = ({ userName, perPage = 10 }: ActionsListProps) => {
                     .map(f => `${f.field} = "${f.value}"`)
                     .join(' && '),
                 sort: '-created',
-                expand:
-                    'activity,cell,user,' +
-                    'cell.filter.platforms,cell.filter.activities,cell.filter.developers,' +
-                    'cell.filter.publishers,cell.filter.genres,cell.filter.tags,' +
-                    'cell.filter.themes',
+                expand: 'activity,cell,user',
             }),
         getNextPageParam: (lastPage, _allPages, lastPageParam) => {
             if (lastPage.page === lastPage.totalPages) return null;

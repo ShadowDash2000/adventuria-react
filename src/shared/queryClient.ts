@@ -15,6 +15,8 @@ export const queryKeys = {
     items: ['items'],
     settings: ['settings'],
     rules: ['rules'],
+    cells: ['cells'],
+    cell: (cellId: RecordIdString) => ['cells', 'cell', cellId],
     inventory: (userId: RecordIdString) => ['inventory', userId],
 } as const;
 
@@ -72,4 +74,12 @@ export const invalidateRules = async () => {
 
 export const invalidateInventory = async (userId: RecordIdString) => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.inventory(userId) });
+};
+
+export const invalidateCells = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.cells });
+};
+
+export const invalidateCell = async (cellId: RecordIdString) => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.cell(cellId) });
 };

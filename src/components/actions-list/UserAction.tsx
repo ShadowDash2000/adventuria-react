@@ -1,21 +1,22 @@
 import { Card, HStack, Text, Image, VStack, DataList, Stack, IconButton } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { type ActionRecord } from '@shared/types/action';
+import type { RecordIdString } from '@shared/types/pocketbase';
 import { useAppContext } from '@context/AppContext';
 import { formatDateLocalized } from '@shared/helpers/helper';
 import { ActionFactory } from '../actions/action-factory';
 import { PlayerAvatar } from '../PlayerAvatar';
 import { InfoTip } from '@ui/toggle-tip';
-import { CellInfo } from '../board/cells/CellInfoModal';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
-import type { RecordIdString } from '@shared/types/pocketbase';
 import { Button } from '@theme/button';
 import { UserActionComment } from '@components/profile/UserActionComment';
+import { useCellsStore } from '@components/board/useCellsStore';
 
 type ActionProps = { action: ActionRecord };
 
 export const UserAction = ({ action }: ActionProps) => {
     const { pb, user: authUser, isAuth } = useAppContext();
+    const openCellInfo = useCellsStore(state => state.openCellInfo);
     const actionController = ActionFactory.get(action.type);
 
     const [isEditing, setIsEditing] = useState(false);
@@ -89,10 +90,9 @@ export const UserAction = ({ action }: ActionProps) => {
                                             aria-label="info"
                                             size="2xs"
                                             colorPalette="gray"
+                                            onClick={() => openCellInfo(action.expand!.cell.id)}
                                         >
-                                            <CellInfo cell={action.expand!.cell}>
-                                                <HiOutlineInformationCircle />
-                                            </CellInfo>
+                                            <HiOutlineInformationCircle />
                                         </IconButton>
                                     </DataList.ItemValue>
                                 </DataList.Item>
