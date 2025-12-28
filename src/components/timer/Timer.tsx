@@ -46,15 +46,15 @@ export const Timer = ({ userId }: TimerProps) => {
                 <IconButton disabled={isActive} _hover={{ bg: 'green' }} onClick={startTimer}>
                     <FaPlay />
                 </IconButton>
-                <Tooltip content="Ссылка для OBS">
-                    <IconButton _hover={{ bg: 'orange' }}>
-                        <Clipboard.Root value={`${window.location.origin}/timer/${userId}`}>
-                            <Clipboard.Trigger asChild>
+                <Clipboard.Root value={`${window.location.origin}/timer/${userId}`}>
+                    <Clipboard.Trigger>
+                        <Tooltip content="Ссылка для OBS">
+                            <IconButton _hover={{ bg: 'orange' }}>
                                 <FaCopy />
-                            </Clipboard.Trigger>
-                        </Clipboard.Root>
-                    </IconButton>
-                </Tooltip>
+                            </IconButton>
+                        </Tooltip>
+                    </Clipboard.Trigger>
+                </Clipboard.Root>
             </ButtonGroup>
         </VStack>
     );
