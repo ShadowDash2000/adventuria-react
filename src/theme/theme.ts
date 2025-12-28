@@ -4,6 +4,7 @@ import { drawerRecipe } from '@theme/drawer.recipe';
 import { cardRecipe } from '@theme/card.recipe';
 import { dialogRecipe } from '@theme/dialog.recipe';
 import { tableRecipe } from '@theme/table.recipe';
+import { segmentGroupRecipe } from '@theme/segment-group.recipe';
 
 export const colorModeConfig = { forcedTheme: 'dark' };
 
@@ -52,6 +53,7 @@ const themeConfig = defineConfig({
             card: cardRecipe,
             dialog: dialogRecipe,
             table: tableRecipe,
+            segmentGroup: segmentGroupRecipe,
         },
     },
 });

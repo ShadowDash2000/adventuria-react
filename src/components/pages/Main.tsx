@@ -1,32 +1,14 @@
-import { useAppContext } from '@context/AppContext';
 import { Box, Spacer } from '@chakra-ui/react';
-import { ActionsList } from '../ActionsList';
-import { CollectionListInfiniteProvider } from '@context/CollectionListInfiniteContext';
-import { Sort } from '@shared/hook/useSort';
 import { Board } from '../board/Board';
+import { ActionsList } from '@components/actions-list/ActionsList';
 
 const Main = () => {
-    const { pb } = useAppContext();
-
     return (
         <>
             <Box maxW="vw">
                 <Board />
                 <Spacer h={10} />
-                <CollectionListInfiniteProvider
-                    collection={pb.collection('actions')}
-                    expand={
-                        'activity,cell,user,' +
-                        'cell.filter.platforms,cell.filter.activities,cell.filter.developers,' +
-                        'cell.filter.publishers,cell.filter.genres,cell.filter.tags,' +
-                        'cell.filter.themes'
-                    }
-                    pageSize={10}
-                    initialSort={new Map([['created', Sort.DESC]])}
-                    refetchOnWindowFocus={false}
-                >
-                    <ActionsList />
-                </CollectionListInfiniteProvider>
+                <ActionsList />
             </Box>
         </>
     );
