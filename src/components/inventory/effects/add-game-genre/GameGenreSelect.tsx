@@ -1,44 +1,44 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useAppContext } from '@context/AppContext';
-import type { TagRecord } from '@shared/types/tag';
+import type { GenreRecord } from '@shared/types/genre';
 import { Combobox, Portal, Spinner, Text, useListCollection } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useDebounce } from '@uidotdev/usehooks';
 import { ComboboxHiddenInput } from '@ui/combobox-hidden-input';
 
-export const GameTagSelect = () => {
+export const GameGenreSelect = () => {
     const { pb } = useAppContext();
     const [inputValue, setInputValue] = useState('');
     const inputValueDebounced = useDebounce(inputValue, 200);
 
-    const { collection, set } = useListCollection<TagRecord>({
+    const { collection, set } = useListCollection<GenreRecord>({
         initialItems: [],
         itemToString: item => item.name,
         itemToValue: item => item.id,
     });
 
-    const tags = useQuery({
+    const genres = useQuery({
         queryFn: () =>
             pb
-                .collection('tags')
-                .getList<TagRecord>(1, 20, {
+                .collection('genres')
+                .getList<GenreRecord>(1, 20, {
                     filter: inputValue.length > 0 ? `name ?~ "${inputValueDebounced}"` : '',
                 }),
         placeholderData: keepPreviousData,
-        queryKey: ['tags', inputValueDebounced],
+        queryKey: ['genres', inputValueDebounced],
     });
 
     useEffect(() => {
-        set(tags.data?.items || []);
-    }, [tags.data]);
+        set(genres.data?.items || []);
+    }, [genres.data]);
 
     return (
         <Combobox.Root collection={collection} openOnClick required>
-            <ComboboxHiddenInput name="tag_id" required />
-            <Combobox.Label>Выберите добавочный тег</Combobox.Label>
+            <ComboboxHiddenInput name="genre_id" required />
+            <Combobox.Label>Выберите добавочный жанр</Combobox.Label>
             <Combobox.Control>
                 <Combobox.Input
-                    placeholder="Поиск тегов"
+                    placeholder="Поиск жанров"
                     onChange={e => setInputValue(e.target.value)}
                 />
                 <Combobox.IndicatorGroup>
@@ -49,13 +49,13 @@ export const GameTagSelect = () => {
             <Portal>
                 <Combobox.Positioner>
                     <Combobox.Content>
-                        {tags.isPending ? (
+                        {genres.isPending ? (
                             <Spinner />
-                        ) : tags.isError ? (
-                            <Text>Error: {tags.error?.message}</Text>
+                        ) : genres.isError ? (
+                            <Text>Error: {genres.error?.message}</Text>
                         ) : (
                             <>
-                                <Combobox.Empty>Теги не найдены</Combobox.Empty>
+                                <Combobox.Empty>Жанры не найдены</Combobox.Empty>
                                 {collection.items.map(item => (
                                     <Combobox.Item item={item} key={item.id}>
                                         {item.name}
