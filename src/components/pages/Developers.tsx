@@ -3,7 +3,9 @@ import { Flex } from '@theme/flex';
 import { Avatar } from '@components/Avatar';
 import { VideoAutoplay } from '@ui/video-autoplay';
 import KiryuGif from '@public/kiryu.gif';
-import ShadodImage from '@public/shadod.jpg';
+import ShadodImage from '@public/developers/shadod.jpg';
+import AtsImage from '@public/developers/jeffrey.png';
+import MboImage from '@public/developers/coi.jpeg';
 import ShadodPushUpsGif from '@public/developers/shadod-push-ups.gif';
 import StrandedDeepVideo from '@public/developers/stranded-deep.mp4';
 import AtsDropVideo from '@public/developers/ats-drop.mp4';
@@ -56,14 +58,14 @@ const Developers = () => {
                     </Text>
                 </GridItem>
                 <GridItem display="flex" flexDir="column" alignItems="center" gap={2}>
-                    <Avatar src={ShadodImage} outlineColor="#323ca8" w={24} h={24} />
+                    <Avatar src={AtsImage} outlineColor="#323ca8" w={24} h={24} />
                     <Text fontSize="xl">ArcherTenSixteen</Text>
                     <Text color="fg.muted" textAlign="center">
                         Дизайн поля, клеток и предметов. Генерация треков для Радиопопии.
                     </Text>
                 </GridItem>
                 <GridItem display="flex" flexDir="column" alignItems="center" gap={2} colSpan={2}>
-                    <Avatar src={ShadodImage} outlineColor="lime" w={24} h={24} />
+                    <Avatar src={MboImage} outlineColor="#007324" w={24} h={24} />
                     <Text fontSize="xl">Мистер Большое Очко</Text>
                     <Text color="fg.muted" textAlign="center">
                         Frontend
