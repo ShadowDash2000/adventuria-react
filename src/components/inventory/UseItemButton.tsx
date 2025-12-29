@@ -11,7 +11,6 @@ import type { RecordIdString } from '@shared/types/pocketbase';
 import type { EffectRecord } from '@shared/types/effect';
 
 interface UseItemButtonProps {
-    isActive: boolean;
     canUse: boolean;
     invItemId: RecordIdString;
     itemEffects: EffectRecord[];
@@ -19,7 +18,6 @@ interface UseItemButtonProps {
 }
 
 export const UseItemButton = ({
-    isActive,
     canUse,
     invItemId,
     itemEffects,
@@ -51,7 +49,7 @@ export const UseItemButton = ({
 
     return (
         <>
-            {needModal && !isActive && canUse ? (
+            {needModal && canUse ? (
                 <Dialog.Root
                     lazyMount
                     unmountOnExit
@@ -84,7 +82,7 @@ export const UseItemButton = ({
                 </Dialog.Root>
             ) : (
                 <Button
-                    disabled={isActive || !canUse}
+                    disabled={!canUse}
                     colorPalette="green"
                     onClick={async () => {
                         try {

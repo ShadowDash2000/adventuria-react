@@ -6,11 +6,12 @@ import { ButtonGroup, CloseButton, Dialog, Portal } from '@chakra-ui/react';
 import { useState } from 'react';
 
 interface DropItemButtonProps {
+    canDrop: boolean;
     invItemId: RecordIdString;
     onItemDrop?: () => void;
 }
 
-export const DropItemButton = ({ invItemId, onItemDrop }: DropItemButtonProps) => {
+export const DropItemButton = ({ canDrop, invItemId, onItemDrop }: DropItemButtonProps) => {
     const { pb, user } = useAppAuthContext();
     const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -32,7 +33,9 @@ export const DropItemButton = ({ invItemId, onItemDrop }: DropItemButtonProps) =
             unmountOnExit
         >
             <Dialog.Trigger asChild>
-                <Button colorPalette="red">Выбросить</Button>
+                <Button disabled={!canDrop} colorPalette="red">
+                    Выбросить
+                </Button>
             </Dialog.Trigger>
             <Portal>
                 <Dialog.Backdrop></Dialog.Backdrop>
