@@ -49,7 +49,7 @@ export const Timer = ({ userId }: TimerProps) => {
                 <Clipboard.Root value={`${window.location.origin}/timer/${userId}`}>
                     <Clipboard.Trigger>
                         <Tooltip content="Ссылка для OBS">
-                            <IconButton _hover={{ bg: 'orange' }}>
+                            <IconButton _hover={{ bg: 'orange' }} as="div">
                                 <FaCopy />
                             </IconButton>
                         </Tooltip>
