@@ -3,12 +3,15 @@ import { ButtonGroup, DataList, Flex, Heading, Image } from '@chakra-ui/react';
 import { formatDateLocalized } from '@shared/helpers/helper';
 import { Link } from 'react-router-dom';
 import { Button } from '@theme/button';
+import { useAppContext } from '@context/AppContext';
 
 interface ActivityInfoProps {
     activity: ActivityRecord;
 }
 
 export const ActivityInfo = ({ activity }: ActivityInfoProps) => {
+    const { pb } = useAppContext();
+
     const platforms = activity.expand?.platforms
         ? activity.expand?.platforms?.map(p => p.name).join(', ')
         : '-';
@@ -30,7 +33,7 @@ export const ActivityInfo = ({ activity }: ActivityInfoProps) => {
         <>
             <Flex direction="column" align="center">
                 <Heading textAlign="center">{activity.name}</Heading>
-                <Image src={activity.cover} />
+                <Image src={activity.cover || pb.files.getURL(activity, activity.cover_alt)} />
             </Flex>
             {activity.type === ActivityType.Game && (
                 <>

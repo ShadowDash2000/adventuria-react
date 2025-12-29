@@ -63,7 +63,7 @@ export const ActivitiesWheelContent = () => {
     const wheelItems = activities.data
         ? activities.data.map(activity => ({
               key: activity.id,
-              image: activity.cover,
+              image: activity.cover || pb.files.getURL(activity, activity.cover_alt),
               title: activity.name,
           }))
         : [];
