@@ -127,6 +127,9 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
                 setIsRolling(false);
                 await invalidateAllActions();
                 await invalidateUser();
+                if (diceSceneRef.current) {
+                    diceSceneRef.current.style.opacity = '1';
+                }
             }, FADEOUT_DURATION * 1000);
         }, duration * 1000);
     };
