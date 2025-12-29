@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import { Card, Image } from '@chakra-ui/react';
 import { useAppContext } from '@context/AppContext';
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
-import { Tooltip } from '@ui/tooltip';
-import parse from 'html-react-parser';
 import { UseItemButton } from './UseItemButton';
 import { DropItemButton } from './DropItemButton';
+import { GlossaryItemDetailModal } from '@components/glossary/GlossaryItemDetailModal';
 
 interface InventoryItemProps {
     invItem: InventoryItemRecord;
@@ -24,15 +23,10 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
 
     return (
         <Card.Root>
-            <Card.Body gap="2">
-                <Tooltip
-                    content={parse(item.description)}
-                    contentProps={{ fontSize: 'lg' }}
-                    disabled={!item.description}
-                    openDelay={100}
-                >
-                    <Image src={icon} width="100%" height="100%" />
-                </Tooltip>
+            <Card.Body alignItems="center" gap={2}>
+                <GlossaryItemDetailModal item={item}>
+                    <Image src={icon} width="100%" height="100%" _hover={{ cursor: 'pointer' }} />
+                </GlossaryItemDetailModal>
                 <Card.Title mt="2">{item.name}</Card.Title>
             </Card.Body>
             <Card.Footer flexDirection="column">
