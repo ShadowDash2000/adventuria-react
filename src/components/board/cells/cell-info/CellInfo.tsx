@@ -170,7 +170,10 @@ export const CellInfo = ({ cellId }: CellInfoProps) => {
                             {activities.map(activity => (
                                 <GridItem key={activity.id} display="flex" flexDir="column">
                                     <Image
-                                        src={activity.cover}
+                                        src={
+                                            activity.cover ||
+                                            pb.files.getURL(activity, activity.cover_alt)
+                                        }
                                         width="100%"
                                         aspectRatio="2/3"
                                         objectFit="cover"

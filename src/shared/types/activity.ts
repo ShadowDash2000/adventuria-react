@@ -31,6 +31,7 @@ export type ActivityRecord = {
     hltb_id: number;
     hltb_campaign_time: number;
     cover: string;
+    cover_alt: RecordIdString;
     checksum: string;
     expand?: ActivityRecordExpand;
 } & RecordModel;
