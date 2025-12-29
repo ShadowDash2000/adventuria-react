@@ -11,6 +11,7 @@ import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
+import { queryKeys } from '@shared/queryClient';
 
 export const ActivitiesWheelContent = () => {
     const { pb, user } = useAppAuthContext();
@@ -24,11 +25,15 @@ export const ActivitiesWheelContent = () => {
                 .collection('actions')
                 .getFirstListItem<ActionRecord>(`user = "${user.id}"`, {
                     sort: '-created',
-                    fields: 'items_list',
+                    expand: 'cell',
                 }),
         refetchOnWindowFocus: false,
-        queryKey: ['action'],
+        queryKey: queryKeys.latestAction,
     });
+
+    const audioPresetFilter = action.data?.expand?.cell?.audio_preset
+        ? { audioPresetId: action.data.expand.cell.audio_preset }
+        : { audioPresetSlug: 'roll-wheel' };
 
     const activities = useQuery({
         queryFn: () =>
@@ -45,8 +50,9 @@ export const ActivitiesWheelContent = () => {
 
     const { spinning, handleSpin, currentItemIndex, setCurrentItemIndex, audioPreset } = useWheel({
         wheelRef,
+        enabled: action.isSuccess,
         spinRequest: () => rollWheelRequest(pb.authStore.token),
-        audioPresetSlug: 'roll-wheel',
+        ...audioPresetFilter,
     });
 
     useEffect(() => {

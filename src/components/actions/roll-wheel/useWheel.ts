@@ -7,12 +7,24 @@ import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { useRollWheelStore } from './useRollWheelStore';
 
-export interface UseRollWheelProps {
+interface RollWheelBaseProps {
     wheelRef: RefObject<WheelOFortuneHandle | null>;
     spinRequest: () => Promise<SpinResult>;
-    audioPresetSlug: string;
     onSpinComplete?: (result: SpinResultData) => Promise<void> | void;
+    enabled?: boolean;
 }
+
+interface RollWheelPropsWithSlug extends RollWheelBaseProps {
+    audioPresetSlug: string;
+    audioPresetId?: never;
+}
+
+interface RollWheelPropsWithId extends RollWheelBaseProps {
+    audioPresetSlug?: never;
+    audioPresetId: string;
+}
+
+type RollWheelProps = RollWheelPropsWithSlug | RollWheelPropsWithId;
 
 export type SpinSuccess = { success: true; data: SpinResultData; error?: never };
 export type SpinError = { success: false; error: string; data?: never };
@@ -24,12 +36,19 @@ export const useWheel = ({
     wheelRef,
     spinRequest,
     audioPresetSlug,
+    audioPresetId,
+    enabled = true,
     onSpinComplete,
-}: UseRollWheelProps) => {
+}: RollWheelProps) => {
     const { pb } = useAppAuthContext();
     const { play } = useAudioPlayer(AudioKey.music);
     const { isSpinning, setIsSpinning } = useRollWheelStore();
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
+    const audioFilter = audioPresetSlug
+        ? `slug = "${audioPresetSlug}"`
+        : audioPresetId
+          ? `id = "${audioPresetId}"`
+          : '';
 
     useEffect(() => {
         return () => setIsSpinning(false);
@@ -39,7 +58,7 @@ export const useWheel = ({
         queryFn: async () => {
             return pb
                 .collection('audio_presets')
-                .getFirstListItem<AudioPresetRecord>(`slug = "${audioPresetSlug}"`, {
+                .getFirstListItem<AudioPresetRecord>(audioFilter, {
                     expand: 'audio',
                     fields:
                         'audio,' +
@@ -47,7 +66,8 @@ export const useWheel = ({
                 });
         },
         refetchOnWindowFocus: false,
-        queryKey: ['roll-wheel-audio-preset', audioPresetSlug],
+        queryKey: ['roll-wheel-audio-preset', audioPresetSlug, audioPresetId],
+        enabled: enabled,
     });
 
     const handleSpin = async () => {
