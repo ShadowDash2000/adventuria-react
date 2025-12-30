@@ -9,6 +9,7 @@ import {
 import { CloseButton, Dialog, Flex, Portal } from '@chakra-ui/react';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import type { EffectRecord } from '@shared/types/effect';
+import { useState } from 'react';
 
 interface UseItemButtonProps {
     canUse: boolean;
@@ -26,6 +27,7 @@ export const UseItemButton = ({
     const { pb } = useAppContext();
     const incrementKbdBlock = useKbdSettingsStore(state => state.incrementAll);
     const decrementKbdBlock = useKbdSettingsStore(state => state.decrementAll);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (formData: FormData) => {
         try {
@@ -67,7 +69,11 @@ export const UseItemButton = ({
                                     <form action={handleSubmit}>
                                         {effects.map((effect, i) => effect(i))}
                                         <Flex justifyContent="center" pt={5}>
-                                            <Button type="submit" colorPalette="green">
+                                            <Button
+                                                disabled={loading}
+                                                type="submit"
+                                                colorPalette="green"
+                                            >
                                                 Сохранить
                                             </Button>
                                         </Flex>
@@ -86,11 +92,14 @@ export const UseItemButton = ({
                     colorPalette="green"
                     onClick={async () => {
                         try {
+                            setLoading(true);
                             await itemUseRequest(pb.authStore.token, invItemId);
                             await invalidateAllActions();
                             onItemUse?.();
                         } catch (e) {
                             console.error(e);
+                        } finally {
+                            setLoading(false);
                         }
                     }}
                 >

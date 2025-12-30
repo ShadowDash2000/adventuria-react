@@ -13,6 +13,7 @@ export const DoneModal = () => {
     const [actionType, setActionType] = useState<string>('');
     const [openConfirm, setOpenConfirm] = useState(false);
     const [titleConfirm, setTitleConfirm] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleDone = async (actionType: string) => {
         const res = await doneRequest(pb.authStore.token, actionType, content);
@@ -99,14 +100,25 @@ export const DoneModal = () => {
                                             <Dialog.Body>
                                                 <ButtonGroup>
                                                     <Button
+                                                        disabled={loading}
                                                         colorPalette="red"
                                                         onClick={() => setOpenConfirm(false)}
                                                     >
                                                         Отмена
                                                     </Button>
                                                     <Button
+                                                        disabled={loading}
                                                         colorPalette="green"
-                                                        onClick={() => handleDone(actionType)}
+                                                        onClick={async () => {
+                                                            try {
+                                                                setLoading(true);
+                                                                await handleDone(actionType);
+                                                            } catch (e) {
+                                                                console.error(e);
+                                                            } finally {
+                                                                setLoading(false);
+                                                            }
+                                                        }}
                                                     >
                                                         Подтвердить
                                                     </Button>
