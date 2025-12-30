@@ -28,11 +28,15 @@ export const ItemsWheelContent = () => {
                 .collection('actions')
                 .getFirstListItem<ActionRecord>(`user = "${user.id}"`, {
                     sort: '-created',
-                    fields: 'items_list',
+                    expand: 'cell',
                 }),
         refetchOnWindowFocus: false,
         queryKey: ['action'],
     });
+
+    const audioPresetFilter = action.data?.expand?.cell?.audio_preset
+        ? { audioPresetId: action.data.expand.cell.audio_preset }
+        : { audioPresetSlug: 'roll-items' };
 
     const items = useQuery({
         queryFn: () =>
@@ -48,11 +52,12 @@ export const ItemsWheelContent = () => {
 
     const { spinning, handleSpin, currentItemIndex, setCurrentItemIndex, audioPreset } = useWheel({
         wheelRef,
+        enabled: action.isSuccess,
         spinRequest: () => rollItemOnCellRequest(pb.authStore.token),
-        audioPresetSlug: 'roll-items',
         onSpinComplete: async () => {
             await invalidateUser();
         },
+        ...audioPresetFilter,
     });
 
     useEffect(() => {
