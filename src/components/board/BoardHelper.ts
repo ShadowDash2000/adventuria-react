@@ -28,6 +28,10 @@ export class BoardHelper {
             usersByCellIndex.set(cellIndex, [...prevUsers, user]);
         }
 
+        usersByCellIndex.forEach(users => {
+            users.sort((a, b) => new Date(a.updated).getTime() - new Date(b.updated).getTime());
+        });
+
         const lines: CellBoard[][] = [];
         let currentLine: CellBoard[] = [];
         let cellIndex = 0;

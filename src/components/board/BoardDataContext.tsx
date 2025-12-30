@@ -13,7 +13,7 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
             pb
                 .collection('users')
                 .getFullList<UserRecord>({
-                    fields: 'id,name,collectionName,avatar,color,cellsPassed',
+                    fields: 'id,updated,name,collectionName,avatar,color,cellsPassed',
                 }),
         refetchOnWindowFocus: false,
         queryKey: ['users'],
