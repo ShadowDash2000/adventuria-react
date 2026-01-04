@@ -18,6 +18,7 @@ import { queryKeys } from '@shared/queryClient';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import type { ClientResponseError } from 'pocketbase';
 import type { CellRecord } from '@shared/types/cell';
+import { Tooltip } from '@ui/tooltip';
 
 interface CellInfoProps {
     cellId: RecordIdString;
@@ -169,15 +170,20 @@ export const CellInfo = ({ cellId }: CellInfoProps) => {
                         <Grid templateColumns="repeat(3, 1fr)" gap={2}>
                             {activities.map(activity => (
                                 <GridItem key={activity.id} display="flex" flexDir="column">
-                                    <Image
-                                        src={
-                                            activity.cover ||
-                                            pb.files.getURL(activity, activity.cover_alt)
-                                        }
-                                        width="100%"
-                                        aspectRatio="2/3"
-                                        objectFit="cover"
-                                    />
+                                    <Tooltip
+                                        content={`Время прохождения: ${activity.hltb_campaign_time} ч.`}
+                                        disabled={activity.hltb_campaign_time <= 0}
+                                    >
+                                        <Image
+                                            src={
+                                                activity.cover ||
+                                                pb.files.getURL(activity, activity.cover_alt)
+                                            }
+                                            width="100%"
+                                            aspectRatio="2/3"
+                                            objectFit="cover"
+                                        />
+                                    </Tooltip>
                                     <Text>{activity.name}</Text>
                                 </GridItem>
                             ))}
