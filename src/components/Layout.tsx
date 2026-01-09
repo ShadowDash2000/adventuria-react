@@ -1,8 +1,12 @@
 import { Outlet, ScrollRestoration } from 'react-router-dom';
 import { Header } from './Header';
 import { Flex } from '@chakra-ui/react';
+import { Toaster } from '@ui/toaster';
+import { useWheelIncrease } from '@components/notifications/wheel-increase';
 
 const Layout = () => {
+    useWheelIncrease();
+
     return (
         <>
             <Header />
@@ -10,6 +14,7 @@ const Layout = () => {
                 <Outlet />
             </Flex>
             <ScrollRestoration />
+            <Toaster />
         </>
     );
 };
