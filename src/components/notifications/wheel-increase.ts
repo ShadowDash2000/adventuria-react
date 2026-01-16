@@ -1,4 +1,4 @@
-import { useAppAuthContext } from '@context/AppContext';
+import { useAppContext } from '@context/AppContext';
 import { useEffect, useState } from 'react';
 import { toaster } from '@ui/toaster';
 
@@ -12,7 +12,7 @@ const wordMap = new Map<string, string>([
 const plural = new Intl.PluralRules('ru-RU');
 
 export const useWheelIncrease = () => {
-    const { isAuth, user } = useAppAuthContext();
+    const { isAuth, user } = useAppContext();
     const [wheelCount, setWheelCount] = useState<number | null>(
         isAuth ? user.itemWheelsCount : null,
     );
@@ -36,5 +36,5 @@ export const useWheelIncrease = () => {
         } else if (wheelCount > user.itemWheelsCount) {
             setWheelCount(user.itemWheelsCount);
         }
-    }, [isAuth, user.itemWheelsCount]);
+    }, [isAuth, user?.itemWheelsCount]);
 };
