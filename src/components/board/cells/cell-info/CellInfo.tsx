@@ -68,8 +68,8 @@ export const CellInfo = ({ cellId }: CellInfoProps) => {
             <Dialog.Header>
                 <Dialog.Title>{cell.name}</Dialog.Title>
             </Dialog.Header>
-            <Dialog.Body>
-                <Stack>
+            <Dialog.Body display="flex" overflow="hidden">
+                <Stack overflow="hidden auto">
                     <DataList.Root orientation="horizontal">
                         <DataList.Item>
                             <DataList.ItemLabel>Очков за клетку</DataList.ItemLabel>

@@ -3,11 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import type { ItemRecord } from '@shared/types/item';
 import NotFound from '@components/pages/404';
-import { For, Grid, GridItem, Spinner, Text } from '@chakra-ui/react';
+import { For, Grid, GridItem, type GridProps, Spinner, Text } from '@chakra-ui/react';
 import type { ClientResponseError } from 'pocketbase';
 import { GlossaryItem } from './GlossaryItem';
 
-export const GlossaryContent = () => {
+export const GlossaryContent = ({ ...props }: GridProps) => {
     const { pb } = useAppContext();
 
     const items = useQuery({
@@ -29,7 +29,7 @@ export const GlossaryContent = () => {
     }
 
     return (
-        <Grid templateColumns="repeat(3, 1fr)" gapX={4}>
+        <Grid {...props}>
             <For each={items.data}>
                 {item => (
                     <GridItem key={item.id}>

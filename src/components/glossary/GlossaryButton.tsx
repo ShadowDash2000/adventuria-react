@@ -20,8 +20,12 @@ export const GlossaryButton = () => {
                         <Dialog.Header>
                             <Dialog.Title>Глоссарий</Dialog.Title>
                         </Dialog.Header>
-                        <Dialog.Body>
-                            <GlossaryContent />
+                        <Dialog.Body display="flex" overflow="hidden">
+                            <GlossaryContent
+                                templateColumns="repeat(3, 1fr)"
+                                gapX={4}
+                                overflow="hidden auto"
+                            />
                         </Dialog.Body>
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />

@@ -46,3 +46,9 @@ body {
 a {
     text-decoration: underline;
 }
+
+@media (overflow-block: scroll) {
+    * {
+        scrollbar-color: white transparent;
+    }
+}

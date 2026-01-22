@@ -7,7 +7,7 @@ import type { ClientResponseError } from 'pocketbase';
 import type { UserRecord } from '@shared/types/user';
 import { LeaderboardItem } from './LeaderboardItem';
 
-export const LeaderboardContent = () => {
+export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
     const { pb } = useAppContext();
 
     const users = useQuery({
@@ -28,7 +28,7 @@ export const LeaderboardContent = () => {
     }
 
     return (
-        <Table.Root w="full">
+        <Table.Root {...props}>
             <Table.Header>
                 <Table.Row bg="none">
                     <Table.ColumnHeader></Table.ColumnHeader>

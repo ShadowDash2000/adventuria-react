@@ -2,12 +2,12 @@ import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import NotFound from '@components/pages/404';
-import { Flex, Spinner, Text } from '@chakra-ui/react';
+import { Flex, type FlexProps, Spinner, Text } from '@chakra-ui/react';
 import type { ClientResponseError } from 'pocketbase';
 import type { RuleRecord } from '@shared/types/rules';
 import { RulesItem } from '@components/rules/RulesItem';
 
-export const RulesContent = () => {
+export const RulesContent = ({ ...props }: FlexProps) => {
     const { pb } = useAppContext();
 
     const rules = useQuery({
@@ -28,7 +28,7 @@ export const RulesContent = () => {
     }
 
     return (
-        <Flex gap={4} direction="column">
+        <Flex {...props}>
             {rules.data.map((rule, index) => (
                 <RulesItem key={rule.id} rule={rule} defaultOpen={index === 0} />
             ))}
