@@ -11,6 +11,7 @@ import { HiOutlineInformationCircle } from 'react-icons/hi';
 import { Button } from '@theme/button';
 import { UserActionComment } from '@components/profile/UserActionComment';
 import { useCellsStore } from '@components/board/useCellsStore';
+import { ActivityLinkButtons } from '@components/actions/roll-wheel/activities-wheel/ActivityLinkButtons';
 
 type ActionProps = { action: ActionRecord };
 
@@ -24,6 +25,7 @@ export const UserAction = ({ action }: ActionProps) => {
     const [error, setError] = useState<string | null>(null);
     const [comment, setComment] = useState<string>(action.comment);
     const [draft, setDraft] = useState<string>(comment);
+    const activity = action.expand?.activity;
 
     const canEdit = isAuth && authUser.id && action.user === authUser.id;
 
@@ -73,9 +75,22 @@ export const UserAction = ({ action }: ActionProps) => {
                     align={{ base: 'flex-start', mdDown: 'center' }}
                     direction={{ base: 'row', mdDown: 'column' }}
                 >
-                    <VStack minW="15%">
-                        <Image src={action.expand?.activity?.cover} />
-                        <Text>{action.expand?.activity?.name}</Text>
+                    <VStack minW="15%" flexShrink={0}>
+                        {(activity && (
+                            <ActivityLinkButtons
+                                activity={activity}
+                                justify="center"
+                                size="sm"
+                                gap={0}
+                            />
+                        )) ||
+                            null}
+                        <Image src={activity?.cover} />
+                        <Text>{activity?.name}</Text>
+                        {(activity?.hltb_id && (
+                            <Text>Время прохождения: {activity.hltb_campaign_time} ч.</Text>
+                        )) ||
+                            null}
                     </VStack>
                     <VStack w="full" align="start">
                         <VStack>
@@ -131,7 +146,7 @@ export const UserAction = ({ action }: ActionProps) => {
                     </VStack>
                 </Stack>
             </Card.Body>
-            <Card.Footer pt={5}>
+            <Card.Footer pt={5} justifyContent="center">
                 {isEditing ? (
                     <HStack gap="3">
                         <Button

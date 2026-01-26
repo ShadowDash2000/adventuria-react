@@ -1,9 +1,8 @@
 import { ActivityRecord, ActivityType } from '@shared/types/activity';
-import { ButtonGroup, DataList, Flex, Heading, Image } from '@chakra-ui/react';
+import { DataList, Flex, Heading, Image } from '@chakra-ui/react';
 import { formatDateLocalized } from '@shared/helpers/helper';
-import { Link } from 'react-router-dom';
-import { Button } from '@theme/button';
 import { useAppContext } from '@context/AppContext';
+import { ActivityLinkButtons } from '@components/actions/roll-wheel/activities-wheel/ActivityLinkButtons';
 
 interface ActivityInfoProps {
     activity: ActivityRecord;
@@ -89,36 +88,7 @@ export const ActivityInfo = ({ activity }: ActivityInfoProps) => {
                             <DataList.ItemValue>{themes}</DataList.ItemValue>
                         </DataList.Item>
                     </DataList.Root>
-                    <ButtonGroup justify="center" py={4}>
-                        {activity.steam_app_id > 0 && (
-                            <Button asChild>
-                                <Link
-                                    to={`https://store.steampowered.com/app/${activity.steam_app_id}`}
-                                    target="_blank"
-                                >
-                                    Steam
-                                </Link>
-                            </Button>
-                        )}
-                        {activity.hltb_id > 0 && (
-                            <Button asChild>
-                                <Link
-                                    to={`https://howlongtobeat.com/game/${activity.hltb_id}`}
-                                    target="_blank"
-                                >
-                                    HLTB
-                                </Link>
-                            </Button>
-                        )}
-                        <Button asChild>
-                            <Link
-                                to={`https://www.igdb.com/games/${activity.slug}`}
-                                target="_blank"
-                            >
-                                IGDB
-                            </Link>
-                        </Button>
-                    </ButtonGroup>
+                    <ActivityLinkButtons activity={activity} justify="center" py={4} />
                 </>
             )}
         </>

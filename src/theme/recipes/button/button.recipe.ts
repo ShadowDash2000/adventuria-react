@@ -1,7 +1,7 @@
 import { defineRecipe } from '@chakra-ui/react';
 
 export const buttonRecipe = defineRecipe({
-    className: 'button',
+    className: 'adventuria-button',
     base: {
         display: 'inline-flex',
         position: 'relative',
@@ -41,5 +41,6 @@ export const buttonRecipe = defineRecipe({
             orange: { '--btn-bg': 'colors.orange', _hover: { '--btn-bg': 'colors.orange.hover' } },
             purple: { '--btn-bg': 'colors.purple', _hover: { '--btn-bg': 'colors.purple.hover' } },
         },
+        size: { sm: { px: '{spacing.8}', h: 8, fontSize: 'sm' } },
     },
 });
