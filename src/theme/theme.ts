@@ -9,7 +9,11 @@ import { segmentGroupRecipe } from '@theme/segment-group.recipe';
 export const colorModeConfig = { forcedTheme: 'dark' };
 
 const themeConfig = defineConfig({
-    globalCss: { body: { fontSize: 'sm' } },
+    globalCss: {
+        body: { fontSize: 'sm' },
+        ul: { pl: 4, listStyleType: '"— "' },
+        ol: { pl: 4, listStyleType: 'decimal' },
+    },
     theme: {
         tokens: {
             fonts: {
