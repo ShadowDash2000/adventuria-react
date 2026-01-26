@@ -76,21 +76,29 @@ export const UserAction = ({ action }: ActionProps) => {
                     direction={{ base: 'row', mdDown: 'column' }}
                 >
                     <VStack minW="15%" flexShrink={0}>
-                        {(activity && (
-                            <ActivityLinkButtons
-                                activity={activity}
-                                justify="center"
-                                size="sm"
-                                gap={0}
-                            />
-                        )) ||
-                            null}
-                        <Image src={activity?.cover} />
-                        <Text>{activity?.name}</Text>
-                        {(activity?.hltb_id && (
-                            <Text>Время прохождения: {activity.hltb_campaign_time} ч.</Text>
-                        )) ||
-                            null}
+                        {activity && (
+                            <>
+                                <ActivityLinkButtons
+                                    activity={activity}
+                                    justify="center"
+                                    size="sm"
+                                    gap={0}
+                                />
+                                <Image
+                                    w={220}
+                                    aspectRatio="2/3"
+                                    objectFit="cover"
+                                    src={
+                                        activity.cover ||
+                                        pb.files.getURL(activity, activity.cover_alt)
+                                    }
+                                />
+                                <Text>{activity.name}</Text>
+                                {activity.hltb_campaign_time > 0 && (
+                                    <Text>Время прохождения: {activity.hltb_campaign_time} ч.</Text>
+                                )}
+                            </>
+                        )}
                     </VStack>
                     <VStack w="full" align="start">
                         <VStack>

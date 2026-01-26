@@ -60,7 +60,9 @@ export const ActivityInfo = ({ activity }: ActivityInfoProps) => {
                         <DataList.Item pt="4">
                             <DataList.ItemLabel>Время прохождения</DataList.ItemLabel>
                             <DataList.ItemValue>
-                                {activity.hltb_id ? `${activity.hltb_campaign_time} ч.` : '-'}
+                                {activity.hltb_campaign_time > 0
+                                    ? `${activity.hltb_campaign_time} ч.`
+                                    : '-'}
                             </DataList.ItemValue>
                         </DataList.Item>
                         <DataList.Item pt="4">
