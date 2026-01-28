@@ -1,6 +1,6 @@
 import { Button } from '@theme/button';
 import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
-import { invalidateAllActions } from '@shared/queryClient';
+import { invalidateAllActions, invalidateUser } from '@shared/queryClient';
 import { useAppContext } from '@context/AppContext';
 import {
     EffectFactory,
@@ -30,22 +30,29 @@ export const UseItemButton = ({
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (formData: FormData) => {
-        try {
-            await itemUseRequest(pb.authStore.token, invItemId, Object.fromEntries(formData));
-            decrementKbdBlock();
-            await invalidateAllActions();
-            onItemUse?.();
-        } catch (e) {
-            console.error(e);
-        }
+        await itemUseRequest(pb.authStore.token, invItemId, Object.fromEntries(formData));
+        decrementKbdBlock();
+        await invalidateAllActions();
+        await invalidateUser();
+        onItemUse?.();
+    };
+
+    const handleItemUse = async () => {
+        await itemUseRequest(pb.authStore.token, invItemId);
+        await invalidateAllActions();
+        await invalidateUser();
+        onItemUse?.();
     };
 
     const effects =
-        itemEffects.entries()!.reduce((prev, [, effect]) => {
-            const effectFactory = EffectFactory.get(effect.type);
-            if (effectFactory === null) return prev;
-            return [...prev, effectFactory];
-        }, [] as Type_Effect_Creator[]) || [];
+        itemEffects.entries()!.reduce(
+            (prev, [, effect]) => {
+                const effectFactory = EffectFactory.get(effect.type);
+                if (effectFactory === null) return prev;
+                return [...prev, { effect: effect, effectCreator: effectFactory }];
+            },
+            [] as { effect: EffectRecord; effectCreator: Type_Effect_Creator }[],
+        ) || [];
 
     const needModal = effects.length > 0;
 
@@ -66,8 +73,21 @@ export const UseItemButton = ({
                             <Dialog.Content>
                                 <Dialog.Header />
                                 <Dialog.Body>
-                                    <form action={handleSubmit}>
-                                        {effects.map((effect, i) => effect(i))}
+                                    <form
+                                        action={formData => {
+                                            setLoading(true);
+                                            handleSubmit(formData)
+                                                .catch(e => console.error(e))
+                                                .finally(() => setLoading(false));
+                                        }}
+                                    >
+                                        {effects.map((effect, i) =>
+                                            effect.effectCreator({
+                                                invItemId,
+                                                effectId: effect.effect.id,
+                                                key: i,
+                                            }),
+                                        )}
                                         <Flex justifyContent="center" pt={5}>
                                             <Button
                                                 disabled={loading}
@@ -90,17 +110,11 @@ export const UseItemButton = ({
                 <Button
                     disabled={!canUse}
                     colorPalette="green"
-                    onClick={async () => {
-                        try {
-                            setLoading(true);
-                            await itemUseRequest(pb.authStore.token, invItemId);
-                            await invalidateAllActions();
-                            onItemUse?.();
-                        } catch (e) {
-                            console.error(e);
-                        } finally {
-                            setLoading(false);
-                        }
+                    onClick={() => {
+                        setLoading(true);
+                        handleItemUse()
+                            .catch(e => console.error(e))
+                            .finally(() => setLoading(false));
                     }}
                 >
                     Использовать

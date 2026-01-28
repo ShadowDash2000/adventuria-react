@@ -1,6 +1,6 @@
 import { GameGenreSelect } from './GameGenreSelect';
-import type { Key } from 'react';
+import type { EffectCreatorProps } from '../effect-factory';
 
-export const createAddGameGenre = (key?: Key) => {
+export const createAddGameGenre = ({ key }: EffectCreatorProps) => {
     return <GameGenreSelect key={key} />;
 };

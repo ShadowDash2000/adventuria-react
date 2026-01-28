@@ -1,6 +1,6 @@
 import { ChooseGameSelect } from './ChooseGameSelect';
-import type { Key } from 'react';
+import type { EffectCreatorProps } from '../effect-factory';
 
-export const createChooseGame = (key?: Key) => {
+export const createChooseGame = ({ key }: EffectCreatorProps) => {
     return <ChooseGameSelect key={key} />;
 };
