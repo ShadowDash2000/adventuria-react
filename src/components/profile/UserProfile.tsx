@@ -38,7 +38,7 @@ export const UserProfile = () => {
         <Flex variant="solid" align="center" flexDir="column" py={4} gap={2}>
             <VStack w="40%">
                 <Box pos="relative">
-                    <PlayerAvatar user={user} />
+                    <PlayerAvatar user={user} w={40} h={40} />
                     {user.is_stream_live && (
                         <Float placement="bottom-end">
                             <Circle bg="red.solid" w={4} h={4} />
