@@ -15,7 +15,9 @@ export function performRoll(
     const y = randomY + roll.y;
 
     element.style.transition = `transform ${durationSec}s ease-in-out`;
-    performRotation(element, { x: x, y: y });
+    requestAnimationFrame(() => {
+        performRotation(element, { x: x, y: y });
+    });
 
     return { x: x, y: y, roll: roll.value };
 }
