@@ -1,9 +1,10 @@
+import type { CSSProperties } from 'react';
 import { Collapsible, Stack, VStack } from '@chakra-ui/react';
 import { ActionTextEditor } from '@components/profile/ActionTextEditor';
 import type { HTMLContent } from '@tiptap/react';
 import { Button } from '@theme/button';
 import { LuChevronDown } from 'react-icons/lu';
-import HTMLReactParser from 'html-react-parser';
+import HTMLReactParser, { type DOMNode, attributesToProps } from 'html-react-parser';
 
 interface UserActionCommentProps {
     isEditing: boolean;
@@ -13,6 +14,32 @@ interface UserActionCommentProps {
 }
 
 const COMMENT_MAX_LENGTH = 1000;
+
+const renderComment = (html: string) =>
+    HTMLReactParser(html, {
+        replace: (domNode: DOMNode) => {
+            if (!(domNode.type === 'tag' && domNode.name === 'img')) {
+                return;
+            }
+
+            const { width, height } = domNode.attribs ?? {};
+            const sizeStyle: CSSProperties = {};
+            const widthValue = Number(width);
+            const heightValue = Number(height);
+
+            if (Number.isFinite(widthValue)) {
+                sizeStyle.width = `${widthValue}px`;
+            }
+            if (Number.isFinite(heightValue)) {
+                sizeStyle.height = `${heightValue}px`;
+            }
+
+            const props = attributesToProps(domNode.attribs ?? {});
+            const style = { ...(props as { style?: CSSProperties }).style, ...sizeStyle };
+
+            return <img {...props} style={style} />;
+        },
+    });
 
 export const UserActionComment = ({
     isEditing,
@@ -39,7 +66,7 @@ export const UserActionComment = ({
                             shadowColor: 'blackAlpha.500',
                         }}
                     >
-                        <Stack wordBreak="break-word">{HTMLReactParser(comment)}</Stack>
+                        <Stack wordBreak="break-word">{renderComment(comment)}</Stack>
                     </Collapsible.Content>
                     <Collapsible.Trigger asChild mt="4">
                         <Button>
@@ -56,7 +83,7 @@ export const UserActionComment = ({
                     </Collapsible.Trigger>
                 </Collapsible.Root>
             ) : (
-                <Stack wordBreak="break-word">{HTMLReactParser(comment)}</Stack>
+                <Stack wordBreak="break-word">{renderComment(comment)}</Stack>
             )}
         </>
     );

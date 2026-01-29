@@ -5,7 +5,7 @@ import Text from '@tiptap/extension-text';
 import Image from '@tiptap/extension-image';
 import Paragraph from '@tiptap/extension-paragraph';
 import { Box, Button, ButtonGroup, Text as ChakraText } from '@chakra-ui/react';
-import { Dropcursor, Placeholder, CharacterCount } from '@tiptap/extensions';
+import { Dropcursor, Placeholder, CharacterCount, UndoRedo } from '@tiptap/extensions';
 import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
 
 interface ActionTextEditorProps {
@@ -15,6 +15,9 @@ interface ActionTextEditorProps {
     placeholder?: string;
     limit?: number;
 }
+
+const IMAGE_MAX_WIDTH = 600;
+const IMAGE_MAX_HEIGHT = 400;
 
 export const ActionTextEditor = ({
     content,
@@ -29,8 +32,18 @@ export const ActionTextEditor = ({
                 Document,
                 Paragraph,
                 Text,
-                Image.configure({ resize: { enabled: true, alwaysPreserveAspectRatio: true } }),
+                Image.configure({
+                    inline: true,
+                    allowBase64: false,
+                    resize: {
+                        enabled: true,
+                        alwaysPreserveAspectRatio: false,
+                        minWidth: 50,
+                        minHeight: 50,
+                    },
+                }),
                 Dropcursor,
+                UndoRedo,
                 Placeholder.configure({ placeholder: placeholder }),
                 CharacterCount.configure({ limit }),
             ],
@@ -91,7 +104,15 @@ export const ActionTextEditor = ({
                         padding: '1.5rem',
                         outline: '1px solid grey',
                         '&:first-of-type': { marginTop: 0 },
-                        '& img': { display: 'block' },
+                        '& img': {
+                            display: 'block',
+                            maxWidth: `${IMAGE_MAX_WIDTH}px`,
+                            maxHeight: `${IMAGE_MAX_HEIGHT}px`,
+                        },
+                        '& [data-resize-wrapper]': {
+                            maxWidth: `${IMAGE_MAX_WIDTH}px`,
+                            maxHeight: `${IMAGE_MAX_HEIGHT}px`,
+                        },
                         '& [data-resize-handle]': {
                             position: 'absolute',
                             background: 'rgba(0, 0, 0, 0.5)',
