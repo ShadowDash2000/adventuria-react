@@ -18,6 +18,8 @@ import PopiyaFightClubVideo from '@public/developers/popiya-fight-club.mp4';
 import PapaSchrodaPrivVideo from '@public/developers/papa-schroda-priv.mp4';
 import NasralPopiyaVideo from '@public/developers/nasral-popiya.mp4';
 import SchrodDiplomVideo from '@public/developers/schrod-diplom.webm';
+import GirlsStartImage from '@public/developers/girls-start.png';
+import EndOfPopiyaGif from '@public/developers/end-of-popiya.gif';
 
 const Developers = () => {
     return (
@@ -108,6 +110,10 @@ const Developers = () => {
                 </GridItem>
                 <GridItem>
                     <VideoAutoplay w="full" h="full" src={SchrodDiplomVideo} />
+                </GridItem>
+                <GridItem display="flex" flexDir="column">
+                    <Image src={EndOfPopiyaGif} />
+                    <Image src={GirlsStartImage} />
                 </GridItem>
             </Grid>
         </Flex>
