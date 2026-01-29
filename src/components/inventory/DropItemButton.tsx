@@ -1,24 +1,27 @@
 import { Button } from '@theme/button';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { invalidateInventory } from '@shared/queryClient';
+import type { InventoryItemRecord } from '@shared/types/inventory-item';
+import { invalidateInventory, invalidateUser } from '@shared/queryClient';
 import { useAppAuthContext } from '@context/AppContext';
-import { ButtonGroup, CloseButton, Dialog, Portal } from '@chakra-ui/react';
+import { ButtonGroup, CloseButton, Dialog, Portal, Text } from '@chakra-ui/react';
 import { useState } from 'react';
+import { Coin } from '@shared/components/Coin';
 
 interface DropItemButtonProps {
     canDrop: boolean;
-    invItemId: RecordIdString;
+    invItem: InventoryItemRecord;
     onItemDrop?: () => void;
 }
 
-export const DropItemButton = ({ canDrop, invItemId, onItemDrop }: DropItemButtonProps) => {
+export const DropItemButton = ({ canDrop, invItem, onItemDrop }: DropItemButtonProps) => {
     const { pb, user } = useAppAuthContext();
     const [openConfirm, setOpenConfirm] = useState(false);
 
     const handleDrop = async () => {
         try {
-            await itemDropRequest(pb.authStore.token, invItemId);
+            await itemDropRequest(pb.authStore.token, invItem.id);
             await invalidateInventory(user.id);
+            await invalidateUser();
             onItemDrop?.();
         } catch (e) {
             console.error(e);
@@ -44,7 +47,14 @@ export const DropItemButton = ({ canDrop, invItemId, onItemDrop }: DropItemButto
                         <Dialog.Header>
                             <Dialog.Title>Вы уверены, что хотите выбросить предмет?</Dialog.Title>
                         </Dialog.Header>
-                        <Dialog.Body>
+                        <Dialog.Body display="flex" flexDir="column" gap={4}>
+                            {invItem.expand?.item && invItem.expand.item.price > 0 && (
+                                <Text>
+                                    За дроп этого предмета вы получите{' '}
+                                    {Math.trunc(invItem.expand.item.price / 2)}{' '}
+                                    <Coin w={6} display="inline-block" />
+                                </Text>
+                            )}
                             <ButtonGroup>
                                 <Button colorPalette="red" onClick={() => setOpenConfirm(false)}>
                                     Отмена

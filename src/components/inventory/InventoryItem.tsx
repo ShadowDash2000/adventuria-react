@@ -32,7 +32,7 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
             <Card.Footer flexDirection="column">
                 {showControlButtons && (
                     <>
-                        <DropItemButton canDrop={item.canDrop} invItemId={invItem.id} />
+                        <DropItemButton canDrop={item.canDrop} invItem={invItem} />
                         <UseItemButton
                             canUse={!isActive && invItem.can_use}
                             invItemId={invItem.id}
