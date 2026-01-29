@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Inventory } from './Inventory';
 import { Tooltip } from '@ui/tooltip';
-import { CloseButton, Drawer, Float, HStack, IconButton, Kbd, Portal } from '@chakra-ui/react';
+import { Drawer, Float, HStack, IconButton, Kbd, Portal } from '@chakra-ui/react';
 import { GiSwapBag } from 'react-icons/gi';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
 import { useRollWheelStore } from '@components/actions/roll-wheel/useRollWheelStore';
@@ -61,13 +61,7 @@ export const PlayerInventoryButton = ({ user, kbd = false }: PlayerInventoryButt
                 <Drawer.Backdrop />
                 <Drawer.Positioner>
                     <Drawer.Content>
-                        <Drawer.Header fontSize="xl">{user.name}</Drawer.Header>
-                        <Drawer.Body>
-                            <Inventory userId={user.id} />
-                        </Drawer.Body>
-                        <Drawer.CloseTrigger asChild>
-                            <CloseButton size="sm" />
-                        </Drawer.CloseTrigger>
+                        <Inventory user={user} />
                     </Drawer.Content>
                 </Drawer.Positioner>
             </Portal>

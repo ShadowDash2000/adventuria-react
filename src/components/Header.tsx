@@ -12,7 +12,6 @@ export const Header = () => {
         <>
             <CollectionListAllProvider
                 collection={pb.collection('users')}
-                fields={'id,collectionName,name,avatar,color,is_stream_live'}
                 refetchOnWindowFocus={false}
             >
                 <PlayersFloatingList />
