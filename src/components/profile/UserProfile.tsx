@@ -36,68 +36,70 @@ export const UserProfile = () => {
 
     return (
         <Flex variant="solid" align="center" flexDir="column" py={4} gap={2}>
-            <VStack w="40%">
-                <Box pos="relative">
-                    <PlayerAvatar user={user} w={40} h={40} />
-                    {user.is_stream_live && (
-                        <Float placement="bottom-end">
-                            <Circle bg="red.solid" w={4} h={4} />
-                        </Float>
+            <VStack zIndex={1}>
+                <VStack w="40%">
+                    <Box pos="relative">
+                        <PlayerAvatar user={user} w={40} h={40} />
+                        {user.is_stream_live && (
+                            <Float placement="bottom-end">
+                                <Circle bg="red.solid" w={4} h={4} />
+                            </Float>
+                        )}
+                    </Box>
+                    <Text>{user.name}</Text>
+                    <VStack gap={0}>
+                        <Heading>Таймер</Heading>
+                        <TimerSimple userId={user.id} fontSize="4xl" />
+                    </VStack>
+                    {stats && (
+                        <DataList.Root orientation="horizontal" w="full">
+                            <For each={stats}>
+                                {(item, index) => (
+                                    <DataList.Item key={index} justifyContent="space-between">
+                                        <DataList.ItemLabel flex="none">
+                                            {item.label}
+                                        </DataList.ItemLabel>
+                                        <DataList.ItemValue flex="none">
+                                            {item.value}
+                                        </DataList.ItemValue>
+                                    </DataList.Item>
+                                )}
+                            </For>
+                        </DataList.Root>
                     )}
-                </Box>
-                <Text>{user.name}</Text>
-                <VStack gap={0}>
-                    <Heading>Таймер</Heading>
-                    <TimerSimple userId={user.id} fontSize="4xl" />
                 </VStack>
-                <Box
-                    w="full"
-                    textAlign="center"
-                    dangerouslySetInnerHTML={{ __html: user.description }}
-                />
-                {stats && (
-                    <DataList.Root orientation="horizontal" w="full">
-                        <For each={stats}>
-                            {(item, index) => (
-                                <DataList.Item key={index} justifyContent="space-between">
-                                    <DataList.ItemLabel flex="none">
-                                        {item.label}
-                                    </DataList.ItemLabel>
-                                    <DataList.ItemValue flex="none">
-                                        {item.value}
-                                    </DataList.ItemValue>
-                                </DataList.Item>
-                            )}
-                        </For>
-                    </DataList.Root>
-                )}
+                <ButtonGroup>
+                    {user.twitch && (
+                        <Button colorPalette="purple" asChild>
+                            <Link
+                                href={`https://www.twitch.tv/${user.twitch}`}
+                                target="_blank"
+                                _hover={{ textDecoration: 'none' }}
+                            >
+                                <LuTwitch />
+                                Twitch
+                            </Link>
+                        </Button>
+                    )}
+                    {user.twitch && (
+                        <Button colorPalette="red" asChild>
+                            <Link
+                                href={`https://www.youtube.com/@${user.youtube}`}
+                                target="_blank"
+                                _hover={{ textDecoration: 'none' }}
+                            >
+                                <LuYoutube />
+                                YouTube
+                            </Link>
+                        </Button>
+                    )}
+                </ButtonGroup>
             </VStack>
-            <ButtonGroup>
-                {user.twitch && (
-                    <Button colorPalette="purple" asChild>
-                        <Link
-                            href={`https://www.twitch.tv/${user.twitch}`}
-                            target="_blank"
-                            _hover={{ textDecoration: 'none' }}
-                        >
-                            <LuTwitch />
-                            Twitch
-                        </Link>
-                    </Button>
-                )}
-                {user.twitch && (
-                    <Button colorPalette="red" asChild>
-                        <Link
-                            href={`https://www.youtube.com/@${user.youtube}`}
-                            target="_blank"
-                            _hover={{ textDecoration: 'none' }}
-                        >
-                            <LuYoutube />
-                            YouTube
-                        </Link>
-                    </Button>
-                )}
-            </ButtonGroup>
+            <Box
+                w="full"
+                textAlign="center"
+                dangerouslySetInnerHTML={{ __html: user.description }}
+            />
         </Flex>
     );
 };
