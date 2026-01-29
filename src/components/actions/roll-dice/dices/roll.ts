@@ -15,9 +15,6 @@ export function performRoll(
     const y = randomY + roll.y;
 
     element.style.transition = `transform ${durationSec}s ease-in-out`;
-    requestAnimationFrame(() => {
-        performRotation(element, { x: x, y: y });
-    });
 
     return { x: x, y: y, roll: roll.value };
 }
@@ -25,7 +22,9 @@ export function performRoll(
 export type Angle = { x: number; y: number };
 
 export function performRotation(element: HTMLDivElement, angle: Angle) {
-    element.style.transform = `rotateX(${angle.x}deg) rotateY(${angle.y}deg)`;
+    requestAnimationFrame(() => {
+        element.style.transform = `rotateX(${angle.x}deg) rotateY(${angle.y}deg)`;
+    });
 }
 
 export function performFadeOut(element: HTMLDivElement, durationSec: number = 1) {
