@@ -81,7 +81,7 @@ export const UserProfile = () => {
                             </Link>
                         </Button>
                     )}
-                    {user.twitch && (
+                    {user.youtube && (
                         <Button colorPalette="red" asChild>
                             <Link
                                 href={`https://www.youtube.com/@${user.youtube}`}
