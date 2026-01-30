@@ -14,6 +14,7 @@ export type ActionRecord = {
     comment: string;
     diceRoll: number;
     items_list: string[];
+    used_items: string[];
     can_move: boolean;
     custom_activity_filter: unknown;
     expand?: ActionRecordExpand;

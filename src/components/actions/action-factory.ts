@@ -5,6 +5,8 @@ import { Unknown } from './unknown';
 import { RollWheel } from '@components/actions/roll-wheel/roll-wheel';
 import { Drop } from './drop/drop';
 import { Reroll } from './reroll/reroll';
+import { Move } from './move/move';
+import { Teleport } from './teleport/teleport';
 import { BuyItem } from '@components/actions/buy-item/buy-item';
 import { RollItemOnCell } from '@components/actions/roll-item-on-cell/roll-item-on-cell';
 
@@ -19,6 +21,8 @@ export class ActionFactory {
         rollWheel: { order: 0, dispenser: new RollWheel() },
         buyItem: { order: 5, dispenser: new BuyItem() },
         rollItemOnCell: { order: 0, dispenser: new RollItemOnCell() },
+        move: { order: 0, dispenser: new Move() },
+        teleport: { order: 0, dispenser: new Teleport() },
     };
 
     static get(actionType: string): ActionDispenser {

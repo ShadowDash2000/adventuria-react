@@ -12,6 +12,7 @@ import { Button } from '@theme/button';
 import { UserActionComment } from '@components/profile/UserActionComment';
 import { useCellsStore } from '@components/board/useCellsStore';
 import { ActivityLinkButtons } from '@components/actions/roll-wheel/activities-wheel/ActivityLinkButtons';
+import { UsedItems } from './UsedItems';
 
 type ActionProps = { action: ActionRecord };
 
@@ -133,6 +134,9 @@ export const UserAction = ({ action }: ActionProps) => {
                                     </DataList.ItemValue>
                                 </DataList.Item>
                             </DataList.Root>
+                            <HStack>
+                                <UsedItems action={action} />
+                            </HStack>
                         </VStack>
                         <Card.Description as="div" w="full">
                             <UserActionComment
