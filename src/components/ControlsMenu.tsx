@@ -9,6 +9,7 @@ import { useAppContext } from '@context/AppContext';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { Tooltip } from '@ui/tooltip';
 import { HiCommandLine } from 'react-icons/hi2';
+import { SettingsButton } from '@components/settings/SettingsButton';
 
 export const ControlsMenu = () => {
     const { isAuth, logout } = useAppContext();
@@ -42,6 +43,7 @@ export const ControlsMenu = () => {
                         </Link>
                     </IconButton>
                 </Tooltip>
+                <SettingsButton />
                 {isAuth ? (
                     <Tooltip content="Выход">
                         <IconButton onClick={() => logout()} _hover={{ bg: 'red' }}>
