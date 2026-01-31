@@ -28,7 +28,7 @@ export const RulesItem = ({ rule, ...rest }: RulesItemProps) => {
             </Collapsible.Trigger>
             <Separator w="full" borderColor="border.inverted" my={2} />
             <Collapsible.Content>
-                <Box dangerouslySetInnerHTML={{ __html: rule.content }} />
+                <Box fontSize={18} dangerouslySetInnerHTML={{ __html: rule.content }} />
             </Collapsible.Content>
         </Collapsible.Root>
     );
