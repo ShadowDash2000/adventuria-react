@@ -21,4 +21,11 @@ export type ItemRecord = {
 
 export type ItemRecordExpand = { effects: EffectRecord[] };
 
-type ItemType = 'buff' | 'debuff';
+export type ItemType = 'buff' | 'debuff' | 'neutral' | 'dev';
+
+export const ItemTypeInfo: Record<ItemType, { color: string; label: string }> = {
+    buff: { color: 'rgb(45, 194, 107)', label: 'Баф' },
+    debuff: { color: 'rgb(224, 62, 45)', label: 'Дебаф' },
+    neutral: { color: 'rgb(53, 152, 219)', label: 'Нейтральный' },
+    dev: { color: 'rgb(255,106,0)', label: 'Dev' },
+};

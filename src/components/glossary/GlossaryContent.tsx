@@ -11,8 +11,7 @@ export const GlossaryContent = ({ ...props }: GridProps) => {
     const { pb } = useAppContext();
 
     const items = useQuery({
-        queryFn: () =>
-            pb.collection('items').getFullList<ItemRecord>({ filter: 'type != "neutral"' }),
+        queryFn: () => pb.collection('items').getFullList<ItemRecord>({ filter: 'type != "dev"' }),
         queryKey: [...queryKeys.items, 'glossary'],
         refetchOnWindowFocus: false,
     });

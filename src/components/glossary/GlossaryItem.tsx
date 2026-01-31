@@ -1,4 +1,4 @@
-import type { ItemRecord } from '@shared/types/item';
+import { ItemTypeInfo, type ItemRecord } from '@shared/types/item';
 import { Image, VStack, Text, HStack } from '@chakra-ui/react';
 import { useAppContext } from '@context/AppContext';
 import { Coin } from '@shared/components/Coin';
@@ -17,7 +17,10 @@ export const GlossaryItem = ({ item }: GlossaryItemProps) => {
             <GlossaryItemDetailModal item={item}>
                 <Image src={icon} width="100%" height="100%" _hover={{ cursor: 'pointer' }} />
             </GlossaryItemDetailModal>
-            <Text>{item.name}</Text>
+            <HStack>
+                <Text>{item.name}</Text>
+                <Text color={ItemTypeInfo[item.type].color}>({ItemTypeInfo[item.type].label})</Text>
+            </HStack>
             <HStack>
                 <Text userSelect="none">{item.price > 0 ? item.price : 'Не продается'}</Text>
                 <Coin w={6} />

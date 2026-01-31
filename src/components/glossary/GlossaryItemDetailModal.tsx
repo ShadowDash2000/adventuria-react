@@ -3,7 +3,7 @@ import { useAppContext } from '@context/AppContext';
 import { Tooltip } from '@ui/tooltip';
 import parse from 'html-react-parser';
 import type { ReactNode } from 'react';
-import type { ItemRecord } from '@shared/types/item';
+import { type ItemRecord, ItemTypeInfo } from '@shared/types/item';
 import { Coin } from '@shared/components/Coin';
 
 interface GlossaryItemDetailModalProps {
@@ -30,7 +30,12 @@ export const GlossaryItemDetailModal = ({ item, children }: GlossaryItemDetailMo
                 <Dialog.Positioner>
                     <Dialog.Content>
                         <Dialog.Header>
-                            <Dialog.Title>{item.name}</Dialog.Title>
+                            <Dialog.Title>
+                                <Text>{item.name}</Text>
+                                <Text color={ItemTypeInfo[item.type].color}>
+                                    ({ItemTypeInfo[item.type].label})
+                                </Text>
+                            </Dialog.Title>
                         </Dialog.Header>
                         <Dialog.Body display="flex" flexDir="column" alignItems="center" gap={4}>
                             <Image src={icon} width="100%" height="100%" />
