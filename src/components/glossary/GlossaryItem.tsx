@@ -1,22 +1,16 @@
 import { ItemTypeInfo, type ItemRecord } from '@shared/types/item';
-import { Image, VStack, Text, HStack } from '@chakra-ui/react';
-import { useAppContext } from '@context/AppContext';
+import { VStack, Text, HStack } from '@chakra-ui/react';
 import { Coin } from '@shared/components/Coin';
-import { GlossaryItemDetailModal } from './GlossaryItemDetailModal';
+import { ItemIcon } from '@components/items/ItemIcon';
 
 interface GlossaryItemProps {
     item: ItemRecord;
 }
 
 export const GlossaryItem = ({ item }: GlossaryItemProps) => {
-    const { pb } = useAppContext();
-    const icon = pb.files.getURL(item, item.icon);
-
     return (
         <VStack>
-            <GlossaryItemDetailModal item={item}>
-                <Image src={icon} width="100%" height="100%" _hover={{ cursor: 'pointer' }} />
-            </GlossaryItemDetailModal>
+            <ItemIcon item={item} />
             <HStack>
                 <Text>{item.name}</Text>
                 <Text color={ItemTypeInfo[item.type].color}>({ItemTypeInfo[item.type].label})</Text>

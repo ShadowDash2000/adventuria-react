@@ -1,10 +1,10 @@
 import type { ActionRecord } from '@shared/types/action';
 import type { ItemRecord } from '@shared/types/item';
-import { For, Image, Spinner, Text } from '@chakra-ui/react';
+import { For, Spinner, Text } from '@chakra-ui/react';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { GlossaryItemDetailModal } from '@components/glossary/GlossaryItemDetailModal';
 import { queryKeys } from '@shared/queryClient';
+import { ItemIcon } from '@components/items/ItemIcon';
 
 interface UsedItemsProps {
     action: ActionRecord;
@@ -29,16 +29,7 @@ export const UsedItems = ({ action }: UsedItemsProps) => {
 
     return (
         <For each={itemsList}>
-            {(item, index) => (
-                <GlossaryItemDetailModal item={item} key={index}>
-                    <Image
-                        src={pb.files.getURL(item, item.icon)}
-                        w={14}
-                        h={14}
-                        _hover={{ cursor: 'pointer' }}
-                    />
-                </GlossaryItemDetailModal>
-            )}
+            {(item, index) => <ItemIcon item={item} key={index} w={14} h={14} />}
         </For>
     );
 };

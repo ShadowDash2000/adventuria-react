@@ -5,6 +5,7 @@ import { Toaster } from '@ui/toaster';
 import { useWheelIncrease } from '@components/notifications/wheel-increase';
 import { type Theme, useSettingsStore } from '@components/settings/useSettingsStore';
 import { type ReactNode } from 'react';
+import { ItemDetailsDialog } from '@components/items/ItemDetailsDialog';
 
 const themes: Record<Theme, ReactNode | null> = {
     disabled: null,
@@ -50,6 +51,7 @@ const Layout = () => {
             </Flex>
             <ScrollRestoration />
             <Toaster />
+            <ItemDetailsDialog />
         </>
     );
 };

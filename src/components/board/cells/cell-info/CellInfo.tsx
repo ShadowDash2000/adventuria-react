@@ -173,6 +173,7 @@ export const CellInfo = ({ cellId }: CellInfoProps) => {
                                     <Tooltip
                                         content={`Время прохождения: ${activity.hltb_campaign_time} ч.`}
                                         disabled={activity.hltb_campaign_time <= 0}
+                                        openDelay={100}
                                     >
                                         <Image
                                             src={

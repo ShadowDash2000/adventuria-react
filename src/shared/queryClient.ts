@@ -18,6 +18,7 @@ export const queryKeys = {
     cells: ['cells'],
     cell: (cellId: RecordIdString) => ['cells', 'cell', cellId],
     inventory: (userId: RecordIdString) => ['inventory', userId],
+    item: (itemId: RecordIdString) => ['items', itemId],
 } as const;
 
 export const invalidateUser = async () => {
@@ -82,4 +83,8 @@ export const invalidateCells = async () => {
 
 export const invalidateCell = async (cellId: RecordIdString) => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.cell(cellId) });
+};
+
+export const invalidateItem = async (itemId: RecordIdString) => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.item(itemId) });
 };
