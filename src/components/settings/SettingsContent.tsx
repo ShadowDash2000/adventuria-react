@@ -1,5 +1,12 @@
 import { useSettingsStore } from '@components/settings/useSettingsStore';
-import { createListCollection, Portal, Select, StackProps, VStack } from '@chakra-ui/react';
+import {
+    Checkbox,
+    createListCollection,
+    Portal,
+    Select,
+    StackProps,
+    VStack,
+} from '@chakra-ui/react';
 import { Theme } from './useSettingsStore';
 
 const themesCollection = createListCollection<{ label: string; value: Theme }>({
@@ -11,8 +18,7 @@ const themesCollection = createListCollection<{ label: string; value: Theme }>({
 });
 
 export const SettingsContent = ({ ...props }: StackProps) => {
-    const theme = useSettingsStore(state => state.theme);
-    const setTheme = useSettingsStore(state => state.setTheme);
+    const { theme, setTheme, displayCellsNumber, setDisplayCellsNumber } = useSettingsStore();
 
     return (
         <VStack {...props}>
@@ -28,7 +34,7 @@ export const SettingsContent = ({ ...props }: StackProps) => {
                 <Select.Label>Фон</Select.Label>
                 <Select.Control>
                     <Select.Trigger>
-                        <Select.ValueText placeholder="Выберите фон" />
+                        <Select.ValueText />
                     </Select.Trigger>
                     <Select.IndicatorGroup>
                         <Select.Indicator />
@@ -47,6 +53,14 @@ export const SettingsContent = ({ ...props }: StackProps) => {
                     </Select.Positioner>
                 </Portal>
             </Select.Root>
+            <Checkbox.Root
+                defaultChecked={displayCellsNumber}
+                onCheckedChange={e => setDisplayCellsNumber(!!e.checked)}
+            >
+                <Checkbox.HiddenInput />
+                <Checkbox.Label>Отображение нумерации клеток</Checkbox.Label>
+                <Checkbox.Control />
+            </Checkbox.Root>
         </VStack>
     );
 };

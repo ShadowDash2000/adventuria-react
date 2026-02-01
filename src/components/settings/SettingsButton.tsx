@@ -21,7 +21,7 @@ export const SettingsButton = () => {
                             <Dialog.Title>Настройки</Dialog.Title>
                         </Dialog.Header>
                         <Dialog.Body display="flex" overflow="hidden">
-                            <SettingsContent w="full" />
+                            <SettingsContent w="full" alignItems="left" gap={6} />
                         </Dialog.Body>
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />

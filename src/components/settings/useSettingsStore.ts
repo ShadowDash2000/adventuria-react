@@ -5,12 +5,19 @@ export type Theme = 'disabled' | 'white' | 'blue';
 
 interface SettingsState {
     theme: Theme;
+    displayCellsNumber: boolean;
     setTheme: (theme: Theme) => void;
+    setDisplayCellsNumber: (displayCellsNumber: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
-    persist(set => ({ theme: 'disabled', setTheme: (theme: Theme) => set({ theme }) }), {
-        name: 'settings',
-        partialize: state => ({ theme: state.theme }),
-    }),
+    persist(
+        set => ({
+            theme: 'disabled',
+            displayCellsNumber: true,
+            setTheme: (theme: Theme) => set({ theme }),
+            setDisplayCellsNumber: (displayCellsNumber: boolean) => set({ displayCellsNumber }),
+        }),
+        { name: 'settings', partialize: state => ({ theme: state.theme }) },
+    ),
 );
