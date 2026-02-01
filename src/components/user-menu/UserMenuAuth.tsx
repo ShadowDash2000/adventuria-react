@@ -1,14 +1,13 @@
-import { HStack, Text, VStack } from '@chakra-ui/react';
+import { HStack, VStack } from '@chakra-ui/react';
 import { PlayerInventoryButton } from '@components/inventory/PlayerInventoryButton';
-import { Tooltip } from '@ui/tooltip';
 import { ItemsWheelModal } from '@components/actions/roll-wheel/items-wheel/ItemsWheelModal';
 import { RadioButton } from '@components/radio/RadioButton';
 import { useAppAuthContext } from '@context/AppContext';
 import { Timer } from '@components/timer/Timer';
-import { Coin } from '@shared/components/Coin';
 import { VolumeButton } from '@components/user-menu/VolumeButton';
+import { UserBalance } from '@components/user-menu/UserBalance';
 
-export const UserMenu = () => {
+export const UserMenuAuth = () => {
     const { user } = useAppAuthContext();
 
     return (
@@ -23,12 +22,7 @@ export const UserMenu = () => {
                 zIndex={100}
                 align="left"
             >
-                <Tooltip content="Баланс">
-                    <HStack>
-                        <Text userSelect="none">{user.balance}</Text>
-                        <Coin w={6} />
-                    </HStack>
-                </Tooltip>
+                <UserBalance />
                 <VStack justify="center" align="start">
                     <PlayerInventoryButton user={user} kbd={true} />
                     <ItemsWheelModal />

@@ -1,12 +1,12 @@
 import { useAppContext } from '@context/AppContext';
 import { CollectionListAllProvider } from '@context/CollectionListAllContext/CollectionListAllContext';
 import { PlayersFloatingList } from '@components/players-floating-list/PlayersFloatingList';
-import { UserMenu } from '@components/user-menu/UserMenu';
+import { UserMenuAuth } from '@components/user-menu/UserMenuAuth';
+import { UserMenuGuest } from '@components/user-menu/UserMenuGuest';
 import { ControlsMenu } from '@components/ControlsMenu';
 
 export const Header = () => {
-    const { pb } = useAppContext();
-    const { isAuth } = useAppContext();
+    const { pb, isAuth } = useAppContext();
 
     return (
         <>
@@ -16,7 +16,7 @@ export const Header = () => {
             >
                 <PlayersFloatingList />
             </CollectionListAllProvider>
-            {isAuth && <UserMenu />}
+            {isAuth ? <UserMenuAuth /> : <UserMenuGuest />}
             <ControlsMenu />
         </>
     );

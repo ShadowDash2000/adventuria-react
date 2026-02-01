@@ -1,4 +1,4 @@
-import { useAppAuthContext } from '@context/AppContext';
+import { useAppContext } from '@context/AppContext';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import type { AudioRecord } from '@shared/types/audio';
 import type { RecordIdString } from '@shared/types/pocketbase';
@@ -26,7 +26,7 @@ interface RadioReturn {
 }
 
 export const useRadio = (): RadioReturn => {
-    const { pb } = useAppAuthContext();
+    const { pb } = useAppContext();
     const {
         volume,
         setVolume,

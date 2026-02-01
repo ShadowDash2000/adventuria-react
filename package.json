@@ -8,7 +8,9 @@
         "build": "vite build",
         "preview": "vite preview",
         "lint": "eslint .",
-        "lint:fix": "eslint . --fix"
+        "lint:fix": "eslint . --fix",
+        "typegen:chakra": "chakra typegen src/theme/theme.ts",
+        "postinstall": "bun run typegen:chakra"
     },
     "dependencies": {
         "@chakra-ui/react": "^3.31.0",
