@@ -26,7 +26,7 @@ export const Cells = () => {
                     <Grid key={lineNum} autoFlow="column" justifyContent="start" gapX="4px">
                         <For each={lineElements}>
                             {(cell, cellNum) => (
-                                <GridItem position="relative" key={cellNum}>
+                                <GridItem position="relative" key={cellNum} userSelect="none">
                                     <Cell
                                         cell={cell}
                                         width="190px"
