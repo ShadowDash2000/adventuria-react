@@ -9,7 +9,7 @@ ENV VITE_PB_URL=$VITE_PB_URL
 COPY package.json ./
 COPY bun.lock ./
 
-RUN bun install --frozen-lockfile
+RUN bun install --frozen-lockfile --ignore-scripts
 
 COPY . .
 
