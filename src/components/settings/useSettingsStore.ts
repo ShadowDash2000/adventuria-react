@@ -18,6 +18,12 @@ export const useSettingsStore = create<SettingsState>()(
             setTheme: (theme: Theme) => set({ theme }),
             setDisplayCellsNumber: (displayCellsNumber: boolean) => set({ displayCellsNumber }),
         }),
-        { name: 'settings', partialize: state => ({ theme: state.theme }) },
+        {
+            name: 'settings',
+            partialize: state => ({
+                theme: state.theme,
+                displayCellsNumber: state.displayCellsNumber,
+            }),
+        },
     ),
 );
