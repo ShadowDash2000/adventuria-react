@@ -26,10 +26,7 @@ const clampImageSize = (width: number, height: number) => {
 
     const scale = Math.min(1, IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
 
-    return {
-        width: Math.round(width * scale),
-        height: Math.round(height * scale),
-    };
+    return { width: Math.round(width * scale), height: Math.round(height * scale) };
 };
 
 const ResizableImage = Image.extend({
@@ -104,7 +101,9 @@ export const ActionTextEditor = ({
                                     width,
                                     height,
                                 });
-                                const tr = view.state.tr.replaceSelectionWith(node).scrollIntoView();
+                                const tr = view.state.tr
+                                    .replaceSelectionWith(node)
+                                    .scrollIntoView();
                                 view.dispatch(tr);
                             };
                             image.onerror = () => {
@@ -113,7 +112,9 @@ export const ActionTextEditor = ({
                                     width: IMAGE_MAX_WIDTH,
                                     height: IMAGE_MAX_HEIGHT,
                                 });
-                                const tr = view.state.tr.replaceSelectionWith(node).scrollIntoView();
+                                const tr = view.state.tr
+                                    .replaceSelectionWith(node)
+                                    .scrollIntoView();
                                 view.dispatch(tr);
                             };
                             image.src = src;
