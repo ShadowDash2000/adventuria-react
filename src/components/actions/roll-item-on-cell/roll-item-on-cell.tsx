@@ -13,7 +13,7 @@ export class RollItemOnCell extends ActionDispenser {
     }
 
     name() {
-        return 'Выполял предмет';
+        return 'Выролил предмет';
     }
 
     key() {
