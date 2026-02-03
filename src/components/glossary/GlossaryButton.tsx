@@ -24,8 +24,9 @@ export const GlossaryButton = () => {
                             <GlossaryContent
                                 w="full"
                                 templateColumns={{
-                                    base: 'repeat(auto-fit, minmax(100px, 250px))',
+                                    base: 'repeat(3, 1fr)',
                                     lgDown: 'repeat(2, 1fr)',
+                                    smDown: 'repeat(1, 1fr)',
                                 }}
                                 gapX={4}
                                 overflow="hidden auto"
