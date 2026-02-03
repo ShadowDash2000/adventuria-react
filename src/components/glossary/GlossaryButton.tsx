@@ -22,7 +22,11 @@ export const GlossaryButton = () => {
                         </Dialog.Header>
                         <Dialog.Body display="flex" overflow="hidden">
                             <GlossaryContent
-                                templateColumns="repeat(3, 1fr)"
+                                w="full"
+                                templateColumns={{
+                                    base: 'repeat(auto-fit, minmax(100px, 250px))',
+                                    lgDown: 'repeat(2, 1fr)',
+                                }}
                                 gapX={4}
                                 overflow="hidden auto"
                             />
