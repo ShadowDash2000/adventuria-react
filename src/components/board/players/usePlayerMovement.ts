@@ -106,7 +106,6 @@ export const usePlayerMovement = ({
         if (!paths || isMovingRef.current) return;
 
         setMoving(true);
-        incrementBlocked();
         isMovingRef.current = true;
 
         let scrollInterval: number | null = null;
@@ -115,15 +114,16 @@ export const usePlayerMovement = ({
         if (isCurrentUser) {
             document.body.style.overflow = 'hidden';
             scrollInterval = window.setInterval(scrollToUser, SCROLL_INTERVAL);
+            incrementBlocked();
         }
         const cleanup = () => {
             if (moveInterval !== null) clearInterval(moveInterval);
             if (scrollInterval !== null) {
                 clearInterval(scrollInterval);
                 document.body.style.overflow = 'auto';
+                decrementBlocked();
             }
             setMoving(false);
-            decrementBlocked();
             clearMoveTime();
             isMovingRef.current = false;
         };
