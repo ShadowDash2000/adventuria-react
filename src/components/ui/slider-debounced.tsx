@@ -6,15 +6,30 @@ interface SliderDebouncedProps extends Omit<SliderRootProps, 'value'> {
     value: number;
     setValue: (value: number) => void;
     label?: string;
+    onDragStart?: () => void;
+    onDragEnd?: () => void;
+    onValueChangeImmediate?: (value: number) => void;
+    commitMode?: 'debounce' | 'end';
 }
 
-export const SliderDebounced = ({ value, setValue, label, ...rest }: SliderDebouncedProps) => {
+export const SliderDebounced = ({
+    value,
+    setValue,
+    label,
+    onDragStart,
+    onDragEnd,
+    onValueChangeEnd,
+    onValueChangeImmediate,
+    commitMode = 'debounce',
+    ...rest
+}: SliderDebouncedProps) => {
     const [valueInner, setValueInner] = useState<number>(value);
     const debouncedValue = useDebounce(valueInner, 500);
 
     useEffect(() => {
+        if (commitMode !== 'debounce') return;
         setValue(valueInner);
-    }, [debouncedValue]);
+    }, [debouncedValue, commitMode]);
 
     useEffect(() => {
         setValueInner(value);
@@ -25,7 +40,18 @@ export const SliderDebounced = ({ value, setValue, label, ...rest }: SliderDebou
             {...rest}
             defaultValue={[valueInner]}
             value={[valueInner]}
-            onValueChange={e => setValueInner(e.value[0])}
+            onValueChange={e => {
+                const nextValue = e.value[0];
+                setValueInner(nextValue);
+                onValueChangeImmediate?.(nextValue);
+            }}
+            onValueChangeEnd={e => {
+                onValueChangeEnd?.(e);
+                onDragEnd?.();
+                if (commitMode === 'end') {
+                    setValue(e.value[0]);
+                }
+            }}
             min={0}
             max={1}
             step={0.01}
@@ -35,7 +61,11 @@ export const SliderDebounced = ({ value, setValue, label, ...rest }: SliderDebou
                 <Slider.Track>
                     <Slider.Range />
                 </Slider.Track>
-                <Slider.Thumbs />
+                <Slider.Thumbs
+                    onPointerDown={() => {
+                        onDragStart?.();
+                    }}
+                />
             </Slider.Control>
         </Slider.Root>
     );

@@ -6,16 +6,46 @@ import { useState } from 'react';
 import { Tooltip } from '@ui/tooltip';
 
 export const VolumeButton = () => {
-    const { volume, setVolume } = useAudioPlayer(AudioKey.music);
+    const { volume, setVolume, setVolumeImmediate } = useAudioPlayer(AudioKey.music);
     const [hovered, setHovered] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [isHovering, setIsHovering] = useState(false);
+
+    const handleMouseEnter = () => {
+        setIsHovering(true);
+        setHovered(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovering(false);
+        if (!isDragging) {
+            setHovered(false);
+        }
+    };
+
+    const handleDragStart = () => {
+        setIsDragging(true);
+        setHovered(true);
+    };
+
+    const handleDragEnd = () => {
+        setIsDragging(false);
+        if (!isHovering) {
+            setHovered(false);
+        }
+    };
 
     return (
-        <HStack
-            position="relative"
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-        >
-            <Float hidden={!hovered} h="full" w={52} pl={2} translate="100% 0">
+        <HStack position="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <Float
+                hidden={!hovered}
+                h="full"
+                w={52}
+                pl={2}
+                translate="100% 0"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+            >
                 <Box
                     bg="white"
                     w="full"
@@ -29,7 +59,11 @@ export const VolumeButton = () => {
                         w="full"
                         value={volume}
                         setValue={val => setVolume(val)}
+                        onValueChangeImmediate={val => setVolumeImmediate(val)}
                         colorPalette="orange"
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
+                        commitMode="end"
                     />
                 </Box>
             </Float>

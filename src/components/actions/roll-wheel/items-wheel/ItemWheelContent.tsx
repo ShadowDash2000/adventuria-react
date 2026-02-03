@@ -15,7 +15,7 @@ import { Flex } from '@theme/flex';
 export const ItemsWheelContent = () => {
     const { pb, user } = useAppAuthContext();
     const wheelRef = useRef<WheelOFortuneHandle>(null);
-    const { volume, setVolume } = useAudioPlayer(AudioKey.music);
+    const { volume, setVolume, setVolumeImmediate } = useAudioPlayer(AudioKey.music);
 
     const items = useQuery({
         queryFn: () =>
@@ -68,6 +68,8 @@ export const ItemsWheelContent = () => {
                         w="full"
                         value={volume}
                         setValue={val => setVolume(val)}
+                        onValueChangeImmediate={val => setVolumeImmediate(val)}
+                        commitMode="end"
                         label="Громкость"
                         colorPalette="orange"
                     />

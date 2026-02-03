@@ -19,6 +19,7 @@ export const Radio = () => {
         audioName,
         volume,
         setVolume,
+        setVolumeImmediate,
         seek,
         currentTime,
         duration,
@@ -100,7 +101,13 @@ export const Radio = () => {
                     </Slider.Root>
                 </VStack>
             </VStack>
-            <SliderDebounced w="{sizes.48}" value={volume} setValue={val => setVolume(val)} />
+            <SliderDebounced
+                w="{sizes.48}"
+                value={volume}
+                setValue={val => setVolume(val)}
+                onValueChangeImmediate={val => setVolumeImmediate(val)}
+                commitMode="end"
+            />
         </Flex>
     );
 };

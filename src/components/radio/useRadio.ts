@@ -12,6 +12,7 @@ interface RadioReturn {
     volume: number;
     isPlaying: boolean;
     setVolume: (volume: number) => void;
+    setVolumeImmediate: (volume: number) => void;
     prevAudio: () => void;
     nextAudio: () => void;
     seek: (time: number) => void;
@@ -30,6 +31,7 @@ export const useRadio = (): RadioReturn => {
     const {
         volume,
         setVolume,
+        setVolumeImmediate,
         play: playAudio,
         pause,
         isPlaying,
@@ -91,6 +93,7 @@ export const useRadio = (): RadioReturn => {
         audioName: audioByIndex[currentAudioIndex]?.name ?? '',
         volume,
         setVolume,
+        setVolumeImmediate,
         seek,
         currentTime,
         duration,
