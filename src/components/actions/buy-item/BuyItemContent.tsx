@@ -1,52 +1,28 @@
-import { useAppAuthContext } from '@context/AppContext';
-import { useQuery } from '@tanstack/react-query';
-import type { ActionRecord } from '@shared/types/action';
-import { queryKeys } from '@shared/queryClient';
 import type { ItemRecord } from '@shared/types/item';
 import type { ClientResponseError } from 'pocketbase';
-import type { RecordIdString } from '@shared/types/pocketbase';
+import { useAppAuthContext } from '@context/AppContext';
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@shared/queryClient';
 import { For, Grid, GridItem, Spinner, Text } from '@chakra-ui/react';
 import { Item } from '@components/actions/buy-item/Item';
 
 export const BuyItemContent = () => {
-    const { pb, user } = useAppAuthContext();
-
-    const latestAction = useQuery({
-        queryFn: () =>
-            pb
-                .collection('actions')
-                .getFirstListItem<ActionRecord>(`user = "${user.id}"`, { sort: '-created' }),
-        queryKey: [...queryKeys.latestAction, 'buy-item'],
-        refetchOnWindowFocus: false,
-    });
+    const { pb } = useAppAuthContext();
 
     const items = useQuery({
-        queryFn: () =>
-            pb
-                .collection('items')
-                .getFullList<ItemRecord>({
-                    filter: latestAction.data!.items_list.map(id => `id="${id}"`).join('||'),
-                }),
-        queryKey: [...queryKeys.shopItems, latestAction.data?.items_list],
-        enabled: latestAction.isSuccess,
+        queryFn: () => getBuyVariants(pb.authStore.token),
+        queryKey: [...queryKeys.shopItems],
         refetchOnWindowFocus: false,
     });
 
-    if (latestAction.isPending || items.isPending) {
+    if (items.isPending) {
         return <Spinner />;
-    }
-
-    if (latestAction.isError) {
-        const e = latestAction.error as ClientResponseError;
-        return <Text>Error: {e.message}</Text>;
     }
 
     if (items.isError) {
         const e = items.error as ClientResponseError;
         return <Text>Error: {e.message}</Text>;
     }
-
-    const shopItems = new Map<RecordIdString, ItemRecord>(items.data.map(item => [item.id, item]));
 
     return (
         <Grid
@@ -57,15 +33,36 @@ export const BuyItemContent = () => {
             pr="20%"
             pt="8%"
         >
-            {shopItems.size && (
-                <For each={latestAction.data.items_list}>
-                    {(itemId, index) => (
-                        <GridItem key={`${itemId}_${index}`}>
-                            <Item item={shopItems.get(itemId)!} imageHeight="11vw" />
-                        </GridItem>
-                    )}
-                </For>
-            )}
+            <For each={items.data.items}>
+                {(item, index) => (
+                    <GridItem key={`${item.id}_${index}`}>
+                        <Item item={item} imageHeight="11vw" />
+                    </GridItem>
+                )}
+            </For>
         </Grid>
     );
+};
+
+type GetBuyVariantsSuccess = { items: ItemRecord[] };
+
+type GetBuyVariantsError = never;
+
+type GetBuyVariantsResult = GetBuyVariantsSuccess | GetBuyVariantsError;
+
+const getBuyVariants = async (authToken: string) => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/action-variants?action=buyItem`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${authToken}` },
+    });
+    if (!res.ok) {
+        const error = await res
+            .json()
+            .then(res => res.error)
+            .catch(() => '');
+        const text = await res.text().catch(() => '');
+        throw new Error(error || text || `Failed to get buy variants`);
+    }
+
+    return (await res.json()) as GetBuyVariantsResult;
 };

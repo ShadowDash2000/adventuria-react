@@ -3,7 +3,12 @@ import { Image, VStack, Text, ImageProps, Float, Flex } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { Tooltip } from '@ui/tooltip';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { invalidateAvailableActions, invalidateLatestAction } from '@shared/queryClient';
+import {
+    invalidateAvailableActions,
+    invalidateLatestAction,
+    invalidateShopItems,
+    invalidateUser,
+} from '@shared/queryClient';
 import PriceBadgeImage from '@public/price-badge.png';
 import { Coin } from '@shared/components/Coin';
 import { useState } from 'react';
@@ -27,6 +32,8 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
             await buyItemRequest(pb.authStore.token, item.id);
             await invalidateAvailableActions();
             await invalidateLatestAction();
+            await invalidateShopItems();
+            await invalidateUser();
         } catch (e) {
             console.error(e);
         }
