@@ -2,8 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAppAuthContext } from '@context/AppContext';
 import { Portal, Select, useListCollection } from '@chakra-ui/react';
 import { useEffect } from 'react';
-import type { ActionRecord } from '@shared/types/action';
-import { queryKeys } from '@shared/queryClient';
+import { latestActionQuery, queryKeys } from '@shared/queryClient';
 import type { ActivityRecord } from '@shared/types/activity';
 
 export const ChooseGameSelect = () => {
@@ -15,14 +14,7 @@ export const ChooseGameSelect = () => {
         itemToValue: item => item.id,
     });
 
-    const latestAction = useQuery({
-        queryFn: () =>
-            pb
-                .collection('actions')
-                .getFirstListItem<ActionRecord>(`user = "${user.id}"`, { sort: '-created' }),
-        queryKey: [...queryKeys.latestAction, 'choose-game'],
-        refetchOnWindowFocus: false,
-    });
+    const latestAction = useQuery(latestActionQuery(pb, user.id));
 
     const games = useQuery({
         queryFn: () =>

@@ -1,7 +1,6 @@
 import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import type { ActionRecord } from '@shared/types/action';
 import type { ActivityRecord } from '@shared/types/activity';
 import { ActivityInfo } from './ActivityInfo';
 import { useEffect, useRef, useState } from 'react';
@@ -11,7 +10,7 @@ import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
-import { queryKeys } from '@shared/queryClient';
+import { latestActionQuery } from '@shared/queryClient';
 
 export const ActivitiesWheelContent = () => {
     const { pb, user } = useAppAuthContext();
@@ -19,17 +18,7 @@ export const ActivitiesWheelContent = () => {
     const { volume, setVolume, setVolumeImmediate } = useAudioPlayer(AudioKey.music);
     const [wasSpinned, setWasSpinned] = useState(false);
 
-    const action = useQuery({
-        queryFn: () =>
-            pb
-                .collection('actions')
-                .getFirstListItem<ActionRecord>(`user = "${user.id}"`, {
-                    sort: '-created',
-                    expand: 'cell',
-                }),
-        refetchOnWindowFocus: false,
-        queryKey: queryKeys.latestAction,
-    });
+    const action = useQuery(latestActionQuery(pb, user.id, { expand: 'cell' }));
 
     const audioPresetFilter = action.data?.expand?.cell?.audio_preset
         ? { audioPresetId: action.data.expand.cell.audio_preset }

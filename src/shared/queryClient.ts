@@ -1,5 +1,8 @@
 import { QueryClient } from '@tanstack/react-query';
 import type { RecordIdString } from '@shared/types/pocketbase';
+import type { ActionRecord } from '@shared/types/action';
+import type PocketBase from 'pocketbase';
+import type { RecordListOptions } from 'pocketbase';
 
 export const queryClient = new QueryClient();
 
@@ -87,4 +90,22 @@ export const invalidateCell = async (cellId: RecordIdString) => {
 
 export const invalidateItem = async (itemId: RecordIdString) => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.item(itemId) });
+};
+
+export const latestActionQuery = (
+    pb: PocketBase,
+    userId: RecordIdString,
+    options?: RecordListOptions,
+) => {
+    return {
+        queryFn: () =>
+            pb
+                .collection('actions')
+                .getFirstListItem<ActionRecord>(`user = "${userId}"`, {
+                    sort: '-created',
+                    ...options,
+                }),
+        refetchOnWindowFocus: false,
+        queryKey: queryKeys.latestAction,
+    };
 };
