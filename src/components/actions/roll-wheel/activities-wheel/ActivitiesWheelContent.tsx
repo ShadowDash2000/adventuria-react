@@ -18,7 +18,9 @@ export const ActivitiesWheelContent = () => {
     const { volume, setVolume, setVolumeImmediate } = useAudioPlayer(AudioKey.music);
     const [wasSpinned, setWasSpinned] = useState(false);
 
-    const action = useQuery(latestActionQuery(pb, user.id, { expand: 'cell' }));
+    const action = useQuery(
+        latestActionQuery(pb, user.id, { filter: 'type = "rollDice"', expand: 'cell' }),
+    );
 
     const audioPresetFilter = action.data?.expand?.cell?.audio_preset
         ? { audioPresetId: action.data.expand.cell.audio_preset }
