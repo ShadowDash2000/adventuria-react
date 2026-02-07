@@ -10,38 +10,27 @@ import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
-import { latestActionQuery } from '@shared/queryClient';
+import { queryKeys } from '@shared/queryClient';
 
 export const ActivitiesWheelContent = () => {
-    const { pb, user } = useAppAuthContext();
+    const { pb } = useAppAuthContext();
     const wheelRef = useRef<WheelOFortuneHandle>(null);
     const { volume, setVolume, setVolumeImmediate } = useAudioPlayer(AudioKey.music);
     const [wasSpinned, setWasSpinned] = useState(false);
 
-    const action = useQuery(
-        latestActionQuery(pb, user.id, { filter: 'type = "rollDice"', expand: 'cell' }),
-    );
-
-    const audioPresetFilter = action.data?.expand?.cell?.audio_preset
-        ? { audioPresetId: action.data.expand.cell.audio_preset }
-        : { audioPresetSlug: 'roll-wheel' };
-
-    const activities = useQuery({
-        queryFn: () =>
-            pb
-                .collection('activities')
-                .getFullList<ActivityRecord>({
-                    filter: action.data!.items_list.map(id => `id="${id}"`).join('||'),
-                    expand: 'platforms,developers,publishers,genres,tags,themes',
-                }),
+    const wheelVariants = useQuery({
+        queryFn: () => getWheelVariants(pb.authStore.token),
+        queryKey: [...queryKeys.activityWheel],
         refetchOnWindowFocus: false,
-        enabled: action.isSuccess && action.data?.items_list.length > 0,
-        queryKey: [action.data],
     });
+
+    const audioPresetFilter = wheelVariants.data?.audio_preset_id
+        ? { audioPresetId: wheelVariants.data.audio_preset_id }
+        : { audioPresetSlug: 'roll-wheel' };
 
     const { spinning, handleSpin, currentItemIndex, setCurrentItemIndex, audioPreset } = useWheel({
         wheelRef,
-        enabled: action.isSuccess,
+        enabled: wheelVariants.isSuccess,
         spinRequest: () => rollWheelRequest(pb.authStore.token),
         ...audioPresetFilter,
     });
@@ -52,19 +41,18 @@ export const ActivitiesWheelContent = () => {
         }
     }, [spinning]);
 
-    if (action.isPending || activities.isPending || audioPreset.isPending) return <Spinner />;
-    if (action.isError) return <Text>Error: {action.error?.message}</Text>;
-    if (activities.isError) return <Text>Error: {activities.error?.message}</Text>;
+    if (wheelVariants.isPending || audioPreset.isPending) return <Spinner />;
+    if (wheelVariants.isError) return <Text>Error: {wheelVariants.error?.message}</Text>;
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
 
-    const wheelItems = activities.data
-        ? activities.data.map(activity => ({
+    const wheelItems = wheelVariants.data
+        ? wheelVariants.data.items.map(activity => ({
               key: activity.id,
               image: activity.cover || pb.files.getURL(activity, activity.cover_alt),
               title: activity.name,
           }))
         : [];
-    const currentActivity = activities.data[currentItemIndex];
+    const currentActivity = wheelVariants.data.items[currentItemIndex];
 
     return (
         <>
@@ -148,4 +136,27 @@ const rollWheelRequest = async (authToken: string) => {
     }
 
     return (await res.json()) as SpinResult;
+};
+
+type GetWheelVariantsSuccess = { items: ActivityRecord[]; audio_preset_id?: string };
+
+type GetWheelVariantsError = never;
+
+type GetWheelVariantsResult = GetWheelVariantsSuccess | GetWheelVariantsError;
+
+const getWheelVariants = async (authToken: string) => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/action-variants?action=rollWheel`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${authToken}` },
+    });
+    if (!res.ok) {
+        const error = await res
+            .json()
+            .then(res => res.error)
+            .catch(() => '');
+        const text = await res.text().catch(() => '');
+        throw new Error(error || text || `Failed to get wheel variants`);
+    }
+
+    return (await res.json()) as GetWheelVariantsResult;
 };

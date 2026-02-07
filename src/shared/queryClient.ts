@@ -19,6 +19,7 @@ export const queryKeys = {
     settings: ['settings'],
     rules: ['rules'],
     cells: ['cells'],
+    activityWheel: ['activity-wheel'],
     cell: (cellId: RecordIdString) => ['cells', 'cell', cellId],
     inventory: (userId: RecordIdString) => ['inventory', userId],
     item: (itemId: RecordIdString) => ['items', itemId],
