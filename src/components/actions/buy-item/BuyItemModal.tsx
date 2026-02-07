@@ -40,7 +40,13 @@ export const BuyItemModal = () => {
                 <Dialog.Positioner>
                     <Dialog.Content alignItems="center" my={0}>
                         <Box position="relative" w="70vw">
-                            <Image src={image} position="absolute" draggable={false} w="full" />
+                            <Image
+                                src={image}
+                                position="absolute"
+                                draggable={false}
+                                w="full"
+                                userSelect="none"
+                            />
                             <BuyItemContent />
                         </Box>
                     </Dialog.Content>

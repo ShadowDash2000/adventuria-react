@@ -20,6 +20,7 @@ export const queryKeys = {
     rules: ['rules'],
     cells: ['cells'],
     activityWheel: ['activity-wheel'],
+    refreshShopView: ['refresh-shop-view'],
     cell: (cellId: RecordIdString) => ['cells', 'cell', cellId],
     inventory: (userId: RecordIdString) => ['inventory', userId],
     item: (itemId: RecordIdString) => ['items', itemId],
@@ -91,6 +92,10 @@ export const invalidateCell = async (cellId: RecordIdString) => {
 
 export const invalidateItem = async (itemId: RecordIdString) => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.item(itemId) });
+};
+
+export const invalidateRefreshShopView = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.refreshShopView });
 };
 
 export const latestActionQuery = (

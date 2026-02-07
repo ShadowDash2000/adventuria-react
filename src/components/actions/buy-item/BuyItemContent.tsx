@@ -3,8 +3,9 @@ import type { ClientResponseError } from 'pocketbase';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
-import { For, Grid, GridItem, Spinner, Text } from '@chakra-ui/react';
+import { For, Grid, GridItem, Spinner, Text, VStack } from '@chakra-ui/react';
 import { Item } from '@components/actions/buy-item/Item';
+import { RefreshShopButton } from './RefreshShopButton';
 
 export const BuyItemContent = () => {
     const { pb } = useAppAuthContext();
@@ -25,22 +26,18 @@ export const BuyItemContent = () => {
     }
 
     return (
-        <Grid
-            templateColumns="repeat(3, 1fr)"
-            gapX={4}
-            position="absolute"
-            w="full"
-            pr="20%"
-            pt="8%"
-        >
-            <For each={items.data.items}>
-                {(item, index) => (
-                    <GridItem key={`${item.id}_${index}`}>
-                        <Item item={item} imageHeight="11vw" />
-                    </GridItem>
-                )}
-            </For>
-        </Grid>
+        <VStack position="absolute" w="full" pr="20%" pt="8%" gapY={24}>
+            <Grid templateColumns="repeat(3, 1fr)" w="full" gapX={4} userSelect="none">
+                <For each={items.data.items}>
+                    {(item, index) => (
+                        <GridItem key={`${item.id}_${index}`}>
+                            <Item item={item} imageHeight="11vw" />
+                        </GridItem>
+                    )}
+                </For>
+            </Grid>
+            <RefreshShopButton />
+        </VStack>
     );
 };
 
