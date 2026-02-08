@@ -10,6 +10,7 @@ export const CellInfoModal = ({ children }: CellInfoProps) => {
 
     return (
         <Dialog.Root
+            size="xl"
             open={isModalOpen}
             onOpenChange={e => !e.open && closeCellInfo()}
             scrollBehavior="inside"
