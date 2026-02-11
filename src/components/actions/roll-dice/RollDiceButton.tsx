@@ -6,11 +6,11 @@ import { Button } from '@theme/button';
 
 export const RollDiceButton = () => {
     const diceSceneRef = useRef<HTMLDivElement>(null);
-    const { roll, dices, canRoll } = useRollDice(diceSceneRef);
+    const { roll, dices, canRoll, isPending } = useRollDice(diceSceneRef);
 
     return (
         <>
-            <Button colorPalette="purple" disabled={!canRoll} onClick={roll}>
+            <Button colorPalette="purple" loading={isPending} disabled={!canRoll} onClick={roll}>
                 <LuDices />
                 Бросить кубики
             </Button>

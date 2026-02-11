@@ -107,6 +107,7 @@ export const DoneModal = () => {
                                                         Отмена
                                                     </Button>
                                                     <Button
+                                                        loading={loading}
                                                         disabled={loading}
                                                         colorPalette="green"
                                                         onClick={async () => {

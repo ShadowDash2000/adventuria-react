@@ -55,6 +55,7 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
     const { play } = useAudioPlayer(AudioKey.music);
     const { addPaths, setMoveTime } = usePlayer(user.id);
 
+    const [isPending, setIsPending] = useState(false);
     const isRolling = useRollDiceStore(state => state.isRolling);
     const setIsRolling = useRollDiceStore(state => state.setIsRolling);
 
@@ -75,12 +76,15 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
     const roll = async () => {
         if (isRolling) return;
         setIsRolling(true);
+        setIsPending(true);
 
         const res = await diceRollRequest(pb.authStore.token);
         if (!res || !res.success) {
             setIsRolling(false);
+            setIsPending(false);
             return;
         }
+        setIsPending(false);
 
         const newDices: DiceFactoryItem[] = [];
         const rollValues: number[] = [];
@@ -148,5 +152,5 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
         setPendingRolls(null);
     }, [dices, pendingRolls, animationDuration]);
 
-    return { roll, isRolling, dices, canRoll: audioPreset.isSuccess && !isRolling };
+    return { roll, isRolling, dices, canRoll: audioPreset.isSuccess && !isRolling, isPending };
 };
