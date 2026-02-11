@@ -28,7 +28,7 @@ export const BuyItemContent = () => {
     return (
         <VStack position="absolute" w="full" pr="20%" pt="8%" gapY={24}>
             <Grid templateColumns="repeat(3, 1fr)" w="full" gapX={4} userSelect="none">
-                <For each={items.data.items}>
+                <For each={items.data.data.items}>
                     {(item, index) => (
                         <GridItem key={`${item.id}_${index}`}>
                             <Item item={item} imageHeight="11vw" />
@@ -41,9 +41,11 @@ export const BuyItemContent = () => {
     );
 };
 
-type GetBuyVariantsSuccess = { items: ItemRecord[] };
+type GetBuyVariantsData = { items: ItemRecord[] };
 
-type GetBuyVariantsError = never;
+type GetBuyVariantsSuccess = { success: true; data: GetBuyVariantsData; error?: never };
+
+type GetBuyVariantsError = { success: false; data: never; error: never };
 
 type GetBuyVariantsResult = GetBuyVariantsSuccess | GetBuyVariantsError;
 

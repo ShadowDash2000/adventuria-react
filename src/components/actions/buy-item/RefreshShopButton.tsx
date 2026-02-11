@@ -53,7 +53,7 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
         <Button
             {...props}
             loading={loading}
-            disabled={user.balance < refreshShopView.data.refresh_price}
+            disabled={user.balance < refreshShopView.data.data.refresh_price}
             onClick={async () => {
                 try {
                     setLoading(true);
@@ -65,15 +65,17 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
                 }
             }}
         >
-            Обновить {refreshShopView.data.refresh_price}
+            Обновить {refreshShopView.data.data.refresh_price}
             <Coin w={8} h={8} />
         </Button>
     );
 };
 
-type GetRefreshShopViewSuccess = { refresh_price: number };
+type GetRefreshShopViewData = { refresh_price: number };
 
-type GetRefreshShopViewError = never;
+type GetRefreshShopViewSuccess = { success: true; data: GetRefreshShopViewData; error?: never };
+
+type GetRefreshShopViewError = { success: false; data: never; error: string };
 
 type GetRefreshShopViewResult = GetRefreshShopViewSuccess | GetRefreshShopViewError;
 

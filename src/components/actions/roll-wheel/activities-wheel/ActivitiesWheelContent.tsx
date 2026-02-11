@@ -24,8 +24,8 @@ export const ActivitiesWheelContent = () => {
         refetchOnWindowFocus: false,
     });
 
-    const audioPresetFilter = wheelVariants.data?.audio_preset_id
-        ? { audioPresetId: wheelVariants.data.audio_preset_id }
+    const audioPresetFilter = wheelVariants.data?.data?.audio_preset_id
+        ? { audioPresetId: wheelVariants.data.data.audio_preset_id }
         : { audioPresetSlug: 'roll-wheel' };
 
     const { spinning, handleSpin, currentItemIndex, setCurrentItemIndex, audioPreset } = useWheel({
@@ -46,13 +46,13 @@ export const ActivitiesWheelContent = () => {
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
 
     const wheelItems = wheelVariants.data
-        ? wheelVariants.data.items.map(activity => ({
+        ? wheelVariants.data.data.items.map(activity => ({
               key: activity.id,
               image: activity.cover || pb.files.getURL(activity, activity.cover_alt),
               title: activity.name,
           }))
         : [];
-    const currentActivity = wheelVariants.data.items[currentItemIndex];
+    const currentActivity = wheelVariants.data.data.items[currentItemIndex];
 
     return (
         <>
@@ -138,9 +138,11 @@ const rollWheelRequest = async (authToken: string) => {
     return (await res.json()) as SpinResult;
 };
 
-type GetWheelVariantsSuccess = { items: ActivityRecord[]; audio_preset_id?: string };
+type GetWheelVariantsData = { items: ActivityRecord[]; audio_preset_id?: string };
 
-type GetWheelVariantsError = never;
+type GetWheelVariantsSuccess = { success: true; data: GetWheelVariantsData; error?: never };
+
+type GetWheelVariantsError = { success: false; data: never; error: string };
 
 type GetWheelVariantsResult = GetWheelVariantsSuccess | GetWheelVariantsError;
 
