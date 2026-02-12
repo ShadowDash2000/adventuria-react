@@ -20,6 +20,8 @@ import NasralPopiyaVideo from '@public/developers/nasral-popiya.mp4';
 import SchrodDiplomVideo from '@public/developers/schrod-diplom.webm';
 import GirlsStartImage from '@public/developers/girls-start.png';
 import EndOfPopiyaGif from '@public/developers/end-of-popiya.gif';
+import DavaiDropaiVideo from '@public/developers/davai-dropai.mp4';
+import KidayuKubSBratanomVideo from '@public/developers/kidayu-kub-s-bratanom.mp4';
 
 const Developers = () => {
     return (
@@ -114,6 +116,12 @@ const Developers = () => {
                 <GridItem display="flex" flexDir="column">
                     <Image src={EndOfPopiyaGif} />
                     <Image src={GirlsStartImage} />
+                </GridItem>
+                <GridItem>
+                    <VideoAutoplay w="full" h="full" src={DavaiDropaiVideo} />
+                </GridItem>
+                <GridItem>
+                    <VideoAutoplay w="full" h="full" src={KidayuKubSBratanomVideo} />
                 </GridItem>
             </Grid>
         </Flex>
