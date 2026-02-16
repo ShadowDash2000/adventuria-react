@@ -1,5 +1,5 @@
 import { useBoardInnerContext } from '@components/board';
-import { For, HStack, IconButton, VStack, Text } from '@chakra-ui/react';
+import { For, HStack, IconButton, VStack, Text, Box } from '@chakra-ui/react';
 import { ToggleTip } from '@ui/toggle-tip';
 import { BoardHelper } from '../BoardHelper';
 import type { UserRecord } from '@shared/types/user';
@@ -42,11 +42,24 @@ const CellPlayers = ({ cellIndex, users }: CellTooltipProps) => {
             unmountOnExit
             positioning={{ placement: 'top' }}
             content={
-                <VStack p={2} gap={4} align="stretch">
+                <VStack
+                    p={2}
+                    gap={4}
+                    align="stretch"
+                    overflowY="scroll"
+                    scrollbarColor="black transparent"
+                >
                     <For each={users}>
                         {user => (
                             <HStack key={user.id} gap={4}>
-                                <PlayerAvatar user={user} size="xs" outlineWidth="0.20vw" />
+                                <Box position="relative">
+                                    <PlayerAvatar
+                                        user={user}
+                                        showStreamLive
+                                        size="xs"
+                                        outlineWidth="0.20vw"
+                                    />
+                                </Box>
                                 <Text>{user.name}</Text>
                             </HStack>
                         )}
