@@ -99,7 +99,7 @@ export const ActivitiesWheelContent = () => {
                             <HStack
                                 key={item.key}
                                 data-active={currentItemIndex === index}
-                                h={20}
+                                minH={20}
                                 align="center"
                                 gap={4}
                                 cursor="pointer"
@@ -110,7 +110,13 @@ export const ActivitiesWheelContent = () => {
                                     setCurrentItemIndex(index);
                                 }}
                             >
-                                <Image src={item.image} h="100%" pointerEvents="none" />
+                                <Image
+                                    src={item.image}
+                                    h="full"
+                                    pointerEvents="none"
+                                    aspectRatio="2/3"
+                                    objectFit="contain"
+                                />
                                 <Text pointerEvents="none">{item.title}</Text>
                             </HStack>
                         )}

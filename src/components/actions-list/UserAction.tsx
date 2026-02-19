@@ -88,7 +88,7 @@ export const UserAction = ({ action }: ActionProps) => {
                                 <Image
                                     w={220}
                                     aspectRatio="2/3"
-                                    objectFit="cover"
+                                    objectFit="contain"
                                     src={
                                         activity.cover ||
                                         pb.files.getURL(activity, activity.cover_alt)

@@ -34,7 +34,7 @@ export const Timer = ({ userId }: TimerProps) => {
                 align="center"
                 overflowY="hidden"
             >
-                <Text>{nextResetDate}</Text>
+                <Text>Сброс: {nextResetDate}</Text>
                 <Text lineHeight={1} fontSize="4xl" ref={timerRef}>
                     00:00:00
                 </Text>
