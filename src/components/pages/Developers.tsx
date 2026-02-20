@@ -5,7 +5,7 @@ import { VideoAutoplay } from '@ui/video-autoplay';
 import KiryuGif from '@public/kiryu.gif';
 import ShadodImage from '@public/developers/shadod.jpg';
 import AtsImage from '@public/developers/jeffrey.png';
-import MboImage from '@public/developers/coi.jpeg';
+import MboImage from '@public/developers/shurik.jpg';
 import ShadodPushUpsGif from '@public/developers/shadod-push-ups.gif';
 import StrandedDeepVideo from '@public/developers/stranded-deep.mp4';
 import AtsDropVideo from '@public/developers/ats-drop.mp4';
