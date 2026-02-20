@@ -47,7 +47,9 @@ const Layout = () => {
             <Header />
             <Flex as="main" justify="center" w="100%" overflowX="hidden" p="0" m="0">
                 {themes[theme]}
-                <Outlet />
+                <Box maxW="vw">
+                    <Outlet />
+                </Box>
             </Flex>
             <ScrollRestoration />
             <Toaster />

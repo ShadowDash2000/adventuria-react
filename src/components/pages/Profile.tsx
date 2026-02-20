@@ -11,7 +11,7 @@ const Profile = () => {
     const login = useParams().login;
 
     return (
-        <Flex w={{ base: '60vw', mdDown: '100%' }} direction="column" gap="{spacing.5}">
+        <Flex w={{ base: '1280px', xlDown: 'vw' }} direction="column" gap="{spacing.5}">
             <CollectionOneFilterProvider
                 collection={pb.collection('users')}
                 filter={`name = "${login}"`}

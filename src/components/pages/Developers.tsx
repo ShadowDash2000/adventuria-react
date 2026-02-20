@@ -27,7 +27,7 @@ const Developers = () => {
     return (
         <Flex
             variant="solid"
-            w="80vw"
+            w={{ base: '1280px', xlDown: 'vw' }}
             py={6}
             justify="center"
             align="center"

@@ -9,7 +9,7 @@ interface AvatarProps extends ChakraAvatar.RootProps {
 export const Avatar = ({ ref, src, ...props }: AvatarProps) => {
     return (
         <ChakraAvatar.Root
-            outlineWidth=".25vw"
+            outlineWidth="4px"
             outlineOffset="{spacing.0.5}"
             outlineStyle="solid"
             {...props}

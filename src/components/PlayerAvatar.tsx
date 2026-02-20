@@ -21,7 +21,7 @@ export const PlayerAvatar = ({ user, ref, showStreamLive = false, ...props }: Av
                 {...props}
                 ref={ref}
                 src={avatar}
-                outlineWidth=".25vw"
+                outlineWidth="4px"
                 outlineColor={user.color}
                 outlineOffset="{spacing.0.5}"
                 outlineStyle="solid"
