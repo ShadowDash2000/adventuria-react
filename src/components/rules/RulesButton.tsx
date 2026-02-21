@@ -21,7 +21,12 @@ export const RulesButton = () => {
                             <Dialog.Title>Правила</Dialog.Title>
                         </Dialog.Header>
                         <Dialog.Body display="flex" overflow="hidden">
-                            <RulesContent gap={4} direction="column" overflow="hidden auto" />
+                            <RulesContent
+                                w="full"
+                                gap={4}
+                                direction="column"
+                                overflow="hidden auto"
+                            />
                         </Dialog.Body>
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />
