@@ -16,6 +16,7 @@ createRoot(document.getElementById('root')!).render(
         <UmamiAnalytics
             url={import.meta.env.VITE_UMAMI_URL}
             websiteId={import.meta.env.VITE_UMAMI_WEBSITE_ID}
+            debug={import.meta.env.VITE_UMAMI_DEBUG === 'true'}
             lazyLoad
         />
         <ChakraProvider value={theme}>
