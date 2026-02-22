@@ -9,15 +9,23 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { queryClient } from '@shared/queryClient';
 import { ThemeProvider } from 'next-themes';
 import theme, { colorModeConfig } from './theme/theme';
+import UmamiAnalytics from '@danielgtmn/umami-react';
 
 createRoot(document.getElementById('root')!).render(
-    <ChakraProvider value={theme}>
-        <ThemeProvider attribute="class" disableTransitionOnChange {...colorModeConfig} />
-        <QueryClientProvider client={queryClient}>
-            <AppContextProvider>
-                <RouterProvider router={router} />
-            </AppContextProvider>
-            <ReactQueryDevtools initialIsOpen={false} buttonPosition="top-left" />
-        </QueryClientProvider>
-    </ChakraProvider>,
+    <>
+        <UmamiAnalytics
+            url={import.meta.env.VITE_UMAMI_URL}
+            websiteId={import.meta.env.VITE_UMAMI_WEBSITE_ID}
+            lazyLoad
+        />
+        <ChakraProvider value={theme}>
+            <ThemeProvider attribute="class" disableTransitionOnChange {...colorModeConfig} />
+            <QueryClientProvider client={queryClient}>
+                <AppContextProvider>
+                    <RouterProvider router={router} />
+                </AppContextProvider>
+                <ReactQueryDevtools initialIsOpen={false} buttonPosition="top-left" />
+            </QueryClientProvider>
+        </ChakraProvider>
+    </>,
 );
