@@ -45,3 +45,6 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:${{ github.sha }}
           build-args: |
             VITE_PB_URL=${{ secrets.VITE_PB_URL }}
+            VITE_UMAMI_URL=${{ secrets.VITE_UMAMI_URL }}
+            VITE_UMAMI_WEBSITE_ID=${{ secrets.VITE_UMAMI_WEBSITE_ID }}
+            VITE_UMAMI_DEBUG=${{ secrets.VITE_UMAMI_DEBUG }}
