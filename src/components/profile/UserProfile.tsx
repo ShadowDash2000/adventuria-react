@@ -12,6 +12,7 @@ import {
     VStack,
     For,
     Heading,
+    useToken,
 } from '@chakra-ui/react';
 import { LuTwitch, LuYoutube } from 'react-icons/lu';
 import { TimerSimple } from '@components/timer/TimerSimple';
@@ -20,6 +21,7 @@ import { Button } from '@theme/button';
 
 export const UserProfile = () => {
     const { data: user } = useCollectionOneFilter<UserRecord>();
+    const lgBreakpoint = useToken('breakpoints', 'lg');
 
     const stats = user.stats
         ? [
@@ -99,6 +101,7 @@ export const UserProfile = () => {
                 w="full"
                 textAlign="center"
                 dangerouslySetInnerHTML={{ __html: user.description }}
+                css={{ [`@media (max-width: ${lgBreakpoint})`]: { '& img': { display: 'none' } } }}
             />
         </Flex>
     );
