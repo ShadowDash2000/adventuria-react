@@ -1,5 +1,5 @@
 import { UserAction } from './UserAction';
-import { Flex, For, SegmentGroup, Heading, Spinner, Text } from '@chakra-ui/react';
+import { Flex, For, SegmentGroup, Heading, Spinner, Text, type FlexProps } from '@chakra-ui/react';
 import { useInView } from 'react-intersection-observer';
 import { useState } from 'react';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
@@ -8,12 +8,12 @@ import type { ClientResponseError } from 'pocketbase';
 import type { ActionRecord } from '@shared/types/action';
 import { queryKeys } from '@shared/queryClient';
 
-interface ActionsListProps {
+interface ActionsListProps extends FlexProps {
     userName?: string;
     perPage?: number;
 }
 
-export const ActionsList = ({ userName, perPage = 10 }: ActionsListProps) => {
+export const ActionsList = ({ userName, perPage = 10, ...rest }: ActionsListProps) => {
     const { pb } = useAppContext();
     const [actionType, setActionType] = useState<string | null>('all');
 
@@ -62,7 +62,7 @@ export const ActionsList = ({ userName, perPage = 10 }: ActionsListProps) => {
     }
 
     return (
-        <Flex direction="column" gap={4} align="center">
+        <Flex direction="column" gap={4} align="center" {...rest}>
             <Heading size="2xl">Последние ходы</Heading>
             <SegmentGroup.Root
                 defaultValue={actionType}
@@ -74,7 +74,7 @@ export const ActionsList = ({ userName, perPage = 10 }: ActionsListProps) => {
                         { label: 'Все', value: 'all' },
                         { label: 'Завершено', value: 'done' },
                         { label: 'Дроп', value: 'drop' },
-                        { label: 'Рерол', value: 'reroll' },
+                        { label: 'Реролл', value: 'reroll' },
                         { label: 'Колесо', value: 'rollWheel' },
                     ]}
                 />

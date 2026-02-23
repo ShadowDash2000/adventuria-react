@@ -9,7 +9,7 @@ const Main = () => {
             <Board />
             <CellInfoModal />
             <Spacer h={10} />
-            <ActionsList />
+            <ActionsList maxW="1642px" />
         </>
     );
 };
