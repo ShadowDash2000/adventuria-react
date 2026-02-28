@@ -1,4 +1,4 @@
-import { ButtonGroup, CloseButton, Dialog, Flex, Portal, VStack } from '@chakra-ui/react';
+import { ButtonGroup, CloseButton, Dialog, Flex, Portal, VStack, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Content } from '@tiptap/react';
 import { useAppContext } from '@context/AppContext';
@@ -14,11 +14,16 @@ export const DoneModal = () => {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [titleConfirm, setTitleConfirm] = useState('');
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleDone = async (actionType: string) => {
+        setError(null);
         const res = await doneRequest(pb.authStore.token, actionType, content);
 
-        if (!res.success) return;
+        if (!res.success) {
+            setError(res.error);
+            return;
+        }
 
         await invalidateAllActions();
         await invalidateUser();
@@ -98,6 +103,11 @@ export const DoneModal = () => {
                                                 <Dialog.Title>{titleConfirm}</Dialog.Title>
                                             </Dialog.Header>
                                             <Dialog.Body>
+                                                {!!error && (
+                                                    <Text color="red.500" mb="2">
+                                                        {error}
+                                                    </Text>
+                                                )}
                                                 <ButtonGroup>
                                                     <Button
                                                         disabled={loading}
@@ -116,6 +126,11 @@ export const DoneModal = () => {
                                                                 await handleDone(actionType);
                                                             } catch (e) {
                                                                 console.error(e);
+                                                                const message =
+                                                                    e instanceof Error
+                                                                        ? e.message
+                                                                        : 'Unknown error';
+                                                                setError(message);
                                                             } finally {
                                                                 setLoading(false);
                                                             }

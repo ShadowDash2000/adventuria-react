@@ -41,10 +41,12 @@ export const UserAction = ({ action }: ActionProps) => {
         setError(null);
 
         try {
-            const ok = await updateActionRequest(pb.authStore.token, action.id, draft);
-            if (ok) {
+            const res = await updateActionRequest(pb.authStore.token, action.id, draft);
+            if (res.success) {
                 setComment(draft);
                 setIsEditing(false);
+            } else {
+                setError(res.error);
             }
         } catch (e: unknown) {
             const message = e instanceof Error ? e.message : 'Unknown error';
@@ -187,6 +189,12 @@ export const UserAction = ({ action }: ActionProps) => {
     );
 };
 
+type UpdateActionSuccess = { success: true; error?: never };
+
+type UpdateActionError = { success: false; error: string };
+
+type UpdateActionResult = UpdateActionSuccess | UpdateActionError;
+
 const updateActionRequest = async (
     authToken: string,
     actionId: RecordIdString,
@@ -204,12 +212,11 @@ const updateActionRequest = async (
     if (!res.ok) {
         const error = await res
             .json()
-            .then(e => e.error)
+            .then(res => res.error)
             .catch(() => '');
         const text = await res.text().catch(() => '');
-        console.log(error || text || `Failed to update action`);
-        return false;
+        throw new Error(error || text || `Failed to update action`);
     }
 
-    return true;
+    return (await res.json()) as UpdateActionResult;
 };
