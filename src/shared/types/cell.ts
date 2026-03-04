@@ -6,6 +6,7 @@ import type { AudioPresetRecord } from '@shared/types/audio-preset';
 export type CellRecord = {
     created: IsoDateString;
     updated: IsoDateString;
+    disabled: boolean;
     sort: number;
     type: string;
     filter: RecordIdString;

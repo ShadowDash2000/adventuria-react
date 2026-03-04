@@ -5,6 +5,7 @@ import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { Spinner, Text } from '@chakra-ui/react';
 import { BoardDataContext } from '.';
+import { queryKeys } from '@shared/queryClient';
 
 export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
     const { pb } = useAppContext();
@@ -19,9 +20,12 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
         queryKey: ['users'],
     });
     const cells = useQuery({
-        queryFn: () => pb.collection('cells').getFullList<CellRecord>({ sort: 'sort' }),
+        queryFn: () =>
+            pb
+                .collection('cells')
+                .getFullList<CellRecord>({ sort: 'sort', filter: 'disabled = false' }),
         refetchOnWindowFocus: false,
-        queryKey: ['cells'],
+        queryKey: queryKeys.cells,
     });
 
     if (users.isPending || cells.isPending) return <Spinner />;
