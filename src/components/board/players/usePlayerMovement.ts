@@ -7,6 +7,7 @@ import { CELL_MAX_USERS, CELL_MAX_USERS_LINE } from '../Board';
 import { usePlayer } from '@components/board/players/usePlayer';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
+import { invalidateUsers } from '@shared/queryClient';
 
 type PlayerPosition = { x: number; y: number; offsetX: number; offsetY: number };
 
@@ -126,6 +127,8 @@ export const usePlayerMovement = ({
             setMoving(false);
             clearMoveTime();
             isMovingRef.current = false;
+
+            void invalidateUsers();
         };
 
         const performStep = () => {

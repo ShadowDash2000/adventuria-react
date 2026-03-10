@@ -17,7 +17,7 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
                     fields: 'id,updated,name,collectionName,avatar,color,cellsPassed,is_stream_live',
                 }),
         refetchOnWindowFocus: false,
-        queryKey: ['users'],
+        queryKey: queryKeys.users,
     });
     const cells = useQuery({
         queryFn: () =>
