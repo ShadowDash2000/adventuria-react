@@ -23,7 +23,9 @@ export type Angle = { x: number; y: number };
 
 export function performRotation(element: HTMLDivElement, angle: Angle) {
     requestAnimationFrame(() => {
-        element.style.transform = `rotateX(${angle.x}deg) rotateY(${angle.y}deg)`;
+        requestAnimationFrame(() => {
+            element.style.transform = `rotateX(${angle.x}deg) rotateY(${angle.y}deg)`;
+        });
     });
 }
 
