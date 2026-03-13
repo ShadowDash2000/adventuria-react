@@ -25,10 +25,15 @@ export const UserAction = ({ action }: ActionProps) => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [comment, setComment] = useState<string>(action.comment);
-    const [draft, setDraft] = useState<string>(comment);
+    const [draft, setDraft] = useState<string>(action.comment);
     const activity = action.expand?.activity;
 
     const canEdit = isAuth && authUser.id && action.user === authUser.id;
+
+    useEffect(() => {
+        setComment(action.comment ?? '');
+        setDraft(action.comment ?? '');
+    }, [action.comment]);
 
     useEffect(() => {
         if (isEditing) {
