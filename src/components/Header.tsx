@@ -10,10 +10,7 @@ export const Header = () => {
 
     return (
         <>
-            <CollectionListAllProvider
-                collection={pb.collection('users')}
-                refetchOnWindowFocus={false}
-            >
+            <CollectionListAllProvider collection={pb.collection('users')}>
                 <PlayersFloatingList />
             </CollectionListAllProvider>
             {isAuth ? <UserMenuAuth /> : <UserMenuGuest />}
