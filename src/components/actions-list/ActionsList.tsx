@@ -1,5 +1,16 @@
 import { UserAction } from './UserAction';
-import { Flex, For, SegmentGroup, Heading, Spinner, Text, type FlexProps } from '@chakra-ui/react';
+import {
+    Flex,
+    For,
+    SegmentGroup,
+    Heading,
+    Spinner,
+    Text,
+    type FlexProps,
+    HStack,
+    IconButton,
+    Box,
+} from '@chakra-ui/react';
 import { useInView } from 'react-intersection-observer';
 import { useState } from 'react';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
@@ -7,6 +18,7 @@ import { useAppContext } from '@context/AppContext';
 import type { ClientResponseError } from 'pocketbase';
 import type { ActionRecord } from '@shared/types/action';
 import { queryKeys } from '@shared/queryClient';
+import { TbRefresh } from 'react-icons/tb';
 
 interface ActionsListProps extends FlexProps {
     userName?: string;
@@ -63,7 +75,30 @@ export const ActionsList = ({ userName, perPage = 10, ...rest }: ActionsListProp
 
     return (
         <Flex direction="column" gap={4} align="center" {...rest}>
-            <Heading size="2xl">Последние ходы</Heading>
+            <HStack>
+                <Heading size="2xl">Последние ходы</Heading>
+                <IconButton
+                    size="xs"
+                    bg="none"
+                    color="white"
+                    disabled={actions.isFetching}
+                    _hover={{ cursor: 'pointer' }}
+                    onClick={() => actions.refetch()}
+                >
+                    <Box
+                        w="full"
+                        h="full"
+                        data-loading={actions.isFetching}
+                        css={{
+                            '&[data-loading="true"]': {
+                                animation: 'spin 1s linear infinite reverse',
+                            },
+                        }}
+                    >
+                        <TbRefresh style={{ width: '100%', height: '100%' }} />
+                    </Box>
+                </IconButton>
+            </HStack>
             <SegmentGroup.Root
                 defaultValue={actionType}
                 onValueChange={e => setActionType(e.value)}
