@@ -15,7 +15,16 @@ export const RollDiceButton = () => {
                 Бросить кубики
             </Button>
             <Portal>
-                <Flex ref={diceSceneRef} position="fixed" gap="{spacing.40}" top={0} zIndex={100}>
+                <Flex
+                    ref={diceSceneRef}
+                    position="fixed"
+                    w="full"
+                    justifyContent="center"
+                    gap="{spacing.40}"
+                    top={0}
+                    zIndex={100}
+                    pointerEvents="none"
+                >
                     {dices ? <For each={dices}>{dice => dice.element}</For> : null}
                 </Flex>
             </Portal>
