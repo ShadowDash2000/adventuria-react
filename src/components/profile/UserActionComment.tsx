@@ -14,6 +14,16 @@ interface UserActionCommentProps {
 }
 
 const COMMENT_MAX_LENGTH = 1000;
+const COMMENT_COLLAPSIBLE_IMAGES_COUNT = 2;
+
+const shouldCollapseComment = (comment: string) => {
+    const imageMatches = comment.match(/<img\b/gi);
+
+    return (
+        comment.length > COMMENT_MAX_LENGTH ||
+        (imageMatches?.length ?? 0) >= COMMENT_COLLAPSIBLE_IMAGES_COUNT
+    );
+};
 
 const renderComment = (html: string) =>
     HTMLReactParser(html, {
@@ -47,6 +57,8 @@ export const UserActionComment = ({
     draft,
     setDraft,
 }: UserActionCommentProps) => {
+    const isCollapsible = shouldCollapseComment(comment);
+
     return (
         <>
             {isEditing ? (
@@ -58,7 +70,7 @@ export const UserActionComment = ({
                         editable={isEditing}
                     />
                 </VStack>
-            ) : comment.length > COMMENT_MAX_LENGTH ? (
+            ) : isCollapsible ? (
                 <Collapsible.Root collapsedHeight={200}>
                     <Collapsible.Content
                         _closed={{
