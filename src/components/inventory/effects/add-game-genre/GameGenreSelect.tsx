@@ -21,7 +21,7 @@ export const GameGenreSelect = () => {
         queryFn: () =>
             pb
                 .collection('genres')
-                .getList<GenreRecord>(1, 20, {
+                .getList<GenreRecord>(1, 100, {
                     filter: inputValue.length > 0 ? `name ?~ "${inputValueDebounced}"` : '',
                 }),
         placeholderData: keepPreviousData,
