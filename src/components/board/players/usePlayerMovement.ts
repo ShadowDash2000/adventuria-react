@@ -109,19 +109,20 @@ export const usePlayerMovement = ({
         setMoving(true);
         isMovingRef.current = true;
 
+        let cleaned = false;
+        let bodyLocked = false;
+        let prevBodyOverflow = '';
         let scrollInterval: number | null = null;
         let moveInterval: number | null = null;
 
-        if (isCurrentUser) {
-            document.body.style.overflow = 'hidden';
-            scrollInterval = window.setInterval(scrollToUser, SCROLL_INTERVAL);
-            incrementBlocked();
-        }
         const cleanup = () => {
+            if (cleaned) return;
+            cleaned = true;
+
             if (moveInterval !== null) clearInterval(moveInterval);
-            if (scrollInterval !== null) {
-                clearInterval(scrollInterval);
-                document.body.style.overflow = 'auto';
+            if (scrollInterval !== null) clearInterval(scrollInterval);
+            if (bodyLocked) {
+                document.body.style.overflow = prevBodyOverflow;
                 decrementBlocked();
             }
             setMoving(false);
@@ -130,6 +131,14 @@ export const usePlayerMovement = ({
 
             void invalidateUsers();
         };
+
+        if (isCurrentUser) {
+            prevBodyOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            bodyLocked = true;
+            scrollInterval = window.setInterval(scrollToUser, SCROLL_INTERVAL);
+            incrementBlocked();
+        }
 
         const performStep = () => {
             const next = pullPath();
@@ -142,13 +151,11 @@ export const usePlayerMovement = ({
         };
 
         performStep();
-        if (isMovingRef.current) {
+        if (!cleaned) {
             moveInterval = window.setInterval(performStep, moveTime * 1000);
         }
 
-        return () => {
-            cleanup();
-        };
+        return cleanup;
     }, [paths, moveTime, isCurrentUser, scrollToUser, move, pullPath]);
 
     return { position, moving, moveTime, visible };
