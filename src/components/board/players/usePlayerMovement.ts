@@ -38,6 +38,8 @@ export const usePlayerMovement = ({
     const { pullPath, paths, moveTime, clearMoveTime } = usePlayer(user.id);
 
     const isMovingRef = useRef(false);
+    const startedMovementRef = useRef(false);
+    const nextStepAtRef = useRef<number | null>(null);
 
     const calculateState = (
         row: number,
@@ -113,18 +115,29 @@ export const usePlayerMovement = ({
         let bodyLocked = false;
         let prevBodyOverflow = '';
         let scrollInterval: number | null = null;
-        let moveInterval: number | null = null;
+        let moveTimeout: number | null = null;
 
-        const cleanup = () => {
-            if (cleaned) return;
-            cleaned = true;
+        const stopAnimation = () => {
+            if (moveTimeout !== null) clearTimeout(moveTimeout);
+            moveTimeout = null;
 
-            if (moveInterval !== null) clearInterval(moveInterval);
             if (scrollInterval !== null) clearInterval(scrollInterval);
+            scrollInterval = null;
+
             if (bodyLocked) {
                 document.body.style.overflow = prevBodyOverflow;
+                bodyLocked = false;
                 decrementBlocked();
             }
+        };
+
+        const finishMovement = () => {
+            if (cleaned) return;
+            cleaned = true;
+            startedMovementRef.current = false;
+            nextStepAtRef.current = null;
+
+            stopAnimation();
             setMoving(false);
             clearMoveTime();
             isMovingRef.current = false;
@@ -140,22 +153,39 @@ export const usePlayerMovement = ({
             incrementBlocked();
         }
 
+        const scheduleNextStep = (delayMs: number) => {
+            moveTimeout = window.setTimeout(() => {
+                moveTimeout = null;
+                performStep();
+            }, delayMs);
+        };
+
         const performStep = () => {
             const next = pullPath();
 
             if (next) {
+                startedMovementRef.current = true;
+                nextStepAtRef.current = Date.now() + moveTime * 1000;
                 move(next.row, next.col);
+                scheduleNextStep(moveTime * 1000);
             } else {
-                cleanup();
+                finishMovement();
             }
         };
 
-        performStep();
-        if (!cleaned) {
-            moveInterval = window.setInterval(performStep, moveTime * 1000);
+        const nextStepAt = nextStepAtRef.current;
+        const isRestart = startedMovementRef.current && nextStepAt !== null;
+
+        if (isRestart) {
+            scheduleNextStep(Math.max(nextStepAt - Date.now(), 0));
+        } else {
+            performStep();
         }
 
-        return cleanup;
+        return () => {
+            stopAnimation();
+            isMovingRef.current = false;
+        };
     }, [paths, moveTime, isCurrentUser, scrollToUser, move, pullPath]);
 
     return { position, moving, moveTime, visible };
