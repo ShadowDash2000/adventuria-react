@@ -10,6 +10,10 @@ import {
     HStack,
     IconButton,
     Box,
+    Select,
+    createListCollection,
+    Portal,
+    Grid,
 } from '@chakra-ui/react';
 import { useInView } from 'react-intersection-observer';
 import { useState } from 'react';
@@ -28,10 +32,12 @@ interface ActionsListProps extends FlexProps {
 export const ActionsList = ({ userName, perPage = 10, ...rest }: ActionsListProps) => {
     const { pb } = useAppContext();
     const [actionType, setActionType] = useState<string | null>('all');
+    const [cellType, setCellType] = useState<string | null>('all');
 
     const filter = [
         { field: 'type', value: actionType === 'all' ? null : actionType },
         { field: 'user.name', value: userName },
+        { field: 'cell.type', value: cellType === 'all' ? null : cellType },
     ];
 
     const actions = useInfiniteQuery({
@@ -48,7 +54,7 @@ export const ActionsList = ({ userName, perPage = 10, ...rest }: ActionsListProp
             if (lastPage.page === lastPage.totalPages) return null;
             return ++lastPageParam;
         },
-        queryKey: [...queryKeys.actions, actionType, userName],
+        queryKey: [...queryKeys.actions, actionType, userName, cellType],
         initialPageParam: 1,
         refetchOnWindowFocus: false,
         placeholderData: keepPreviousData,
@@ -99,21 +105,62 @@ export const ActionsList = ({ userName, perPage = 10, ...rest }: ActionsListProp
                     </Box>
                 </IconButton>
             </HStack>
-            <SegmentGroup.Root
-                defaultValue={actionType}
-                onValueChange={e => setActionType(e.value)}
+            <Grid
+                templateColumns={{ base: '1fr', md: '1fr auto 1fr' }}
+                alignItems="center"
+                justifyItems="center"
+                gap={8}
+                w="full"
             >
-                <SegmentGroup.Indicator />
-                <SegmentGroup.Items
-                    items={[
-                        { label: 'Все', value: 'all' },
-                        { label: 'Завершено', value: 'done' },
-                        { label: 'Дроп', value: 'drop' },
-                        { label: 'Реролл', value: 'reroll' },
-                        { label: 'Колесо', value: 'rollWheel' },
-                    ]}
-                />
-            </SegmentGroup.Root>
+                <Text justifySelf={{ base: 'center', md: 'end' }}>
+                    Всего: {actions.data.pages ? actions.data.pages[0].totalItems : 0}
+                </Text>
+                <SegmentGroup.Root
+                    defaultValue={actionType}
+                    onValueChange={e => setActionType(e.value)}
+                >
+                    <SegmentGroup.Indicator />
+                    <SegmentGroup.Items
+                        items={[
+                            { label: 'Все', value: 'all' },
+                            { label: 'Завершено', value: 'done' },
+                            { label: 'Дроп', value: 'drop' },
+                            { label: 'Реролл', value: 'reroll' },
+                            { label: 'Колесо', value: 'rollWheel' },
+                        ]}
+                    />
+                </SegmentGroup.Root>
+                <Select.Root
+                    size="sm"
+                    w={200}
+                    justifySelf={{ base: 'center', md: 'start' }}
+                    collection={cellTypes}
+                    defaultValue={['all']}
+                    onValueChange={e => setCellType(e.value[0])}
+                >
+                    <Select.HiddenSelect />
+                    <Select.Control>
+                        <Select.Trigger>
+                            <Select.ValueText placeholder="Тип действия" />
+                        </Select.Trigger>
+                        <Select.IndicatorGroup>
+                            <Select.Indicator />
+                        </Select.IndicatorGroup>
+                    </Select.Control>
+                    <Portal>
+                        <Select.Positioner>
+                            <Select.Content>
+                                {cellTypes.items.map(cellType => (
+                                    <Select.Item item={cellType} key={cellType.value}>
+                                        {cellType.label}
+                                        <Select.ItemIndicator />
+                                    </Select.Item>
+                                ))}
+                            </Select.Content>
+                        </Select.Positioner>
+                    </Portal>
+                </Select.Root>
+            </Grid>
             <For each={actions.data.pages}>
                 {list => list.items.map(action => <UserAction key={action.id} action={action} />)}
             </For>
@@ -121,3 +168,17 @@ export const ActionsList = ({ userName, perPage = 10, ...rest }: ActionsListProp
         </Flex>
     );
 };
+
+const cellTypes = createListCollection({
+    items: [
+        { label: 'Все', value: 'all' },
+        { label: 'Игры', value: 'game' },
+        { label: 'Фильмы', value: 'movie' },
+        { label: 'Тюрьма', value: 'jail' },
+        { label: 'Качалки', value: 'gym' },
+        { label: 'Буфет', value: 'shop' },
+        { label: 'Казик', value: 'casino' },
+        { label: 'Лестницы/Ямы', value: 'teleport' },
+        { label: 'Бафы/Дебафы', value: 'rollItem' },
+    ],
+});
