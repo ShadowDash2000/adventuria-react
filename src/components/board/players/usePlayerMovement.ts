@@ -146,8 +146,12 @@ export const usePlayerMovement = ({
         };
 
         if (isCurrentUser) {
-            prevBodyOverflow = document.body.style.overflow;
-            document.body.style.overflow = 'hidden';
+            if ('scrollLock' in document.body.dataset) {
+                prevBodyOverflow = '';
+            } else {
+                prevBodyOverflow = document.body.style.overflow;
+                document.body.style.overflow = 'hidden';
+            }
             bodyLocked = true;
             scrollInterval = window.setInterval(scrollToUser, SCROLL_INTERVAL);
             incrementBlocked();
