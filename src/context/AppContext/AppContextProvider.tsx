@@ -22,7 +22,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
             return pb.collection('users').getOne<UserRecord>(pb.authStore.record!.id);
         },
         enabled: isAuth,
-        queryKey: [...queryKeys.user, isAuth, pb.authStore.record?.id],
+        queryKey: [...queryKeys.userAuth, isAuth, pb.authStore.record?.id],
         refetchOnWindowFocus: false,
     });
 

@@ -1,6 +1,6 @@
 import { Button } from '@theme/button';
 import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
-import { invalidateAllActions, invalidateUser } from '@shared/queryClient';
+import { invalidateAllActions, invalidateUserAuth } from '@shared/queryClient';
 import { useAppContext } from '@context/AppContext';
 import {
     EffectFactory,
@@ -33,14 +33,14 @@ export const UseItemButton = ({
         await itemUseRequest(pb.authStore.token, invItemId, Object.fromEntries(formData));
         decrementKbdBlock();
         await invalidateAllActions();
-        await invalidateUser();
+        await invalidateUserAuth();
         onItemUse?.();
     };
 
     const handleItemUse = async () => {
         await itemUseRequest(pb.authStore.token, invItemId);
         await invalidateAllActions();
-        await invalidateUser();
+        await invalidateUserAuth();
         onItemUse?.();
     };
 

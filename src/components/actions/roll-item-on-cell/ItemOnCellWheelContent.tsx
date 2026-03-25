@@ -2,7 +2,7 @@ import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import type { ItemRecord } from '@shared/types/item';
-import { invalidateUser } from '@shared/queryClient';
+import { invalidateUserAuth } from '@shared/queryClient';
 import { WheelItemInfo } from '@components/actions/roll-wheel/items-wheel/WheeItemInfo';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -55,7 +55,7 @@ export const ItemsWheelContent = () => {
         enabled: action.isSuccess,
         spinRequest: () => rollItemOnCellRequest(pb.authStore.token),
         onSpinComplete: async () => {
-            await invalidateUser();
+            await invalidateUserAuth();
         },
         ...audioPresetFilter,
     });

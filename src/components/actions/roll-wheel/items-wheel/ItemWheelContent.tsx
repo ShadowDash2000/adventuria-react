@@ -2,7 +2,7 @@ import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import type { ItemRecord } from '@shared/types/item';
-import { invalidateUser } from '@shared/queryClient';
+import { invalidateUserAuth } from '@shared/queryClient';
 import { WheelItemInfo } from './WheeItemInfo';
 import { useRef } from 'react';
 import { WheelOFortune, type WheelOFortuneHandle } from '../WheelOFortune';
@@ -29,7 +29,7 @@ export const ItemsWheelContent = () => {
         spinRequest: () => rollWheelRequest(pb.authStore.token),
         audioPresetSlug: 'roll-items',
         onSpinComplete: async () => {
-            await invalidateUser();
+            await invalidateUserAuth();
         },
     });
 

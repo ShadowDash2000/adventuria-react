@@ -2,7 +2,7 @@ import { Input, Field, Flex, Dialog, Portal, CloseButton, IconButton } from '@ch
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@ui/password-input';
 import { useAppContext } from '@context/AppContext';
-import { invalidateUser } from '@shared/queryClient';
+import { invalidateUserAuth } from '@shared/queryClient';
 import { Tooltip } from '@ui/tooltip';
 import { FaSignInAlt } from 'react-icons/fa';
 import { Button } from '@theme/button';
@@ -23,7 +23,7 @@ export const LoginModalButton = () => {
             .authWithPassword(values['login'], values['password']);
 
         if (authResult.token) {
-            await invalidateUser();
+            await invalidateUserAuth();
             login();
         }
     };

@@ -7,7 +7,8 @@ import type { RecordListOptions } from 'pocketbase';
 export const queryClient = new QueryClient();
 
 export const queryKeys = {
-    user: ['user'],
+    userAuth: ['user-auth'],
+    user: (userId: RecordIdString) => ['users', userId],
     users: ['users'],
     actions: ['actions'],
     latestAction: ['latest-action'],
@@ -26,8 +27,12 @@ export const queryKeys = {
     item: (itemId: RecordIdString) => ['items', itemId],
 } as const;
 
-export const invalidateUser = async () => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.user });
+export const invalidateUserAuth = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.userAuth });
+};
+
+export const invalidateUser = async (userId: RecordIdString) => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.user(userId) });
 };
 
 export const invalidateUsers = async () => {

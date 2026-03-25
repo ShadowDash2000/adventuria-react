@@ -7,7 +7,7 @@ import { type RefObject, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { BoardHelper, type CellPosition } from '@components/board/BoardHelper';
-import { invalidateAllActions, invalidateUser } from '@shared/queryClient';
+import { invalidateAllActions, invalidateUserAuth } from '@shared/queryClient';
 import { performFadeOut } from '@components/actions/roll-dice/dices/roll';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { usePlayer } from '@components/board/players/usePlayer';
@@ -130,7 +130,7 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
                 setPendingRolls(null);
                 setIsRolling(false);
                 await invalidateAllActions();
-                await invalidateUser();
+                await invalidateUserAuth();
                 if (diceSceneRef.current) {
                     diceSceneRef.current.style.opacity = '1';
                 }

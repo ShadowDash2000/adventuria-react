@@ -1,10 +1,11 @@
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
 import type { UserRecord } from '@shared/types/user';
-import { CloseButton, Drawer, For, Grid, Spinner, Text } from '@chakra-ui/react';
+import { CloseButton, Drawer, For, Grid, HStack, Spinner, Text } from '@chakra-ui/react';
 import { InventoryItem } from './InventoryItem';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
+import { Coin } from '@shared/components/Coin';
 
 interface InventoryProps {
     user: UserRecord;
@@ -12,6 +13,7 @@ interface InventoryProps {
 
 export const Inventory = ({ user: invUser }: InventoryProps) => {
     const { pb, isAuth, user } = useAppContext();
+
     const inventory = useQuery({
         queryFn: () => {
             return pb
@@ -22,6 +24,13 @@ export const Inventory = ({ user: invUser }: InventoryProps) => {
                 });
         },
         queryKey: queryKeys.inventory(invUser.id),
+    });
+
+    const userInventory = useQuery({
+        queryFn: () => {
+            return pb.collection('users').getOne<UserRecord>(invUser.id, { fields: 'balance' });
+        },
+        queryKey: queryKeys.user(invUser.id),
     });
 
     if (inventory.isPending) return <Spinner />;
@@ -49,8 +58,16 @@ export const Inventory = ({ user: invUser }: InventoryProps) => {
                     </For>
                 </Grid>
             </Drawer.Body>
-            <Drawer.Footer>
-                {`${itemsUsingSlot} / ${invUser.maxInventorySlots}`} слотов
+            <Drawer.Footer justifyContent="space-between">
+                <HStack>
+                    {userInventory.isPending ? (
+                        <Spinner />
+                    ) : (
+                        <Text>{userInventory.isSuccess ? userInventory.data.balance : 0}</Text>
+                    )}
+                    <Coin w={6} />
+                </HStack>
+                <Text>{`${itemsUsingSlot} / ${invUser.maxInventorySlots}`} слотов</Text>
             </Drawer.Footer>
             <Drawer.CloseTrigger asChild>
                 <CloseButton size="sm" />

@@ -7,7 +7,7 @@ import {
     invalidateAvailableActions,
     invalidateLatestAction,
     invalidateShopItems,
-    invalidateUser,
+    invalidateUserAuth,
 } from '@shared/queryClient';
 import PriceBadgeImage from '@public/price-badge.png';
 import { Coin } from '@shared/components/Coin';
@@ -33,7 +33,7 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
             await invalidateAvailableActions();
             await invalidateLatestAction();
             await invalidateShopItems();
-            await invalidateUser();
+            await invalidateUserAuth();
         } catch (e) {
             console.error(e);
         }

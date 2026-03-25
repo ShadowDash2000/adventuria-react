@@ -4,7 +4,7 @@ import { Content } from '@tiptap/react';
 import { useAppContext } from '@context/AppContext';
 import { LuNotebookPen } from 'react-icons/lu';
 import { ActionTextEditor } from '@components/profile/ActionTextEditor';
-import { invalidateAllActions, invalidateUser } from '@shared/queryClient';
+import { invalidateAllActions, invalidateUserAuth } from '@shared/queryClient';
 import { Button } from '@theme/button';
 
 export const DoneModal = () => {
@@ -26,7 +26,7 @@ export const DoneModal = () => {
         }
 
         await invalidateAllActions();
-        await invalidateUser();
+        await invalidateUserAuth();
     };
 
     return (
