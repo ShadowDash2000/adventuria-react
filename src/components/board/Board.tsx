@@ -3,8 +3,8 @@ import { LuArrowBigDown, LuArrowBigUp } from 'react-icons/lu';
 import { useRef } from 'react';
 import { BoardInner } from './BoardInner';
 import { BoardDataProvider } from './BoardDataContext';
-import BuildingImage from '/building.png';
-import WallsImage from '/walls.png';
+import BuildingImage from '/building-2.png';
+import WallsImage from '/walls-2.png';
 import { BoardContext } from '.';
 
 export const CELL_MAX_USERS_LINE = 3;
@@ -27,7 +27,7 @@ export const Board = () => {
                 justify="center"
                 align="flex-end"
                 w="1642px"
-                h="2426px"
+                h="2688px"
                 position="relative"
             >
                 <Button
@@ -74,7 +74,7 @@ export const Board = () => {
                     bottom={0}
                     ml="152px"
                     mb="655px"
-                    gapY="8.3px"
+                    gapY="8.4px"
                 >
                     <BoardContext.Provider value={{ boardRef, boardInnerRef }}>
                         <BoardDataProvider>
