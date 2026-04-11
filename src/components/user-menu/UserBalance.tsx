@@ -8,7 +8,7 @@ export const UserBalance = () => {
 
     return (
         <Tooltip content="Баланс">
-            <HStack>
+            <HStack justifyContent="center" w="full">
                 <Text userSelect="none">{user.balance}</Text>
                 <Coin w={6} />
             </HStack>

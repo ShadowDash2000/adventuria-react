@@ -6,6 +6,7 @@ import { useAppAuthContext } from '@context/AppContext';
 import { Timer } from '@components/timer/Timer';
 import { VolumeButton } from '@components/user-menu/VolumeButton';
 import { UserBalance } from '@components/user-menu/UserBalance';
+import { UserDrops } from '@components/user-menu/UserDrops';
 
 export const UserMenuAuth = () => {
     const { user } = useAppAuthContext();
@@ -22,6 +23,7 @@ export const UserMenuAuth = () => {
                 zIndex={100}
                 align="left"
             >
+                <UserDrops />
                 <UserBalance />
                 <VStack justify="center" align="start">
                     <PlayerInventoryButton user={user} kbd={true} />

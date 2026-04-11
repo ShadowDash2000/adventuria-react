@@ -25,6 +25,7 @@ export const LeaderboardItem = ({ user }: LeaderboardItemProps) => {
             <Table.Cell>{user.stats?.rerolls || 0}</Table.Cell>
             <Table.Cell>{user.stats?.drops || 0}</Table.Cell>
             <Table.Cell>{user.cellsPassed}</Table.Cell>
+            <Table.Cell>{user.dropsInARow}</Table.Cell>
         </Table.Row>
     );
 };

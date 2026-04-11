@@ -38,6 +38,7 @@ export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
                     <Table.ColumnHeader>Рероллов</Table.ColumnHeader>
                     <Table.ColumnHeader>Дропов</Table.ColumnHeader>
                     <Table.ColumnHeader>Пройдено клеток</Table.ColumnHeader>
+                    <Table.ColumnHeader>Счётчик дропов</Table.ColumnHeader>
                 </Table.Row>
             </Table.Header>
             <Table.Body>
