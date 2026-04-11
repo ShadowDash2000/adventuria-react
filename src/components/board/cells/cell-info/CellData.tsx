@@ -8,13 +8,36 @@ interface CellDataProps {
     cell: CellRecord;
 }
 
+const activityListTitle: Record<string, string> = {
+    game: 'Пул игр',
+    movie: 'Пул фильмов',
+    gym: 'Пул тренировок',
+    karaoke: 'Пул песен',
+};
+
 export const CellData = ({ cell }: CellDataProps) => {
     const { pb } = useAppContext();
 
     const hasActivityFilter = !!(
         cell.expand?.filter?.expand?.activities && cell.expand.filter.expand.activities.length > 0
     );
-    const activities = hasActivityFilter ? cell.expand!.filter!.expand!.activities : [];
+    const activities = hasActivityFilter ? (cell.expand!.filter!.expand!.activities ?? []) : [];
+
+    const averageCampaignTime = hasActivityFilter
+        ? (() => {
+              let totalHours = 0;
+              let activitiesCount = 0;
+
+              activities.forEach(activity => {
+                  if (activity.hltb_campaign_time > 0) {
+                      totalHours += activity.hltb_campaign_time;
+                      activitiesCount += 1;
+                  }
+              });
+
+              return activitiesCount > 0 ? totalHours / activitiesCount : 0;
+          })()
+        : 0;
 
     return (
         <>
@@ -107,12 +130,20 @@ export const CellData = ({ cell }: CellDataProps) => {
                                 </DataList.ItemValue>
                             </DataList.Item>
                         )}
+                        {averageCampaignTime > 0 && (
+                            <DataList.Item>
+                                <DataList.ItemLabel>Среднее время</DataList.ItemLabel>
+                                <DataList.ItemValue>
+                                    {averageCampaignTime.toFixed(1)} ч.
+                                </DataList.ItemValue>
+                            </DataList.Item>
+                        )}
                     </>
                 )}
             </DataList.Root>
             {activities && activities.length > 0 && (
                 <>
-                    <Text>Пул игр</Text>
+                    <Text>{activityListTitle[cell.type] || 'Пул'}</Text>
                     <Grid templateColumns="repeat(3, 1fr)" gap={2}>
                         {activities.map(activity => (
                             <GridItem key={activity.id} display="flex" flexDir="column">
