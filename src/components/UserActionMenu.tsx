@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useAppContext } from '@context/AppContext';
 import { ActionFactory } from './actions/action-factory';
 import { Flex, For } from '@chakra-ui/react';
+import { MotionBox } from '@shared/components/MotionBox';
 
 export const UserActionMenu = () => {
     const { availableActions } = useAppContext();
@@ -20,7 +21,13 @@ export const UserActionMenu = () => {
             justify="center"
             align="center"
         >
-            <For each={actions}>{action => action.buttonNode()}</For>
+            <For each={actions}>
+                {(action, key) => (
+                    <MotionBox key={key} whileHover={{ scale: 1.1 }}>
+                        {action.buttonNode()}
+                    </MotionBox>
+                )}
+            </For>
         </Flex>
     );
 };

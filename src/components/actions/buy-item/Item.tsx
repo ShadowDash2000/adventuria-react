@@ -1,5 +1,5 @@
 import type { ItemRecord } from '@shared/types/item';
-import { Image, VStack, Text, ImageProps, Float, Flex } from '@chakra-ui/react';
+import { Image, Text, ImageProps, Float, Flex } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { Tooltip } from '@ui/tooltip';
 import type { RecordIdString } from '@shared/types/pocketbase';
@@ -11,7 +11,7 @@ import {
 } from '@shared/queryClient';
 import PriceBadgeImage from '@public/price-badge.png';
 import { Coin } from '@shared/components/Coin';
-import { useState } from 'react';
+import { MotionVStack } from '@shared/components/MotionVStack';
 
 interface ItemProps {
     item: ItemRecord;
@@ -25,7 +25,6 @@ const BADGE_ROTATION = 'rotate(35deg)';
 export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
     const { pb } = useAppAuthContext();
     const icon = pb.files.getURL(item, item.icon);
-    const [hovered, setHovered] = useState(false);
 
     const handleBuy = async () => {
         try {
@@ -53,17 +52,15 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
             disabled={!item.description}
             openDelay={100}
         >
-            <VStack
-                data-hovered={hovered}
+            <MotionVStack
                 position="relative"
-                _hover={{ cursor: 'pointer' }}
-                css={{
-                    '&[data-hovered="true"]': {
-                        filter: 'brightness(1.1) drop-shadow(0 0 0.5rem black)',
-                    },
+                cursor="pointer"
+                whileHover={{
+                    scale: 1.1,
+                    rotate: 2,
+                    filter: 'brightness(1.1) drop-shadow(0 0 0.5rem black)',
                 }}
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 onClick={handleBuy}
             >
                 <Image {...imageProps} />
@@ -99,7 +96,7 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
                 >
                     {item.name}
                 </Text>
-            </VStack>
+            </MotionVStack>
         </Tooltip>
     );
 };

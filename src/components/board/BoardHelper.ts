@@ -82,7 +82,7 @@ export class BoardHelper {
             const currentRowStart = Math.floor(current / cols) * cols;
             const currentRowEnd = currentRowStart + cols - 1;
 
-            let nextStep = current;
+            let nextStep: number;
             if (direction === 1) {
                 if (current === currentRowEnd) {
                     nextStep = current + 1;

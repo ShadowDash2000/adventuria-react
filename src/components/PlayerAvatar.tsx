@@ -1,11 +1,10 @@
-import { type RefObject } from 'react';
-import { type AvatarRootProps } from '@chakra-ui/react/avatar';
+import { ComponentProps, type RefObject } from 'react';
 import type { UserRecord } from '@shared/types/user';
 import { useAppContext } from '@context/AppContext';
 import { Circle, Float } from '@chakra-ui/react';
-import { Avatar } from '@components/Avatar';
+import { MotionAvatar } from '@shared/components/MotionAvatar';
 
-interface AvatarProps extends AvatarRootProps {
+interface AvatarProps extends ComponentProps<typeof MotionAvatar> {
     ref?: RefObject<HTMLDivElement | null>;
     user: UserRecord;
     showStreamLive?: boolean;
@@ -17,7 +16,7 @@ export const PlayerAvatar = ({ user, ref, showStreamLive = false, ...props }: Av
 
     return (
         <>
-            <Avatar
+            <MotionAvatar
                 {...props}
                 ref={ref}
                 src={avatar}

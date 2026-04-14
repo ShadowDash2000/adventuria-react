@@ -6,6 +6,7 @@ import { queryKeys } from '@shared/queryClient';
 import { For, Grid, GridItem, Spinner, Text, VStack } from '@chakra-ui/react';
 import { Item } from '@components/actions/buy-item/Item';
 import { RefreshShopButton } from './RefreshShopButton';
+import { MotionBox } from '@shared/components/MotionBox';
 
 export const BuyItemContent = () => {
     const { pb } = useAppAuthContext();
@@ -36,7 +37,9 @@ export const BuyItemContent = () => {
                     )}
                 </For>
             </Grid>
-            <RefreshShopButton />
+            <MotionBox whileHover={{ scale: 1.1 }}>
+                <RefreshShopButton />
+            </MotionBox>
         </VStack>
     );
 };

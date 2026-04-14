@@ -52,7 +52,7 @@ export const ActionsList = ({ userName, perPage = 10, ...rest }: ActionsListProp
             }),
         getNextPageParam: (lastPage, _allPages, lastPageParam) => {
             if (lastPage.page === lastPage.totalPages) return null;
-            return ++lastPageParam;
+            return lastPageParam + 1;
         },
         queryKey: [...queryKeys.actions, actionType, userName, cellType],
         initialPageParam: 1,

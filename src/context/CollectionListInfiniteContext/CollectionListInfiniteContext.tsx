@@ -42,7 +42,7 @@ export const CollectionListInfiniteProvider = <T extends RecordModel>({
             refetchOnWindowFocus: refetchOnWindowFocus,
             getNextPageParam: (lastPage, _allPages, lastPageParam) => {
                 if (lastPage.page === lastPage.totalPages) return null;
-                return ++lastPageParam;
+                return lastPageParam + 1;
             },
             retry: (failureCount, e: unknown) => {
                 const error = e as ClientResponseError;

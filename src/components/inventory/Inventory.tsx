@@ -6,6 +6,7 @@ import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import { Coin } from '@shared/components/Coin';
+import { MotionBox } from '@shared/components/MotionBox';
 
 interface InventoryProps {
     user: UserRecord;
@@ -49,11 +50,12 @@ export const Inventory = ({ user: invUser }: InventoryProps) => {
                 <Grid templateColumns="repeat(2, 1fr)">
                     <For each={inventory.data}>
                         {(inv, index) => (
-                            <InventoryItem
-                                key={index}
-                                invItem={inv}
-                                showControlButtons={isAuth && user.id === invUser.id}
-                            />
+                            <MotionBox key={index} whileHover={{ scale: 1.1 }}>
+                                <InventoryItem
+                                    invItem={inv}
+                                    showControlButtons={isAuth && user.id === invUser.id}
+                                />
+                            </MotionBox>
                         )}
                     </For>
                 </Grid>
