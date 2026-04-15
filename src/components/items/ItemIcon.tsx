@@ -1,9 +1,10 @@
 import parse from 'html-react-parser';
 import { Image, type ImageProps } from '@chakra-ui/react';
 import { Tooltip } from '@ui/tooltip';
-import type { ItemRecord } from '@shared/types/item';
+import { MotionBox } from '@shared/components/MotionBox';
 import { useAppContext } from '@context/AppContext';
 import { useItemsStore } from '@components/items/useItemsStore';
+import type { ItemRecord } from '@shared/types/item';
 
 interface ItemIconProps extends ImageProps {
     item: ItemRecord;
@@ -21,14 +22,16 @@ export const ItemIcon = ({ item, ...rest }: ItemIconProps) => {
             disabled={!item.description}
             openDelay={100}
         >
-            <Image
-                w="full"
-                h="full"
-                {...rest}
-                src={icon}
-                _hover={{ cursor: 'pointer' }}
-                onClick={() => openItemDetails(item.id)}
-            />
+            <MotionBox whileHover={{ scale: 1.1 }}>
+                <Image
+                    w="full"
+                    h="full"
+                    {...rest}
+                    src={icon}
+                    _hover={{ cursor: 'pointer' }}
+                    onClick={() => openItemDetails(item.id)}
+                />
+            </MotionBox>
         </Tooltip>
     );
 };

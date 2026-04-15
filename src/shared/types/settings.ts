@@ -4,6 +4,7 @@ import type { IsoDateString } from '@shared/types/pocketbase';
 export type SettingsRecord = {
     created: IsoDateString;
     updated: IsoDateString;
+    event_ended: boolean;
     eventDateStart: IsoDateString;
     currentWeek: number;
     timerTimeLimit: number;
