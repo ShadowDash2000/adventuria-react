@@ -7,8 +7,8 @@ import BuildingImage from '/building-2.png';
 import WallsImage from '/walls-2.png';
 import { BoardContext } from '.';
 
-export const CELL_MAX_USERS_LINE = 3;
-export const CELL_MAX_USERS = 6;
+export const CELL_MAX_PLAYERS_LINE = 3;
+export const CELL_MAX_PLAYERS = 6;
 
 export const Board = () => {
     // board container refs

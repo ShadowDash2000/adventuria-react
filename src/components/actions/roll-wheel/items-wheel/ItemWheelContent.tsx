@@ -2,7 +2,7 @@ import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import type { ItemRecord } from '@shared/types/item';
-import { invalidateUserAuth } from '@shared/queryClient';
+import { invalidatePlayerProgress, invalidatePlayerProgressAuth } from '@shared/queryClient';
 import { WheelItemInfo } from './WheeItemInfo';
 import { useRef } from 'react';
 import { WheelOFortune, type WheelOFortuneHandle } from '../WheelOFortune';
@@ -11,15 +11,26 @@ import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
+import { itemSchema, pbCollections } from '@shared/pbSchema';
 
 export const ItemsWheelContent = () => {
-    const { pb, user } = useAppAuthContext();
+    const {
+        pb,
+        player,
+        playerProgress,
+        isPlayerProgressSuccess,
+        isPlayerProgressPending,
+        isPlayerProgressError,
+        playerProgressError,
+    } = useAppAuthContext();
     const wheelRef = useRef<WheelOFortuneHandle>(null);
     const { volume, setVolume, setVolumeImmediate } = useAudioPlayer(AudioKey.music);
 
     const items = useQuery({
         queryFn: () =>
-            pb.collection('items').getFullList<ItemRecord>({ filter: `isRollable = true` }),
+            pb
+                .collection(pbCollections.items)
+                .getFullList<ItemRecord>({ filter: `${itemSchema.isRollable} = true` }),
         refetchOnWindowFocus: false,
         queryKey: ['items'],
     });
@@ -29,11 +40,13 @@ export const ItemsWheelContent = () => {
         spinRequest: () => rollWheelRequest(pb.authStore.token),
         audioPresetSlug: 'roll-items',
         onSpinComplete: async () => {
-            await invalidateUserAuth();
+            await invalidatePlayerProgressAuth();
+            await invalidatePlayerProgress(player.id);
         },
     });
 
-    if (items.isPending || audioPreset.isPending) return <Spinner />;
+    if (isPlayerProgressPending || items.isPending || audioPreset.isPending) return <Spinner />;
+    if (isPlayerProgressError) return <Text>Error: {playerProgressError?.message}</Text>;
     if (items.isError) return <Text>Error: {items.error?.message}</Text>;
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
 
@@ -61,8 +74,15 @@ export const ItemsWheelContent = () => {
             <VStack gap={3} justify="center">
                 <WheelOFortune ref={wheelRef} items={wheelItems} />
                 <VStack w="full" gap={3} justify="center">
-                    <Button disabled={spinning || user.itemWheelsCount === 0} onClick={handleSpin}>
-                        {`Крутить (x${user.itemWheelsCount})`}
+                    <Button
+                        disabled={
+                            spinning ||
+                            !isPlayerProgressSuccess ||
+                            playerProgress.item_wheels_count === 0
+                        }
+                        onClick={handleSpin}
+                    >
+                        {`Крутить (x${playerProgress?.item_wheels_count})`}
                     </Button>
                     <SliderDebounced
                         w="full"

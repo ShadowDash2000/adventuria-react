@@ -7,6 +7,8 @@ import type { RecordIdString } from '@shared/types/pocketbase';
 import type { ClientResponseError } from 'pocketbase';
 import type { CellRecord } from '@shared/types/cell';
 import { CellData } from '@components/board/cells/cell-info/CellData';
+import { activityFilterSchema, cellSchema, pbCollections } from '@shared/pbSchema';
+import { dotExpand, joinExpand } from '@shared/pbExpand';
 
 interface CellInfoProps {
     cellId: RecordIdString;
@@ -23,11 +25,17 @@ export const CellInfo = ({ cellId }: CellInfoProps) => {
     } = useQuery({
         queryFn: () =>
             pb
-                .collection('cells')
+                .collection(pbCollections.cells)
                 .getOne<CellRecord>(cellId, {
-                    expand:
-                        'filter.platforms,filter.developers,filter.publishers,' +
-                        'filter.genres,filter.tags,filter.themes,filter.activities',
+                    expand: joinExpand(
+                        dotExpand(cellSchema.filter, activityFilterSchema.platforms),
+                        dotExpand(cellSchema.filter, activityFilterSchema.developers),
+                        dotExpand(cellSchema.filter, activityFilterSchema.publishers),
+                        dotExpand(cellSchema.filter, activityFilterSchema.genres),
+                        dotExpand(cellSchema.filter, activityFilterSchema.tags),
+                        dotExpand(cellSchema.filter, activityFilterSchema.themes),
+                        dotExpand(cellSchema.filter, activityFilterSchema.activities),
+                    ),
                 }),
         queryKey: queryKeys.cell(cellId),
         refetchOnWindowFocus: false,

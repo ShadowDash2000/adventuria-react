@@ -6,7 +6,7 @@ import { Button } from '@theme/button';
 import { LuChevronDown } from 'react-icons/lu';
 import HTMLReactParser, { type DOMNode, attributesToProps } from 'html-react-parser';
 
-interface UserActionCommentProps {
+interface PlayerActionCommentProps {
     isEditing: boolean;
     comment: string;
     draft: HTMLContent;
@@ -51,12 +51,12 @@ const renderComment = (html: string) =>
         },
     });
 
-export const UserActionComment = ({
+export const PlayerActionComment = ({
     isEditing,
     comment,
     draft,
     setDraft,
-}: UserActionCommentProps) => {
+}: PlayerActionCommentProps) => {
     const isCollapsible = shouldCollapseComment(comment);
 
     return (

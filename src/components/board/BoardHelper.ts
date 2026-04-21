@@ -1,12 +1,12 @@
 import type { CellRecord } from '@shared/types/cell';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import type { UserRecord } from '@shared/types/user';
+import type { PlayerRecord } from '@shared/types/player';
 
 export type CellPosition = { row: number; col: number };
-export type CellBoard = { players?: UserRecord[] } & CellRecord;
+export type CellBoard = { players?: PlayerRecord[] } & CellRecord;
 
 export class BoardHelper {
-    static getUserCellIndex(cellsPassed: number, cellsCount: number) {
+    static getPlayerCellIndex(cellsPassed: number, cellsCount: number) {
         return this.mod(cellsPassed, cellsCount);
     }
 
@@ -16,20 +16,20 @@ export class BoardHelper {
 
     static buildCells(
         cells: CellRecord[],
-        users: Map<RecordIdString, UserRecord>,
+        players: Map<RecordIdString, PlayerRecord>,
         lineSize = 7,
-    ): { lines: CellBoard[][]; usersByCellIndex: Map<number, UserRecord[]> } {
-        if (cells.length === 0) return { lines: [], usersByCellIndex: new Map() };
+    ): { lines: CellBoard[][]; playersByCellIndex: Map<number, PlayerRecord[]> } {
+        if (cells.length === 0) return { lines: [], playersByCellIndex: new Map() };
 
-        const usersByCellIndex = new Map<number, UserRecord[]>();
-        for (const [, user] of users) {
-            const cellIndex = BoardHelper.getUserCellIndex(user.cellsPassed, cells.length);
-            const prevUsers = usersByCellIndex.get(cellIndex) || [];
-            usersByCellIndex.set(cellIndex, [...prevUsers, user]);
+        const playersByCellIndex = new Map<number, PlayerRecord[]>();
+        for (const [, player] of players) {
+            const cellIndex = BoardHelper.getPlayerCellIndex(player.cellsPassed, cells.length);
+            const prevPlayers = playersByCellIndex.get(cellIndex) || [];
+            playersByCellIndex.set(cellIndex, [...prevPlayers, player]);
         }
 
-        usersByCellIndex.forEach(users => {
-            users.sort((a, b) => new Date(a.updated).getTime() - new Date(b.updated).getTime());
+        playersByCellIndex.forEach(players => {
+            players.sort((a, b) => new Date(a.updated).getTime() - new Date(b.updated).getTime());
         });
 
         const lines: CellBoard[][] = [];
@@ -37,7 +37,7 @@ export class BoardHelper {
         let cellIndex = 0;
 
         for (let i = 0; i < cells.length; i++) {
-            currentLine.push({ ...cells[i], players: usersByCellIndex.get(cellIndex) });
+            currentLine.push({ ...cells[i], players: playersByCellIndex.get(cellIndex) });
 
             const isLineFull = currentLine.length === Math.min(lineSize, cells.length);
             const isLast = i === cells.length - 1;
@@ -51,7 +51,7 @@ export class BoardHelper {
             cellIndex++;
         }
 
-        return { lines, usersByCellIndex };
+        return { lines, playersByCellIndex: playersByCellIndex };
     }
 
     static getCoords(rows: number, cols: number, cellIndex: number): CellPosition {

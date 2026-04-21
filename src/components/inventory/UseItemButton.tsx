@@ -1,7 +1,11 @@
 import { Button } from '@theme/button';
 import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
-import { invalidateAllActions, invalidateUserAuth } from '@shared/queryClient';
-import { useAppContext } from '@context/AppContext';
+import {
+    invalidateAllActions,
+    invalidatePlayerProgress,
+    invalidatePlayerProgressAuth,
+} from '@shared/queryClient';
+import { useAppAuthContext } from '@context/AppContext';
 import {
     EffectFactory,
     type Type_Effect_Creator,
@@ -24,7 +28,7 @@ export const UseItemButton = ({
     itemEffects,
     onItemUse,
 }: UseItemButtonProps) => {
-    const { pb } = useAppContext();
+    const { pb, player } = useAppAuthContext();
     const incrementKbdBlock = useKbdSettingsStore(state => state.incrementAll);
     const decrementKbdBlock = useKbdSettingsStore(state => state.decrementAll);
     const [loading, setLoading] = useState(false);
@@ -33,14 +37,16 @@ export const UseItemButton = ({
         await itemUseRequest(pb.authStore.token, invItemId, Object.fromEntries(formData));
         decrementKbdBlock();
         await invalidateAllActions();
-        await invalidateUserAuth();
+        await invalidatePlayerProgressAuth();
+        await invalidatePlayerProgress(player.id);
         onItemUse?.();
     };
 
     const handleItemUse = async () => {
         await itemUseRequest(pb.authStore.token, invItemId);
         await invalidateAllActions();
-        await invalidateUserAuth();
+        await invalidatePlayerProgressAuth();
+        await invalidatePlayerProgress(player.id);
         onItemUse?.();
     };
 

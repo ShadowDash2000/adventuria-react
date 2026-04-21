@@ -2,10 +2,11 @@ import { Input, Field, Flex, Dialog, Portal, CloseButton, IconButton } from '@ch
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@ui/password-input';
 import { useAppContext } from '@context/AppContext';
-import { invalidateUserAuth } from '@shared/queryClient';
+import { invalidatePlayerAuth } from '@shared/queryClient';
 import { Tooltip } from '@ui/tooltip';
 import { FaSignInAlt } from 'react-icons/fa';
 import { Button } from '@theme/button';
+import { pbCollections } from '@shared/pbSchema';
 
 type LoginFormValues = { login: string; password: string };
 
@@ -19,11 +20,11 @@ export const LoginModalButton = () => {
 
     const onSubmit = async (values: LoginFormValues) => {
         const authResult = await pb
-            .collection('users')
+            .collection(pbCollections.players)
             .authWithPassword(values['login'], values['password']);
 
         if (authResult.token) {
-            await invalidateUserAuth();
+            await invalidatePlayerAuth();
             login();
         }
     };

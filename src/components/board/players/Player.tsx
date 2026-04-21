@@ -3,17 +3,19 @@ import { PlayerAvatar } from '../../PlayerAvatar';
 import { usePlayerMovement } from './usePlayerMovement';
 import { useAnimationControls } from 'framer-motion';
 import { Box, type BoxProps } from '@chakra-ui/react';
-import type { UserRecord } from '@shared/types/user';
+import type { PlayerRecord } from '@shared/types/player';
+import type { PlayerProgressRecord } from '@shared/types/player_progress';
 
 interface PlayerProps extends BoxProps {
-    user: UserRecord;
+    player: PlayerRecord;
+    playerProgress: PlayerProgressRecord;
 }
 
-export const Player = ({ user, ...rest }: PlayerProps) => {
+export const Player = ({ player, playerProgress, ...rest }: PlayerProps) => {
     const avatarRef = useRef<HTMLDivElement | null>(null);
     const controls = useAnimationControls();
     const { position, visible, moving, moveTime } = usePlayerMovement({
-        user: user,
+        playerProgress: playerProgress,
         playerRef: avatarRef,
     });
 
@@ -37,11 +39,11 @@ export const Player = ({ user, ...rest }: PlayerProps) => {
             void highlightPlayer();
         };
 
-        document.addEventListener(`player.scroll.${user.id}`, handler);
+        document.addEventListener(`player.scroll.${player.id}`, handler);
         return () => {
-            document.removeEventListener(`player.scroll.${user.id}`, handler);
+            document.removeEventListener(`player.scroll.${player.id}`, handler);
         };
-    }, [controls, user.id]);
+    }, [controls, player.id]);
 
     return (
         <Box
@@ -66,7 +68,7 @@ export const Player = ({ user, ...rest }: PlayerProps) => {
                 '&[data-not-visible="true"]': { visibility: 'hidden' },
             }}
         >
-            <PlayerAvatar user={user} animate={controls} initial={false} />
+            <PlayerAvatar player={player} animate={controls} initial={false} />
         </Box>
     );
 };

@@ -1,4 +1,4 @@
-import { UserAction } from './UserAction';
+import { PlayerAction } from './PlayerAction';
 import {
     Flex,
     For,
@@ -23,38 +23,43 @@ import type { ClientResponseError } from 'pocketbase';
 import type { ActionRecord } from '@shared/types/action';
 import { queryKeys } from '@shared/queryClient';
 import { TbRefresh } from 'react-icons/tb';
+import { actionSchema, cellSchema, pbCollections, playerSchema } from '@shared/pbSchema';
+import { dotExpand, joinExpand } from '@shared/pbExpand';
 
 interface ActionsListProps extends FlexProps {
-    userName?: string;
+    playerName?: string;
     perPage?: number;
 }
 
-export const ActionsList = ({ userName, perPage = 10, ...rest }: ActionsListProps) => {
+export const ActionsList = ({ playerName, perPage = 10, ...rest }: ActionsListProps) => {
     const { pb } = useAppContext();
     const [actionType, setActionType] = useState<string | null>('all');
     const [cellType, setCellType] = useState<string | null>('all');
 
     const filter = [
-        { field: 'type', value: actionType === 'all' ? null : actionType },
-        { field: 'user.name', value: userName },
-        { field: 'cell.type', value: cellType === 'all' ? null : cellType },
+        { field: actionSchema.type, value: actionType === 'all' ? null : actionType },
+        { field: dotExpand(actionSchema.player, playerSchema.name), value: playerName },
+        {
+            field: dotExpand(actionSchema.cell, cellSchema.type),
+            value: cellType === 'all' ? null : cellType,
+        },
     ];
 
     const actions = useInfiniteQuery({
         queryFn: async ({ pageParam }) =>
-            await pb.collection('actions').getList<ActionRecord>(pageParam, perPage, {
+            await pb.collection(pbCollections.actions).getList<ActionRecord>(pageParam, perPage, {
                 filter: filter
                     .filter(f => f.value)
                     .map(f => `${f.field} = "${f.value}"`)
                     .join(' && '),
                 sort: '-created',
-                expand: 'activity,cell,user',
+                expand: joinExpand(actionSchema.activity, actionSchema.cell, actionSchema.player),
             }),
         getNextPageParam: (lastPage, _allPages, lastPageParam) => {
             if (lastPage.page === lastPage.totalPages) return null;
             return lastPageParam + 1;
         },
-        queryKey: [...queryKeys.actions, actionType, userName, cellType],
+        queryKey: [...queryKeys.actions, actionType, playerName, cellType],
         initialPageParam: 1,
         refetchOnWindowFocus: false,
         placeholderData: keepPreviousData,
@@ -162,9 +167,12 @@ export const ActionsList = ({ userName, perPage = 10, ...rest }: ActionsListProp
                 </Select.Root>
             </Grid>
             <For each={actions.data.pages}>
-                {list => list.items.map(action => <UserAction key={action.id} action={action} />)}
+                {list => list.items.map(action => <PlayerAction key={action.id} action={action} />)}
             </For>
             <div ref={bottomRef} style={{ height: '10px' }}></div>
+            <Box minH="32px" display="flex" alignItems="center" justifyContent="center">
+                {actions.isFetchingNextPage ? <Spinner /> : null}
+            </Box>
         </Flex>
     );
 };

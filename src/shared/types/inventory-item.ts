@@ -1,23 +1,23 @@
 import type { RecordModel } from 'pocketbase';
 import type { IsoDateString, RecordIdString } from '@shared/types/pocketbase';
-import type { UserRecord } from '@shared/types/user';
+import type { PlayerRecord } from '@shared/types/player';
 import { ItemRecord } from '@shared/types/item';
 import { EffectRecord } from '@shared/types/effect';
 
 export type InventoryItemRecord = {
     created: IsoDateString;
     updated: IsoDateString;
-    user: RecordIdString;
+    player: RecordIdString;
     item: RecordIdString;
-    isActive: boolean;
+    is_active: boolean;
     can_use: boolean;
     can_drop: boolean;
-    appliedEffects: RecordIdString[];
+    applied_effects: RecordIdString[];
     expand?: InventoryItemRecordExpand;
 } & RecordModel;
 
 export type InventoryItemRecordExpand = {
-    user: UserRecord;
+    user: PlayerRecord;
     item: ItemRecord;
     appliedEffects?: EffectRecord[];
 };

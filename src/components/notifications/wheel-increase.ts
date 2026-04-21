@@ -12,29 +12,28 @@ const wordMap = new Map<string, string>([
 const plural = new Intl.PluralRules('ru-RU');
 
 export const useWheelIncrease = () => {
-    const { isAuth, user } = useAppContext();
-    const [wheelCount, setWheelCount] = useState<number | null>(
-        isAuth ? user.itemWheelsCount : null,
-    );
+    const { isAuth, playerProgress, isPlayerProgressSuccess } = useAppContext();
+    const [wheelCount, setWheelCount] = useState<number | null>(null);
 
     useEffect(() => {
-        if (!isAuth) return;
+        if (!isAuth || !isPlayerProgressSuccess) return;
+
         if (wheelCount === null) {
-            setWheelCount(user.itemWheelsCount);
+            setWheelCount(playerProgress.item_wheels_count);
             return;
         }
 
-        if (wheelCount < user.itemWheelsCount) {
-            const wheelsAdded = user.itemWheelsCount - wheelCount;
+        if (wheelCount < playerProgress.item_wheels_count) {
+            const wheelsAdded = playerProgress.item_wheels_count - wheelCount;
 
             toaster.create({
                 type: 'info',
                 title: 'Время крутить казик!',
                 description: `Начислено ${wheelsAdded} ${wordMap.get(plural.select(wheelsAdded))}.`,
             });
-            setWheelCount(user.itemWheelsCount);
-        } else if (wheelCount > user.itemWheelsCount) {
-            setWheelCount(user.itemWheelsCount);
+            setWheelCount(playerProgress.item_wheels_count);
+        } else if (wheelCount > playerProgress.item_wheels_count) {
+            setWheelCount(playerProgress.item_wheels_count);
         }
-    }, [isAuth, user?.itemWheelsCount]);
+    }, [isAuth, isPlayerProgressSuccess, playerProgress?.item_wheels_count]);
 };

@@ -1,5 +1,5 @@
 import { LuFerrisWheel } from 'react-icons/lu';
-import { CloseButton, Dialog, IconButton, Portal } from '@chakra-ui/react';
+import { CloseButton, Dialog, IconButton, Portal, Spinner } from '@chakra-ui/react';
 import { Tooltip } from '@ui/tooltip';
 import { useState } from 'react';
 import { useAppAuthContext } from '@context/AppContext';
@@ -8,10 +8,12 @@ import { useRollWheelStore } from '../useRollWheelStore';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 
 export const ItemsWheelModal = () => {
-    const { user, availableActions } = useAppAuthContext();
+    const { playerProgress, isPlayerProgressSuccess, availableActions } = useAppAuthContext();
     const [open, setOpen] = useState(false);
     const isSpinning = useRollWheelStore(state => state.isSpinning);
     const isRolling = useRollDiceStore(state => state.isRolling);
+
+    if (!isPlayerProgressSuccess) return <Spinner />;
 
     return (
         <Dialog.Root
@@ -31,7 +33,7 @@ export const ItemsWheelModal = () => {
                         flexDir="column"
                         gap={0}
                         disabled={
-                            user.itemWheelsCount === 0 ||
+                            playerProgress.item_wheels_count === 0 ||
                             !availableActions.includes('rollItem') ||
                             isSpinning ||
                             isRolling
@@ -39,7 +41,7 @@ export const ItemsWheelModal = () => {
                         colorPalette="{colors.purple}"
                         _hover={{ bg: '{colors.purple.hover}' }}
                     >
-                        <LuFerrisWheel />x{user.itemWheelsCount}
+                        <LuFerrisWheel />x{playerProgress.item_wheels_count}
                     </IconButton>
                 </Dialog.Trigger>
             </Tooltip>

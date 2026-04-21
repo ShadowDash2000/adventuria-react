@@ -6,12 +6,16 @@ import NotFound from '@components/pages/404';
 import { For, Grid, GridItem, type GridProps, Spinner, Text } from '@chakra-ui/react';
 import type { ClientResponseError } from 'pocketbase';
 import { GlossaryItem } from './GlossaryItem';
+import { itemSchema, pbCollections } from '@shared/pbSchema';
 
 export const GlossaryContent = ({ ...props }: GridProps) => {
     const { pb } = useAppContext();
 
     const items = useQuery({
-        queryFn: () => pb.collection('items').getFullList<ItemRecord>({ filter: 'type != "dev"' }),
+        queryFn: () =>
+            pb
+                .collection(pbCollections.items)
+                .getFullList<ItemRecord>({ filter: `${itemSchema.type} != "dev"` }),
         queryKey: [...queryKeys.items, 'glossary'],
         refetchOnWindowFocus: false,
     });

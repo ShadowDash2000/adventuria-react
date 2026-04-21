@@ -7,6 +7,7 @@ import parse from 'html-react-parser';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
+import { pbCollections } from '@shared/pbSchema';
 
 interface ItemDetailsContentProps {
     itemId: RecordIdString;
@@ -21,7 +22,7 @@ export const ItemDetailsContent = ({ itemId }: ItemDetailsContentProps) => {
         isError,
         error,
     } = useQuery({
-        queryFn: () => pb.collection('items').getOne<ItemRecord>(itemId),
+        queryFn: () => pb.collection(pbCollections.items).getOne<ItemRecord>(itemId),
         queryKey: queryKeys.item(itemId),
         refetchOnWindowFocus: false,
     });

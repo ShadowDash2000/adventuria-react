@@ -7,10 +7,11 @@ import { type RefObject, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { BoardHelper, type CellPosition } from '@components/board/BoardHelper';
-import { invalidateAllActions, invalidateUserAuth } from '@shared/queryClient';
+import { invalidateAllActions, invalidatePlayerProgressAuth } from '@shared/queryClient';
 import { performFadeOut } from '@components/actions/roll-dice/dices/roll';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { usePlayer } from '@components/board/players/usePlayer';
+import { audioPresetSchema, pbCollections } from '@shared/pbSchema';
 
 type MoveEvent = {
     steps: number;
@@ -50,10 +51,10 @@ const FADEOUT_DURATION = 3;
 const DEFAULT_ANIMATION_DURATION = 10;
 
 export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
-    const { pb, user } = useAppAuthContext();
+    const { pb, player } = useAppAuthContext();
     const { rows, cols } = useBoardInnerContext();
     const { play } = useAudioPlayer(AudioKey.music);
-    const { addPaths, setMoveTime } = usePlayer(user.id);
+    const { addPaths, setMoveTime } = usePlayer(player.id);
 
     const [isPending, setIsPending] = useState(false);
     const isRolling = useRollDiceStore(state => state.isRolling);
@@ -66,8 +67,10 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
     const audioPreset = useQuery({
         queryFn: async () => {
             return pb
-                .collection('audio_presets')
-                .getFirstListItem<AudioPresetRecord>('slug = "roll-dice"', { expand: 'audio' });
+                .collection(pbCollections.audio_presets)
+                .getFirstListItem<AudioPresetRecord>(`${audioPresetSchema.slug} = "roll-dice"`, {
+                    expand: 'audio',
+                });
         },
         refetchOnWindowFocus: false,
         queryKey: ['roll-dice-audio-preset'],
@@ -130,7 +133,7 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
                 setPendingRolls(null);
                 setIsRolling(false);
                 await invalidateAllActions();
-                await invalidateUserAuth();
+                await invalidatePlayerProgressAuth();
                 if (diceSceneRef.current) {
                     diceSceneRef.current.style.opacity = '1';
                 }

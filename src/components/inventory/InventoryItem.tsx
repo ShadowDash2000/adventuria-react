@@ -11,12 +11,12 @@ interface InventoryItemProps {
 }
 
 export const InventoryItem = ({ invItem, showControlButtons = false }: InventoryItemProps) => {
-    const [isActive, setIsActive] = useState<boolean>(invItem.isActive);
+    const [isActive, setIsActive] = useState<boolean>(invItem.is_active);
     const item = invItem.expand!.item;
 
     useEffect(() => {
-        setIsActive(invItem.isActive);
-    }, [invItem.isActive]);
+        setIsActive(invItem.is_active);
+    }, [invItem.is_active]);
 
     return (
         <Card.Root>

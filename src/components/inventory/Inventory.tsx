@@ -1,49 +1,70 @@
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
-import type { UserRecord } from '@shared/types/user';
+import type { PlayerRecord } from '@shared/types/player';
+import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import { CloseButton, Drawer, For, Grid, HStack, Spinner, Text } from '@chakra-ui/react';
 import { InventoryItem } from './InventoryItem';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import { Coin } from '@shared/components/Coin';
+import { inventorySchema, itemSchema, pbCollections, playerProgressSchema } from '@shared/pbSchema';
+import { dotExpand, joinExpand } from '@shared/pbExpand';
+import { and, eq } from '@shared/pbFilter';
 
 interface InventoryProps {
-    user: UserRecord;
+    player: PlayerRecord;
 }
 
-export const Inventory = ({ user: invUser }: InventoryProps) => {
-    const { pb, isAuth, user } = useAppContext();
+export const Inventory = ({ player: invPlayer }: InventoryProps) => {
+    const { pb, isAuth, player, settings, isSettingsSuccess } = useAppContext();
 
     const inventory = useQuery({
         queryFn: () => {
             return pb
-                .collection('inventory')
+                .collection(pbCollections.inventory)
                 .getFullList<InventoryItemRecord>({
-                    filter: `user = "${invUser.id}"`,
-                    expand: 'item,item.effects',
+                    filter: `${inventorySchema.player} = "${invPlayer.id}"`,
+                    expand: joinExpand(
+                        inventorySchema.item,
+                        dotExpand(inventorySchema.item, itemSchema.effects),
+                    ),
                 });
         },
-        queryKey: queryKeys.inventory(invUser.id),
+        refetchOnWindowFocus: false,
+        queryKey: queryKeys.inventory(invPlayer.id),
     });
 
-    const userInventory = useQuery({
+    const playerProgress = useQuery({
         queryFn: () => {
-            return pb.collection('users').getOne<UserRecord>(invUser.id, { fields: 'balance' });
+            return pb
+                .collection(pbCollections.playersProgress)
+                .getFirstListItem<PlayerProgressRecord>(invPlayer.id, {
+                    filter: and(
+                        eq(playerProgressSchema.player, invPlayer.id),
+                        eq(playerProgressSchema.season, settings!.current_season),
+                    ),
+                    fields: joinExpand(
+                        playerProgressSchema.balance,
+                        playerProgressSchema.maxInventorySlots,
+                    ),
+                });
         },
-        queryKey: queryKeys.user(invUser.id),
+        refetchOnWindowFocus: false,
+        enabled: isSettingsSuccess,
+        queryKey: [...queryKeys.playerProgress(invPlayer.id), 'inventory'],
     });
 
     if (inventory.isPending) return <Spinner />;
     if (inventory.isError) return <Text>Error: {inventory.error?.message}</Text>;
 
     const itemsUsingSlot = inventory.data.filter(
-        invItem => invItem.expand?.item.isUsingSlot,
+        invItem => invItem.expand?.item.is_using_slot,
     ).length;
 
     return (
         <>
             <Drawer.Header fontSize="xl" justifyContent="space-between">
-                {invUser.name}
+                {invPlayer.name}
             </Drawer.Header>
             <Drawer.Body>
                 <Grid templateColumns="repeat(2, 1fr)">
@@ -52,7 +73,7 @@ export const Inventory = ({ user: invUser }: InventoryProps) => {
                             <InventoryItem
                                 invItem={inv}
                                 key={index}
-                                showControlButtons={isAuth && user.id === invUser.id}
+                                showControlButtons={isAuth && player.id === invPlayer.id}
                             />
                         )}
                     </For>
@@ -60,14 +81,21 @@ export const Inventory = ({ user: invUser }: InventoryProps) => {
             </Drawer.Body>
             <Drawer.Footer justifyContent="space-between">
                 <HStack>
-                    {userInventory.isPending ? (
+                    {playerProgress.isPending ? (
                         <Spinner />
                     ) : (
-                        <Text>{userInventory.isSuccess ? userInventory.data.balance : 0}</Text>
+                        <Text>{playerProgress.isSuccess ? playerProgress.data.balance : 0}</Text>
                     )}
                     <Coin w={6} />
                 </HStack>
-                <Text>{`${itemsUsingSlot} / ${invUser.maxInventorySlots}`} слотов</Text>
+                {playerProgress.isPending ? (
+                    <Spinner />
+                ) : (
+                    <Text>
+                        {`${itemsUsingSlot} / ${playerProgress.isSuccess ? playerProgress.data.max_inventory_slots : 0}`}{' '}
+                        слотов
+                    </Text>
+                )}
             </Drawer.Footer>
             <Drawer.CloseTrigger asChild>
                 <CloseButton size="sm" />

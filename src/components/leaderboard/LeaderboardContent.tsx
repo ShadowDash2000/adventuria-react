@@ -1,29 +1,45 @@
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
-import NotFound from '@components/pages/404';
 import { Spinner, Table, Text } from '@chakra-ui/react';
-import type { ClientResponseError } from 'pocketbase';
-import type { UserRecord } from '@shared/types/user';
 import { LeaderboardItem } from './LeaderboardItem';
+import { pbCollections, playerProgressSchema, playerSchema } from '@shared/pbSchema';
+import { eq } from '@shared/pbFilter';
+import type { ClientResponseError } from 'pocketbase';
+import type { PlayerProgressRecord } from '@shared/types/player_progress';
+import { dotExpand, joinExpand } from '@shared/pbExpand';
 
 export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
-    const { pb } = useAppContext();
+    const { pb, settings, isSettingsSuccess } = useAppContext();
 
-    const users = useQuery({
-        queryFn: () => pb.collection('users').getFullList<UserRecord>({ sort: '-points' }),
-        queryKey: [...queryKeys.users, 'leaderboard'],
+    const playersProgress = useQuery({
+        queryFn: () =>
+            pb
+                .collection(pbCollections.playersProgress)
+                .getFullList<PlayerProgressRecord>({
+                    sort: `-${playerProgressSchema.points}`,
+                    filter: eq(playerProgressSchema.season, settings!.current_season),
+                    expand: playerProgressSchema.player,
+                    fields: joinExpand(
+                        '*',
+                        dotExpand('expand', playerProgressSchema.player, playerSchema.id),
+                        dotExpand('expand', playerProgressSchema.player, playerSchema.name),
+                        dotExpand('expand', playerProgressSchema.player, playerSchema.avatar),
+                        dotExpand('expand', playerProgressSchema.player, playerSchema.color),
+                        dotExpand('expand', playerProgressSchema.player, 'collectionName'),
+                    ),
+                }),
+        queryKey: [...queryKeys.playersProgress, 'leaderboard'],
+        enabled: isSettingsSuccess,
         refetchOnWindowFocus: false,
     });
 
-    if (users.isPending) {
+    if (playersProgress.isPending) {
         return <Spinner />;
     }
 
-    if (users.isError) {
-        const e = users.error as ClientResponseError;
-        if (e.status === 404) return <NotFound />;
-
+    if (playersProgress.isError) {
+        const e = playersProgress.error as ClientResponseError;
         return <Text>Error: {e.message}</Text>;
     }
 
@@ -42,8 +58,12 @@ export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
                 </Table.Row>
             </Table.Header>
             <Table.Body>
-                {users.data.map(user => (
-                    <LeaderboardItem user={user} key={user.id} />
+                {playersProgress.data.map(playerProgress => (
+                    <LeaderboardItem
+                        player={playerProgress.expand!.player}
+                        playerProgress={playerProgress}
+                        key={playerProgress.id}
+                    />
                 ))}
             </Table.Body>
         </Table.Root>

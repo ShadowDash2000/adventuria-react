@@ -1,7 +1,8 @@
 import type { RefObject } from 'react';
 import type { CellBoard } from '@components/board/BoardHelper';
-import type { UserRecord } from '@shared/types/user';
+import type { PlayerRecord } from '@shared/types/player';
 import type { RecordIdString } from '@shared/types/pocketbase';
+import type { PlayerProgressRecord } from '@shared/types/player_progress';
 
 export type BoardContextType = {
     boardRef: RefObject<HTMLDivElement | null>;
@@ -11,8 +12,9 @@ export type BoardContextType = {
 export type BoardInnerContextType = {
     cellsOrdered: CellBoard[][];
     cellsOrderedRev: CellBoard[][];
-    usersByCellIndex: Map<number, UserRecord[]>;
-    users: Map<RecordIdString, UserRecord>;
+    playersByCellIndex: Map<number, PlayerRecord[]>;
+    players: Map<RecordIdString, PlayerRecord>;
+    playersProgress: Map<RecordIdString, PlayerProgressRecord>;
     rows: number;
     cols: number;
     cellWidth: number;

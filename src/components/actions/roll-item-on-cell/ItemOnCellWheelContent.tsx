@@ -2,7 +2,7 @@ import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import type { ItemRecord } from '@shared/types/item';
-import { invalidateUserAuth } from '@shared/queryClient';
+import { invalidatePlayerProgressAuth } from '@shared/queryClient';
 import { WheelItemInfo } from '@components/actions/roll-wheel/items-wheel/WheeItemInfo';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -15,9 +15,10 @@ import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
 import type { ActionRecord } from '@shared/types/action';
+import { actionSchema, activitySchema, pbCollections } from '@shared/pbSchema';
 
 export const ItemsWheelContent = () => {
-    const { pb, user } = useAppAuthContext();
+    const { pb, player } = useAppAuthContext();
     const wheelRef = useRef<WheelOFortuneHandle>(null);
     const { volume, setVolume } = useAudioPlayer(AudioKey.music);
     const [wasSpinned, setWasSpinned] = useState(false);
@@ -25,10 +26,10 @@ export const ItemsWheelContent = () => {
     const action = useQuery({
         queryFn: () =>
             pb
-                .collection('actions')
-                .getFirstListItem<ActionRecord>(`user = "${user.id}"`, {
+                .collection(pbCollections.actions)
+                .getFirstListItem<ActionRecord>(`${actionSchema.player} = "${player.id}"`, {
                     sort: '-created',
-                    expand: 'cell',
+                    expand: actionSchema.cell,
                 }),
         refetchOnWindowFocus: false,
         queryKey: ['action'],
@@ -41,9 +42,11 @@ export const ItemsWheelContent = () => {
     const items = useQuery({
         queryFn: () =>
             pb
-                .collection('items')
+                .collection(pbCollections.items)
                 .getFullList<ItemRecord>({
-                    filter: action.data!.items_list.map(id => `id="${id}"`).join('||'),
+                    filter: action
+                        .data!.items_list.map(id => `${activitySchema.id}="${id}"`)
+                        .join('||'),
                 }),
         refetchOnWindowFocus: false,
         enabled: action.isSuccess,
@@ -55,7 +58,7 @@ export const ItemsWheelContent = () => {
         enabled: action.isSuccess,
         spinRequest: () => rollItemOnCellRequest(pb.authStore.token),
         onSpinComplete: async () => {
-            await invalidateUserAuth();
+            await invalidatePlayerProgressAuth();
         },
         ...audioPresetFilter,
     });

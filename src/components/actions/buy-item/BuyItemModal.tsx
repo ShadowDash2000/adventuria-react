@@ -12,8 +12,8 @@ import type { ClientResponseError } from 'pocketbase';
 const bgImage: Record<string, string> = { shop: ShopImage, casino: CasinoImage };
 
 export const BuyItemModal = () => {
-    const { pb, user } = useAppAuthContext();
-    const action = useQuery(latestActionQuery(pb, user.id, { expand: 'cell' }));
+    const { pb, player } = useAppAuthContext();
+    const action = useQuery(latestActionQuery(pb, player.id, { expand: 'cell' }));
 
     if (action.isPending) {
         return <Spinner />;

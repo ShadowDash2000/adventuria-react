@@ -5,12 +5,13 @@ import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import type { SettingsRecord } from '@shared/types/settings';
+import { pbCollections } from '@shared/pbSchema';
 
 export const EventSummary = () => {
     const { pb } = useAppContext();
 
     const settings = useQuery({
-        queryFn: () => pb.collection('settings').getFirstListItem<SettingsRecord>(''),
+        queryFn: () => pb.collection(pbCollections.settings).getFirstListItem<SettingsRecord>(''),
         queryKey: [...queryKeys.settings, 'event-summary'],
     });
 

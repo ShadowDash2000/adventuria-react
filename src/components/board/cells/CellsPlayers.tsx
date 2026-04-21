@@ -2,23 +2,23 @@ import { useBoardInnerContext } from '@components/board';
 import { For, HStack, IconButton, VStack, Text, Box } from '@chakra-ui/react';
 import { ToggleTip } from '@ui/toggle-tip';
 import { BoardHelper } from '../BoardHelper';
-import type { UserRecord } from '@shared/types/user';
+import type { PlayerRecord } from '@shared/types/player';
 import { PlayerAvatar } from '../../PlayerAvatar';
-import { CELL_MAX_USERS } from '../Board';
+import { CELL_MAX_PLAYERS } from '../Board';
 
 export const CellsPlayers = () => {
-    const { usersByCellIndex } = useBoardInnerContext();
+    const { playersByCellIndex } = useBoardInnerContext();
 
-    const cellsWithoutSpace = new Map<number, UserRecord[]>();
-    for (const [cellIndex, users] of usersByCellIndex) {
-        if (users.length <= CELL_MAX_USERS) continue;
-        cellsWithoutSpace.set(cellIndex, users);
+    const cellsWithoutSpace = new Map<number, PlayerRecord[]>();
+    for (const [cellIndex, players] of playersByCellIndex) {
+        if (players.length <= CELL_MAX_PLAYERS) continue;
+        cellsWithoutSpace.set(cellIndex, players);
     }
 
     return (
         <For each={[...cellsWithoutSpace.entries()]}>
-            {([cellIndex, users]) => (
-                <CellPlayers key={cellIndex} cellIndex={cellIndex} users={users} />
+            {([cellIndex, players]) => (
+                <CellPlayers key={cellIndex} cellIndex={cellIndex} players={players} />
             )}
         </For>
     );
@@ -26,10 +26,10 @@ export const CellsPlayers = () => {
 
 interface CellTooltipProps {
     cellIndex: number;
-    users: UserRecord[];
+    players: PlayerRecord[];
 }
 
-const CellPlayers = ({ cellIndex, users }: CellTooltipProps) => {
+const CellPlayers = ({ cellIndex, players }: CellTooltipProps) => {
     const { rows, cols, cellWidth, cellHeight } = useBoardInnerContext();
     const position = BoardHelper.getCoords(rows, cols, cellIndex);
 
@@ -49,18 +49,18 @@ const CellPlayers = ({ cellIndex, users }: CellTooltipProps) => {
                     overflowY="scroll"
                     scrollbarColor="black transparent"
                 >
-                    <For each={users}>
-                        {user => (
-                            <HStack key={user.id} gap={4}>
+                    <For each={players}>
+                        {player => (
+                            <HStack key={player.id} gap={4}>
                                 <Box position="relative">
                                     <PlayerAvatar
-                                        user={user}
+                                        player={player}
                                         showStreamLive
                                         size="xs"
                                         outlineWidth="0.20vw"
                                     />
                                 </Box>
-                                <Text>{user.name}</Text>
+                                <Text>{player.name}</Text>
                             </HStack>
                         )}
                     </For>
@@ -75,7 +75,7 @@ const CellPlayers = ({ cellIndex, users }: CellTooltipProps) => {
                 top="anchor(end)"
                 transform={`translate(calc(${x}px - 50%), calc(${y}px + 50%))`}
             >
-                {users.length}
+                {players.length}
             </IconButton>
         </ToggleTip>
     );

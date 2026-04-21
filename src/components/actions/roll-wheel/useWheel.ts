@@ -6,6 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { useRollWheelStore } from './useRollWheelStore';
+import { audioPresetSchema, audioSchema, pbCollections } from '@shared/pbSchema';
+import { dotExpand, joinExpand } from '@shared/pbExpand';
 
 interface RollWheelBaseProps {
     wheelRef: RefObject<WheelOFortuneHandle | null>;
@@ -45,9 +47,9 @@ export const useWheel = ({
     const { isSpinning, setIsSpinning } = useRollWheelStore();
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const audioFilter = audioPresetSlug
-        ? `slug = "${audioPresetSlug}"`
+        ? `${audioPresetSchema.slug} = "${audioPresetSlug}"`
         : audioPresetId
-          ? `id = "${audioPresetId}"`
+          ? `${audioPresetSchema.id} = "${audioPresetId}"`
           : '';
 
     useEffect(() => {
@@ -57,12 +59,16 @@ export const useWheel = ({
     const audioPreset = useQuery({
         queryFn: async () => {
             return pb
-                .collection('audio_presets')
+                .collection(pbCollections.audio_presets)
                 .getFirstListItem<AudioPresetRecord>(audioFilter, {
-                    expand: 'audio',
-                    fields:
-                        'audio,' +
-                        'expand.audio.id,expand.audio.collectionName,expand.audio.audio,expand.audio.duration',
+                    expand: audioPresetSchema.audio,
+                    fields: joinExpand(
+                        audioPresetSchema.audio,
+                        dotExpand('expand', audioPresetSchema.audio, audioSchema.id),
+                        dotExpand('expand', audioSchema.audio, 'collectionName'),
+                        dotExpand('expand', audioSchema.audio, audioSchema.audio),
+                        dotExpand('expand', audioSchema.audio, audioSchema.duration),
+                    ),
                 });
         },
         refetchOnWindowFocus: false,

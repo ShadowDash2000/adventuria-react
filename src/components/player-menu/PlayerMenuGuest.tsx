@@ -1,7 +1,7 @@
 import { VStack } from '@chakra-ui/react';
 import { RadioButton } from '@components/radio/RadioButton';
 
-export const UserMenuGuest = () => {
+export const PlayerMenuGuest = () => {
     return (
         <VStack
             position="fixed"

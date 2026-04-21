@@ -4,7 +4,7 @@ import { ItemIcon } from '@components/items/ItemIcon';
 import { PlayerAvatar } from '@components/PlayerAvatar';
 import { useQuery } from '@tanstack/react-query';
 import type { ClientResponseError } from 'pocketbase';
-import type { UserRecord } from '@shared/types/user';
+import type { PlayerRecord } from '@shared/types/player';
 import type { CellRecord } from '@shared/types/cell';
 import type { ItemRecord } from '@shared/types/item';
 import { useCellsStore } from '@components/board/useCellsStore';
@@ -97,7 +97,11 @@ export const EventStatsContent = ({ ...props }: StackProps) => {
 
                                 return (
                                     <HStack key={record.id} gap={2}>
-                                        <PlayerAvatar user={record as UserRecord} w={14} h={14} />
+                                        <PlayerAvatar
+                                            player={record as PlayerRecord}
+                                            w={14}
+                                            h={14}
+                                        />
                                         <VStack align="start" gap={0}>
                                             <Text lineHeight={1}>{record.name}</Text>
                                             <Text lineHeight={1} fontSize="sm" color="gray.400">
@@ -130,7 +134,7 @@ type EventStatsData = {
     most_used_items: EventItemStatEntry[];
 };
 
-type EventUserStatEntry = { count: number; record: UserRecord };
+type EventUserStatEntry = { count: number; record: PlayerRecord };
 
 type EventCellStatEntry = { count: number; record: CellRecord };
 

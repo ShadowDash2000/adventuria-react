@@ -2,17 +2,17 @@ import { type RefObject, useEffect, useRef, useState } from 'react';
 import { useBoardInnerContext } from '@components/board';
 import { useAppContext } from '@context/AppContext';
 import { BoardHelper } from '../BoardHelper';
-import type { UserRecord } from '@shared/types/user';
-import { CELL_MAX_USERS, CELL_MAX_USERS_LINE } from '../Board';
+import { CELL_MAX_PLAYERS, CELL_MAX_PLAYERS_LINE } from '../Board';
 import { usePlayer } from '@components/board/players/usePlayer';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
-import { invalidateUsers } from '@shared/queryClient';
+import { invalidatePlayers } from '@shared/queryClient';
+import type { PlayerProgressRecord } from '@shared/types/player_progress';
 
 type PlayerPosition = { x: number; y: number; offsetX: number; offsetY: number };
 
 interface PlayerMovementProps {
-    user: UserRecord;
+    playerProgress: PlayerProgressRecord;
     playerRef: RefObject<HTMLElement | null>;
 }
 
@@ -26,16 +26,16 @@ interface PlayerMovementReturn {
 const SCROLL_INTERVAL = 50;
 
 export const usePlayerMovement = ({
-    user,
+    playerProgress,
     playerRef,
 }: PlayerMovementProps): PlayerMovementReturn => {
-    const { user: userAuth } = useAppContext();
+    const { player: playerAuth } = useAppContext();
     const { rows, cols, cellWidth, cellHeight, cellsOrdered } = useBoardInnerContext();
-    const isCurrentUser = userAuth ? user.id === userAuth.id : false;
+    const isCurrentPlayer = playerAuth ? playerProgress.player === playerAuth.id : false;
     const [moving, setMoving] = useState<boolean>(false);
     const { incrementBlocked, decrementBlocked } = useKbdSettings(KbdKey.inventory);
 
-    const { pullPath, paths, moveTime, clearMoveTime } = usePlayer(user.id);
+    const { pullPath, paths, moveTime, clearMoveTime } = usePlayer(playerProgress.player);
 
     const isMovingRef = useRef(false);
     const startedMovementRef = useRef(false);
@@ -46,29 +46,29 @@ export const usePlayerMovement = ({
         col: number,
     ): { position: PlayerPosition; visible: boolean } => {
         const cell = cellsOrdered[row][col];
-        let userCol = 0;
-        let userRow = 0;
+        let playerCol = 0;
+        let playerRow = 0;
         let isVisible = true;
 
         if (cell && cell.players) {
-            const index = cell.players.findIndex(player => player.id === user.id);
+            const index = cell.players.findIndex(player => player.id === playerProgress.player);
             if (index !== -1) {
-                userCol = index % CELL_MAX_USERS_LINE;
-                userRow = Math.floor(index / CELL_MAX_USERS_LINE);
+                playerCol = index % CELL_MAX_PLAYERS_LINE;
+                playerRow = Math.floor(index / CELL_MAX_PLAYERS_LINE);
             }
-            isVisible = cell.players.length <= CELL_MAX_USERS;
+            isVisible = cell.players.length <= CELL_MAX_PLAYERS;
         }
 
         const x = cellWidth * col;
         const y = -(cellHeight * row) - cellHeight;
-        const offsetX = 50 + 100 * userCol;
-        const offsetY = 130 + 100 * userRow;
+        const offsetX = 50 + 100 * playerCol;
+        const offsetY = 130 + 100 * playerRow;
 
         return { position: { x, y, offsetX, offsetY }, visible: isVisible };
     };
 
     const [initialState] = useState(() => {
-        const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
+        const pos = BoardHelper.getCoords(rows, cols, playerProgress.cells_passed);
         return calculateState(pos.row, pos.col);
     });
 
@@ -81,7 +81,7 @@ export const usePlayerMovement = ({
         setVisible(newState.visible);
     };
 
-    const scrollToUser = () => {
+    const scrollToPlayer = () => {
         playerRef.current?.scrollIntoView({
             behavior: 'instant',
             block: 'center',
@@ -90,20 +90,20 @@ export const usePlayerMovement = ({
     };
 
     useEffect(() => {
-        if (moving || paths || (useRollDiceStore.getState().isRolling && isCurrentUser)) return;
-        const pos = BoardHelper.getCoords(rows, cols, user.cellsPassed);
+        if (moving || paths || (useRollDiceStore.getState().isRolling && isCurrentPlayer)) return;
+        const pos = BoardHelper.getCoords(rows, cols, playerProgress.cells_passed);
         move(pos.row, pos.col);
     }, [cellWidth, cellHeight, cellsOrdered]);
 
     useEffect(() => {
         const abortController = new AbortController();
-        document.addEventListener(`player.scroll.${user.id}`, scrollToUser, {
+        document.addEventListener(`player.scroll.${playerProgress.player}`, scrollToPlayer, {
             signal: abortController.signal,
         });
         return () => {
             abortController.abort();
         };
-    }, [scrollToUser]);
+    }, [scrollToPlayer]);
 
     useEffect(() => {
         if (!paths || isMovingRef.current) return;
@@ -142,10 +142,10 @@ export const usePlayerMovement = ({
             clearMoveTime();
             isMovingRef.current = false;
 
-            void invalidateUsers();
+            void invalidatePlayers();
         };
 
-        if (isCurrentUser) {
+        if (isCurrentPlayer) {
             if ('scrollLock' in document.body.dataset) {
                 prevBodyOverflow = '';
             } else {
@@ -153,7 +153,7 @@ export const usePlayerMovement = ({
                 document.body.style.overflow = 'hidden';
             }
             bodyLocked = true;
-            scrollInterval = window.setInterval(scrollToUser, SCROLL_INTERVAL);
+            scrollInterval = window.setInterval(scrollToPlayer, SCROLL_INTERVAL);
             incrementBlocked();
         }
 
@@ -190,7 +190,7 @@ export const usePlayerMovement = ({
             stopAnimation();
             isMovingRef.current = false;
         };
-    }, [paths, moveTime, isCurrentUser, scrollToUser, move, pullPath]);
+    }, [paths, moveTime, isCurrentPlayer, scrollToPlayer, move, pullPath]);
 
     return { position, moving, moveTime, visible };
 };

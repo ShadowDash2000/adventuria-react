@@ -1,27 +1,34 @@
 import { useEffect, useState } from 'react';
 import { Players } from './players/Players';
-import type { UserRecord } from '@shared/types/user';
 import { useAppContext } from '@context/AppContext';
 import { Cells } from './cells/Cells';
+import type { PlayerRecord } from '@shared/types/player';
+import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { BoardHelper } from './BoardHelper';
 import { CellsPlayers } from './cells/CellsPlayers';
-import { UserActionMenu } from '@components/UserActionMenu';
+import { PlayerActionMenu } from '@components/PlayerActionMenu';
 import { usePlayersStore } from '@components/board/players/usePlayersStore';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { BoardInnerContext, useBoardContext, useBoardDataContext } from '.';
+import { pbCollections } from '@shared/pbSchema';
 
 type Dimension = { width: number; height: number };
 
 export const BoardInner = () => {
-    const { pb, isAuth, user } = useAppContext();
+    const { pb, isAuth, player } = useAppContext();
     const { boardInnerRef } = useBoardContext();
-    const { users: usersRaw, cells } = useBoardDataContext();
-    const [users, setUsers] = useState<Map<RecordIdString, UserRecord>>(
-        new Map(usersRaw.map(u => [u.id, u])),
-    );
+    const {
+        players: playersRaw,
+        playersProgress: playersProgressRaw,
+        cells,
+    } = useBoardDataContext();
+    const players = new Map(playersRaw.map(p => [p.id, p]));
+    const [playersProgress, setPlayersProgress] = useState<
+        Map<RecordIdString, PlayerProgressRecord>
+    >(new Map(playersProgressRaw.map(p => [p.player, p])));
 
-    const cellsOrdered = BoardHelper.buildCells(cells, users);
+    const cellsOrdered = BoardHelper.buildCells(cells, players);
     const cellsOrderedRev = cellsOrdered.lines.slice().reverse();
 
     // board geometry
@@ -61,40 +68,33 @@ export const BoardInner = () => {
     useEffect(() => {
         if (!isAuth) return;
 
-        pb.collection('users').subscribe<UserRecord>('*', e => {
+        pb.collection(pbCollections.playersProgress).subscribe<PlayerProgressRecord>('*', e => {
             switch (e.action) {
-                case 'create':
-                    setUsers(prev => {
-                        const next = new Map(prev);
-                        next.set(e.record.id, e.record);
-                        return next;
-                    });
-                    break;
                 case 'update':
-                    setUsers(prev => {
-                        if (!(e.record.id === user.id && useRollDiceStore.getState().isRolling)) {
+                    setPlayersProgress(prev => {
+                        if (!prev.has(e.record.player)) return prev;
+
+                        if (
+                            !(
+                                e.record.player === player.id &&
+                                useRollDiceStore.getState().isRolling
+                            )
+                        ) {
                             usePlayersStore
                                 .getState()
                                 .addPaths(
-                                    e.record.id,
+                                    e.record.player,
                                     BoardHelper.createPath(
                                         rows,
                                         cols,
-                                        prev.get(e.record.id)!.cellsPassed,
-                                        e.record.cellsPassed,
+                                        prev.get(e.record.player)!.cells_passed,
+                                        e.record.cells_passed,
                                     ),
                                 );
                         }
 
                         const next = new Map(prev);
-                        next.set(e.record.id, e.record);
-                        return next;
-                    });
-                    break;
-                case 'delete':
-                    setUsers(prev => {
-                        const next = new Map(prev);
-                        next.delete(e.record.id);
+                        next.set(e.record.player, e.record);
                         return next;
                     });
                     break;
@@ -102,7 +102,7 @@ export const BoardInner = () => {
         });
 
         return () => {
-            pb.collection('users').unsubscribe();
+            pb.collection(pbCollections.players).unsubscribe();
         };
     }, [pb, isAuth]);
 
@@ -110,9 +110,10 @@ export const BoardInner = () => {
         <BoardInnerContext.Provider
             value={{
                 cellsOrdered: cellsOrdered.lines,
-                usersByCellIndex: cellsOrdered.usersByCellIndex,
+                playersByCellIndex: cellsOrdered.playersByCellIndex,
                 cellsOrderedRev,
-                users,
+                players: players,
+                playersProgress,
                 rows,
                 cols,
                 cellWidth,
@@ -122,7 +123,7 @@ export const BoardInner = () => {
             <Cells />
             {cellWidth !== 0 && cellHeight !== 0 && <Players />}
             <CellsPlayers />
-            {isAuth ? <UserActionMenu /> : null}
+            {isAuth ? <PlayerActionMenu /> : null}
         </BoardInnerContext.Provider>
     );
 };

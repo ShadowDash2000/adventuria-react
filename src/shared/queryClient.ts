@@ -3,13 +3,17 @@ import type { RecordIdString } from '@shared/types/pocketbase';
 import type { ActionRecord } from '@shared/types/action';
 import type PocketBase from 'pocketbase';
 import type { RecordListOptions } from 'pocketbase';
+import { actionSchema, pbCollections } from '@shared/pbSchema';
 
 export const queryClient = new QueryClient();
 
 export const queryKeys = {
-    userAuth: ['user-auth'],
-    user: (userId: RecordIdString) => ['users', userId],
-    users: ['users'],
+    playerAuth: ['player-auth'],
+    player: (playerId: RecordIdString) => ['players', playerId],
+    players: ['players'],
+    playerProgressAuth: ['player-progress-auth'],
+    playerProgress: (playerId: RecordIdString) => ['player-progress', playerId],
+    playersProgress: ['players-progress'],
     actions: ['actions'],
     latestAction: ['latest-action'],
     availableActions: ['available-actions'],
@@ -23,20 +27,32 @@ export const queryKeys = {
     activityWheel: ['activity-wheel'],
     refreshShopView: ['refresh-shop-view'],
     cell: (cellId: RecordIdString) => ['cells', 'cell', cellId],
-    inventory: (userId: RecordIdString) => ['inventory', userId],
+    inventory: (playerId: RecordIdString) => ['inventory', playerId],
     item: (itemId: RecordIdString) => ['items', itemId],
 } as const;
 
-export const invalidateUserAuth = async () => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.userAuth });
+export const invalidatePlayerAuth = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.playerAuth });
 };
 
-export const invalidateUser = async (userId: RecordIdString) => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.user(userId) });
+export const invalidatePlayer = async (playerId: RecordIdString) => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.player(playerId) });
 };
 
-export const invalidateUsers = async () => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.users });
+export const invalidatePlayers = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.players });
+};
+
+export const invalidatePlayerProgressAuth = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.playerProgressAuth });
+};
+
+export const invalidatePlayerProgress = async (playerId: RecordIdString) => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.playerProgress(playerId) });
+};
+
+export const invalidatePlayersProgress = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.playersProgress });
 };
 
 export const invalidateActions = async () => {
@@ -83,8 +99,8 @@ export const invalidateRules = async () => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.rules });
 };
 
-export const invalidateInventory = async (userId: RecordIdString) => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.inventory(userId) });
+export const invalidateInventory = async (playerId: RecordIdString) => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.inventory(playerId) });
 };
 
 export const invalidateCells = async () => {
@@ -105,14 +121,14 @@ export const invalidateRefreshShopView = async () => {
 
 export const latestActionQuery = (
     pb: PocketBase,
-    userId: RecordIdString,
+    playerId: RecordIdString,
     options?: RecordListOptions,
 ) => {
     return {
         queryFn: () =>
             pb
-                .collection('actions')
-                .getFirstListItem<ActionRecord>(`user = "${userId}"`, {
+                .collection(pbCollections.actions)
+                .getFirstListItem<ActionRecord>(`${actionSchema.player} = "${playerId}"`, {
                     sort: '-created',
                     ...options,
                 }),

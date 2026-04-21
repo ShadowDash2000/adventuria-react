@@ -1,0 +1,28 @@
+import type { AuthRecord } from 'pocketbase';
+import type { IsoDateString, RecordIdString } from '@shared/types/pocketbase';
+
+export type PlayerProgressRecord = {
+    created: IsoDateString;
+    updated: IsoDateString;
+    player: RecordIdString;
+    season: RecordIdString;
+    points: number;
+    balance: number;
+    cells_passed: number;
+    is_in_jail: boolean;
+    drops_in_a_row: number;
+    item_wheels_count: number;
+    max_inventory_slots: number;
+    stats?: PlayerStats;
+} & AuthRecord;
+
+export type PlayerStats = {
+    drops: number;
+    rerolls: number;
+    finished: number;
+    wasInJail: number;
+    itemsUsed: number;
+    diceRolls: number;
+    maxDiceRoll: number;
+    wheelRolled: number;
+};

@@ -1,7 +1,11 @@
 import { Button } from '@theme/button';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
-import { invalidateInventory, invalidateUserAuth } from '@shared/queryClient';
+import {
+    invalidateInventory,
+    invalidatePlayerProgress,
+    invalidatePlayerProgressAuth,
+} from '@shared/queryClient';
 import { useAppAuthContext } from '@context/AppContext';
 import { ButtonGroup, CloseButton, Dialog, Portal, Text } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -14,14 +18,15 @@ interface DropItemButtonProps {
 }
 
 export const DropItemButton = ({ canDrop, invItem, onItemDrop }: DropItemButtonProps) => {
-    const { pb, user } = useAppAuthContext();
+    const { pb, player } = useAppAuthContext();
     const [openConfirm, setOpenConfirm] = useState(false);
 
     const handleDrop = async () => {
         try {
             await itemDropRequest(pb.authStore.token, invItem.id);
-            await invalidateInventory(user.id);
-            await invalidateUserAuth();
+            await invalidateInventory(player.id);
+            await invalidatePlayerProgressAuth();
+            await invalidatePlayerProgress(player.id);
             onItemDrop?.();
         } catch (e) {
             console.error(e);

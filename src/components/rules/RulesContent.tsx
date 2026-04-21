@@ -6,12 +6,13 @@ import { Flex, type FlexProps, Spinner, Text } from '@chakra-ui/react';
 import type { ClientResponseError } from 'pocketbase';
 import type { RuleRecord } from '@shared/types/rules';
 import { RulesItem } from '@components/rules/RulesItem';
+import { pbCollections } from '@shared/pbSchema';
 
 export const RulesContent = ({ ...props }: FlexProps) => {
     const { pb } = useAppContext();
 
     const rules = useQuery({
-        queryFn: () => pb.collection('rules').getFullList<RuleRecord>({ sort: 'sort' }),
+        queryFn: () => pb.collection(pbCollections.rules).getFullList<RuleRecord>({ sort: 'sort' }),
         queryKey: [...queryKeys.rules, 'rules'],
         refetchOnWindowFocus: false,
     });

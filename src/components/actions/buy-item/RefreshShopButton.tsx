@@ -1,11 +1,11 @@
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import {
+    queryKeys,
     invalidateAvailableActions,
     invalidateRefreshShopView,
     invalidateShopItems,
-    invalidateUserAuth,
-    queryKeys,
+    invalidatePlayerProgressAuth,
 } from '@shared/queryClient';
 import { ButtonProps, Spinner, Text } from '@chakra-ui/react';
 import { Button } from '@theme/button';
@@ -14,7 +14,7 @@ import { Coin } from '@shared/components/Coin';
 import { useState } from 'react';
 
 export const RefreshShopButton = ({ ...props }: ButtonProps) => {
-    const { pb, user, availableActions } = useAppAuthContext();
+    const { pb, player, availableActions } = useAppAuthContext();
     const [loading, setLoading] = useState(false);
 
     const isRefreshShopAvailable = availableActions.includes('refreshShop');
@@ -30,7 +30,7 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
 
         if (!res.success) return;
 
-        await invalidateUserAuth();
+        await invalidatePlayerProgressAuth();
         await invalidateAvailableActions();
         await invalidateShopItems();
         await invalidateRefreshShopView();
@@ -53,7 +53,7 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
         <Button
             {...props}
             loading={loading}
-            disabled={user.balance < refreshShopView.data.data.refresh_price}
+            disabled={player.balance < refreshShopView.data.data.refresh_price}
             onClick={async () => {
                 try {
                     setLoading(true);

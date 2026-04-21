@@ -1,4 +1,4 @@
-import type { UserRecord } from '@shared/types/user';
+import type { PlayerRecord } from '@shared/types/player';
 import { PlayerAvatar } from '../PlayerAvatar';
 import { useCollectionOneFilter } from '@context/CollectionOneFilterContext';
 import {
@@ -11,28 +11,26 @@ import {
     Circle,
     VStack,
     For,
-    Heading,
     useToken,
 } from '@chakra-ui/react';
 import { LuTwitch, LuYoutube } from 'react-icons/lu';
-import { TimerSimple } from '@components/timer/TimerSimple';
 import { Flex } from '@theme/flex';
 import { Button } from '@theme/button';
 
-export const UserProfile = () => {
-    const { data: user } = useCollectionOneFilter<UserRecord>();
+export const PlayerProfile = () => {
+    const { data: player } = useCollectionOneFilter<PlayerRecord>();
     const lgBreakpoint = useToken('breakpoints', 'lg');
 
-    const stats = user.stats
+    const stats = player.stats
         ? [
-              { label: 'Завершено', value: user.stats.finished },
-              { label: 'Рероллов', value: user.stats.rerolls },
-              { label: 'Дропов', value: user.stats.drops },
-              { label: 'Был в тюрьме', value: user.stats.wasInJail },
-              { label: 'Использовано предметов', value: user.stats.itemsUsed },
-              { label: 'Бросков кубиков', value: user.stats.diceRolls },
-              { label: 'Максимальный бросок кубиков', value: user.stats.maxDiceRoll },
-              { label: 'Прокручено колёс', value: user.stats.wheelRolled },
+              { label: 'Завершено', value: player.stats.finished },
+              { label: 'Рероллов', value: player.stats.rerolls },
+              { label: 'Дропов', value: player.stats.drops },
+              { label: 'Был в тюрьме', value: player.stats.wasInJail },
+              { label: 'Использовано предметов', value: player.stats.itemsUsed },
+              { label: 'Бросков кубиков', value: player.stats.diceRolls },
+              { label: 'Максимальный бросок кубиков', value: player.stats.maxDiceRoll },
+              { label: 'Прокручено колёс', value: player.stats.wheelRolled },
           ]
         : [];
 
@@ -41,18 +39,14 @@ export const UserProfile = () => {
             <VStack zIndex={1}>
                 <VStack w="40%">
                     <Box pos="relative">
-                        <PlayerAvatar user={user} w={40} h={40} />
-                        {user.is_stream_live && (
+                        <PlayerAvatar player={player} w={40} h={40} />
+                        {player.is_stream_live && (
                             <Float placement="bottom-end">
                                 <Circle bg="red.solid" w={4} h={4} />
                             </Float>
                         )}
                     </Box>
-                    <Text>{user.name}</Text>
-                    <VStack gap={0}>
-                        <Heading>Таймер</Heading>
-                        <TimerSimple userId={user.id} fontSize="4xl" />
-                    </VStack>
+                    <Text>{player.name}</Text>
                     {stats && (
                         <DataList.Root orientation="horizontal" w="full">
                             <For each={stats}>
@@ -71,10 +65,10 @@ export const UserProfile = () => {
                     )}
                 </VStack>
                 <ButtonGroup>
-                    {user.twitch && (
+                    {player.twitch && (
                         <Button colorPalette="purple" asChild>
                             <Link
-                                href={`https://www.twitch.tv/${user.twitch}`}
+                                href={`https://www.twitch.tv/${player.twitch}`}
                                 target="_blank"
                                 _hover={{ textDecoration: 'none' }}
                             >
@@ -83,10 +77,10 @@ export const UserProfile = () => {
                             </Link>
                         </Button>
                     )}
-                    {user.youtube && (
+                    {player.youtube && (
                         <Button colorPalette="red" asChild>
                             <Link
-                                href={`https://www.youtube.com/@${user.youtube}`}
+                                href={`https://www.youtube.com/@${player.youtube}`}
                                 target="_blank"
                                 _hover={{ textDecoration: 'none' }}
                             >
@@ -100,7 +94,7 @@ export const UserProfile = () => {
             <Box
                 w="full"
                 textAlign="center"
-                dangerouslySetInnerHTML={{ __html: user.description }}
+                dangerouslySetInnerHTML={{ __html: player.description }}
                 css={{ [`@media (max-width: ${lgBreakpoint})`]: { '& img': { display: 'none' } } }}
             />
         </Flex>

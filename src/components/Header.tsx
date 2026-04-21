@@ -1,19 +1,16 @@
 import { useAppContext } from '@context/AppContext';
-import { CollectionListAllProvider } from '@context/CollectionListAllContext/CollectionListAllContext';
 import { PlayersFloatingList } from '@components/players-floating-list/PlayersFloatingList';
-import { UserMenuAuth } from '@components/user-menu/UserMenuAuth';
-import { UserMenuGuest } from '@components/user-menu/UserMenuGuest';
+import { PlayerMenuAuth } from '@components/player-menu/PlayerMenuAuth';
+import { PlayerMenuGuest } from '@components/player-menu/PlayerMenuGuest';
 import { ControlsMenu } from '@components/ControlsMenu';
 
 export const Header = () => {
-    const { pb, isAuth } = useAppContext();
+    const { isAuth } = useAppContext();
 
     return (
         <>
-            <CollectionListAllProvider collection={pb.collection('users')}>
-                <PlayersFloatingList />
-            </CollectionListAllProvider>
-            {isAuth ? <UserMenuAuth /> : <UserMenuGuest />}
+            <PlayersFloatingList />
+            {isAuth ? <PlayerMenuAuth /> : <PlayerMenuGuest />}
             <ControlsMenu />
         </>
     );

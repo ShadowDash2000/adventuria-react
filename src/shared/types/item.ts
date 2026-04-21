@@ -9,10 +9,10 @@ export type ItemRecord = {
     icon: string;
     effects: RecordIdString[];
     order: number;
-    isUsingSlot: boolean;
-    isActiveByDefault: boolean;
+    is_using_slot: boolean;
+    is_active_by_default: boolean;
     canDrop: boolean;
-    isRollable: boolean;
+    is_rollable: boolean;
     description: string;
     type: ItemType;
     price: number;

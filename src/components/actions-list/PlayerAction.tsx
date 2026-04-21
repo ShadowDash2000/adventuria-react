@@ -9,15 +9,15 @@ import { PlayerAvatar } from '../PlayerAvatar';
 import { InfoTip } from '@ui/toggle-tip';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
 import { Button } from '@theme/button';
-import { UserActionComment } from '@components/profile/UserActionComment';
+import { PlayerActionComment } from '@components/profile/PlayerActionComment';
 import { useCellsStore } from '@components/board/useCellsStore';
 import { ActivityLinkButtons } from '@components/actions/roll-wheel/activities-wheel/ActivityLinkButtons';
 import { UsedItems } from './UsedItems';
 
 type ActionProps = { action: ActionRecord };
 
-export const UserAction = ({ action }: ActionProps) => {
-    const { pb, user: authUser, isAuth } = useAppContext();
+export const PlayerAction = ({ action }: ActionProps) => {
+    const { pb, player: authPlayer, isAuth } = useAppContext();
     const openCellInfo = useCellsStore(state => state.openCellInfo);
     const actionController = ActionFactory.get(action.type);
 
@@ -28,7 +28,7 @@ export const UserAction = ({ action }: ActionProps) => {
     const [draft, setDraft] = useState<string>(action.comment);
     const activity = action.expand?.activity;
 
-    const canEdit = isAuth && authUser.id && action.user === authUser.id;
+    const canEdit = isAuth && authPlayer.id && action.player === authPlayer.id;
 
     useEffect(() => {
         setComment(action.comment ?? '');
@@ -128,8 +128,8 @@ export const UserAction = ({ action }: ActionProps) => {
                                     </DataList.ItemValue>
                                 </DataList.Item>
                                 <DataList.Item key="dice-roll">
-                                    <DataList.ItemLabel>Бросок кубика</DataList.ItemLabel>
-                                    <DataList.ItemValue>{action.diceRoll}</DataList.ItemValue>
+                                    <DataList.ItemLabel>Прошёл клеток</DataList.ItemLabel>
+                                    <DataList.ItemValue>{action.cells_passed}</DataList.ItemValue>
                                 </DataList.Item>
                                 <DataList.Item key="created">
                                     <DataList.ItemLabel>Начало действия</DataList.ItemLabel>
@@ -146,7 +146,7 @@ export const UserAction = ({ action }: ActionProps) => {
                             </HStack>
                         </VStack>
                         <Card.Description as="div" w="full">
-                            <UserActionComment
+                            <PlayerActionComment
                                 isEditing={isEditing}
                                 comment={comment}
                                 draft={draft}
@@ -160,8 +160,8 @@ export const UserAction = ({ action }: ActionProps) => {
                         </Card.Description>
                     </VStack>
                     <VStack position="absolute" right="5%">
-                        <PlayerAvatar user={action.expand!.user!} />
-                        <Text>{action.expand?.user.name}</Text>
+                        <PlayerAvatar player={action.expand!.player!} />
+                        <Text>{action.expand?.player.name}</Text>
                     </VStack>
                 </Stack>
             </Card.Body>

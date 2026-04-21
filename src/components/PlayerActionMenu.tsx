@@ -4,7 +4,7 @@ import { ActionFactory } from './actions/action-factory';
 import { Flex, For } from '@chakra-ui/react';
 import { MotionBox } from '@shared/components/MotionBox';
 
-export const UserActionMenu = () => {
+export const PlayerActionMenu = () => {
     const { availableActions } = useAppContext();
     const actions = useMemo(() => {
         return ActionFactory.getAvailableActions(availableActions);

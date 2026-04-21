@@ -5,6 +5,7 @@ import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import { ItemIcon } from '@components/items/ItemIcon';
+import { pbCollections } from '@shared/pbSchema';
 
 interface UsedItemsProps {
     action: ActionRecord;
@@ -14,7 +15,7 @@ export const UsedItems = ({ action }: UsedItemsProps) => {
     const { pb } = useAppContext();
 
     const items = useQuery({
-        queryFn: () => pb.collection('items').getFullList<ItemRecord>(),
+        queryFn: () => pb.collection(pbCollections.items).getFullList<ItemRecord>(),
         enabled: !!action.used_items && !!action.used_items.length,
         queryKey: [...queryKeys.items, 'used-items'],
         refetchOnWindowFocus: false,

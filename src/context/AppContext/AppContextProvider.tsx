@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
 import { ClientResponseError } from 'pocketbase';
-import type { UserRecord } from '@shared/types/user';
+import type { PlayerRecord } from '@shared/types/player';
+import type { SettingsRecord } from '@shared/types/settings';
+import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import { AppProviderType, AppContextProviderProps } from './types';
 import { AppContext, pb } from './index';
+import { pbCollections, playerProgressSchema } from '@shared/pbSchema';
+import { and, eq } from '@shared/pbFilter';
 
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     const [isAuth, setIsAuth] = useState<boolean>(pb.authStore.isValid);
@@ -16,13 +20,15 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         setIsAuth(false);
     };
 
-    const { data: user = pb.authStore.record as UserRecord } = useQuery({
+    const { data: player = pb.authStore.record as PlayerRecord } = useQuery({
         queryFn: () => {
             setIsAuth(pb.authStore.isValid);
-            return pb.collection('users').getOne<UserRecord>(pb.authStore.record!.id);
+            return pb
+                .collection(pbCollections.players)
+                .getOne<PlayerRecord>(pb.authStore.record!.id);
         },
         enabled: isAuth,
-        queryKey: [...queryKeys.userAuth, isAuth, pb.authStore.record?.id],
+        queryKey: [...queryKeys.playerAuth, isAuth, pb.authStore.record?.id],
         refetchOnWindowFocus: false,
     });
 
@@ -30,6 +36,39 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         queryFn: async () => await fetchAvailableActions(pb.authStore.token),
         enabled: isAuth,
         queryKey: [...queryKeys.availableActions, isAuth, pb.authStore.token],
+        refetchOnWindowFocus: false,
+    });
+
+    const {
+        data: settings,
+        isPending: isSettingsPending,
+        isSuccess: isSettingsSuccess,
+        isError: isSettingsError,
+        error: settingsError,
+    } = useQuery({
+        queryFn: () => pb.collection(pbCollections.settings).getFirstListItem<SettingsRecord>(''),
+        queryKey: [...queryKeys.settings],
+        refetchOnWindowFocus: false,
+    });
+
+    const {
+        data: playerProgress,
+        isPending: isPlayerProgressPending,
+        isSuccess: isPlayerProgressSuccess,
+        isError: isPlayerProgressError,
+        error: playerProgressError,
+    } = useQuery({
+        queryFn: () =>
+            pb
+                .collection(pbCollections.playersProgress)
+                .getFirstListItem<PlayerProgressRecord>(
+                    and(
+                        eq(playerProgressSchema.player, player.id),
+                        eq(playerProgressSchema.season, settings!.current_season),
+                    ),
+                ),
+        enabled: isAuth && isSettingsSuccess,
+        queryKey: queryKeys.playerProgressAuth,
         refetchOnWindowFocus: false,
     });
 
@@ -41,11 +80,21 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
 
     const ctx = {
         pb,
-        user: isAuth ? user : null,
+        player: isAuth ? player : null,
         login,
         logout,
         isAuth,
         availableActions,
+        settings,
+        isSettingsPending,
+        isSettingsSuccess,
+        isSettingsError,
+        settingsError,
+        playerProgress,
+        isPlayerProgressPending,
+        isPlayerProgressSuccess,
+        isPlayerProgressError,
+        playerProgressError,
     } as AppProviderType;
 
     return <AppContext.Provider value={ctx}>{children}</AppContext.Provider>;

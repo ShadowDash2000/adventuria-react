@@ -5,56 +5,56 @@ import { create } from 'zustand/react';
 type PlayerStoreState = {
     paths: Map<RecordIdString, CellPosition[]>;
     moveTimes: Map<RecordIdString, number>;
-    addPaths: (userId: RecordIdString, paths: CellPosition[]) => void;
-    getPaths: (userId: RecordIdString) => CellPosition[] | null;
-    pullPath: (userId: RecordIdString) => CellPosition | null;
-    setMoveTime: (userId: RecordIdString, time: number) => void;
-    getMoveTime: (userId: RecordIdString) => number | null;
-    clearMoveTime: (userId: RecordIdString) => void;
+    addPaths: (playerId: RecordIdString, paths: CellPosition[]) => void;
+    getPaths: (playerId: RecordIdString) => CellPosition[] | null;
+    pullPath: (playerId: RecordIdString) => CellPosition | null;
+    setMoveTime: (playerId: RecordIdString, time: number) => void;
+    getMoveTime: (playerId: RecordIdString) => number | null;
+    clearMoveTime: (playerId: RecordIdString) => void;
 };
 
 export const usePlayersStore = create<PlayerStoreState>((set, get) => ({
     paths: new Map<RecordIdString, CellPosition[]>(),
     moveTimes: new Map<RecordIdString, number>(),
 
-    addPaths: (userId, paths) => {
-        const prevPaths = get().paths.get(userId) || [];
-        set(state => ({ paths: state.paths.set(userId, [...prevPaths, ...paths]) }));
+    addPaths: (playerId, paths) => {
+        const prevPaths = get().paths.get(playerId) || [];
+        set(state => ({ paths: state.paths.set(playerId, [...prevPaths, ...paths]) }));
     },
 
-    getPaths: userId => {
+    getPaths: playerId => {
         const paths = get().paths;
-        return paths.get(userId) || null;
+        return paths.get(playerId) || null;
     },
 
-    pullPath: (userId: RecordIdString) => {
-        const paths = get().getPaths(userId);
+    pullPath: (playerId: RecordIdString) => {
+        const paths = get().getPaths(playerId);
         if (!paths) return null;
         const path = paths.shift();
         if (!path) {
             set(state => {
                 const newPaths = new Map(state.paths);
-                newPaths.delete(userId);
+                newPaths.delete(playerId);
                 return { paths: newPaths };
             });
             return null;
         }
-        set(state => ({ paths: state.paths.set(userId, paths) }));
+        set(state => ({ paths: state.paths.set(playerId, paths) }));
         return path;
     },
 
-    setMoveTime: (userId: RecordIdString, time: number) => {
-        set(state => ({ moveTimes: state.moveTimes.set(userId, time) }));
+    setMoveTime: (playerId: RecordIdString, time: number) => {
+        set(state => ({ moveTimes: state.moveTimes.set(playerId, time) }));
     },
 
-    getMoveTime: (userId: RecordIdString) => {
-        return get().moveTimes.get(userId) || null;
+    getMoveTime: (playerId: RecordIdString) => {
+        return get().moveTimes.get(playerId) || null;
     },
 
-    clearMoveTime: (userId: RecordIdString) => {
+    clearMoveTime: (playerId: RecordIdString) => {
         set(state => {
             const newMoveTimes = new Map(state.moveTimes);
-            newMoveTimes.delete(userId);
+            newMoveTimes.delete(playerId);
             return { moveTimes: newMoveTimes };
         });
     },

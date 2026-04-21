@@ -17,10 +17,11 @@ export type CellRecord = {
     coins: number;
     description: string;
     color: string;
-    cantDrop: boolean;
-    cantReroll: boolean;
-    cantChooseAfterDrop: boolean;
-    isSafeDrop: boolean;
+    cant_drop: boolean;
+    cant_reroll: boolean;
+    is_safe_drop: boolean;
+    is_custom_filter_not_allowed: boolean;
+    is_change_game_not_allowed: boolean;
     expand?: FilterRecordExpand;
 } & RecordModel;
 

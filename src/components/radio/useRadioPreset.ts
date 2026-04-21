@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { queryKeys } from '@shared/queryClient';
 import { useAppContext } from '@context/AppContext';
+import { audioPresetSchema, pbCollections } from '@shared/pbSchema';
 
 export const useRadioPreset = () => {
     const { pb } = useAppContext();
@@ -9,8 +10,10 @@ export const useRadioPreset = () => {
     return useQuery({
         queryFn: async () => {
             return pb
-                .collection('audio_presets')
-                .getFirstListItem<AudioPresetRecord>('slug = "radio"', { expand: 'audio' });
+                .collection(pbCollections.audio_presets)
+                .getFirstListItem<AudioPresetRecord>(`${audioPresetSchema.slug} = "radio"`, {
+                    expand: audioPresetSchema.audio,
+                });
         },
         queryKey: queryKeys.radioAudioPreset,
     });

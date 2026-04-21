@@ -5,6 +5,7 @@ import { Combobox, Portal, Spinner, Text, useListCollection } from '@chakra-ui/r
 import { useEffect, useState } from 'react';
 import { useDebounce } from '@uidotdev/usehooks';
 import { ComboboxHiddenInput } from '@ui/combobox-hidden-input';
+import { genresSchema, pbCollections } from '@shared/pbSchema';
 
 export const GameGenreSelect = () => {
     const { pb } = useAppContext();
@@ -20,9 +21,12 @@ export const GameGenreSelect = () => {
     const genres = useQuery({
         queryFn: () =>
             pb
-                .collection('genres')
+                .collection(pbCollections.genres)
                 .getList<GenreRecord>(1, 100, {
-                    filter: inputValue.length > 0 ? `name ?~ "${inputValueDebounced}"` : '',
+                    filter:
+                        inputValue.length > 0
+                            ? `${genresSchema.name} ?~ "${inputValueDebounced}"`
+                            : '',
                 }),
         placeholderData: keepPreviousData,
         queryKey: ['genres', inputValueDebounced],
