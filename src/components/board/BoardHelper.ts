@@ -1,6 +1,7 @@
 import type { CellRecord } from '@shared/types/cell';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import type { PlayerRecord } from '@shared/types/player';
+import type { PlayerProgressRecord } from '@shared/types/player_progress';
 
 export type CellPosition = { row: number; col: number };
 export type CellBoard = { players?: PlayerRecord[] } & CellRecord;
@@ -17,13 +18,16 @@ export class BoardHelper {
     static buildCells(
         cells: CellRecord[],
         players: Map<RecordIdString, PlayerRecord>,
+        playersProgress: Map<RecordIdString, PlayerProgressRecord>,
         lineSize = 7,
     ): { lines: CellBoard[][]; playersByCellIndex: Map<number, PlayerRecord[]> } {
         if (cells.length === 0) return { lines: [], playersByCellIndex: new Map() };
 
         const playersByCellIndex = new Map<number, PlayerRecord[]>();
         for (const [, player] of players) {
-            const cellIndex = BoardHelper.getPlayerCellIndex(player.cellsPassed, cells.length);
+            const playerProgress = playersProgress.get(player.id);
+            const cellsPassed = playerProgress?.cellsPassed || 0;
+            const cellIndex = BoardHelper.getPlayerCellIndex(cellsPassed, cells.length);
             const prevPlayers = playersByCellIndex.get(cellIndex) || [];
             playersByCellIndex.set(cellIndex, [...prevPlayers, player]);
         }

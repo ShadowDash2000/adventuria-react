@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Players } from './players/Players';
 import { useAppContext } from '@context/AppContext';
 import { Cells } from './cells/Cells';
-import type { PlayerRecord } from '@shared/types/player';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { BoardHelper } from './BoardHelper';
@@ -28,7 +27,7 @@ export const BoardInner = () => {
         Map<RecordIdString, PlayerProgressRecord>
     >(new Map(playersProgressRaw.map(p => [p.player, p])));
 
-    const cellsOrdered = BoardHelper.buildCells(cells, players);
+    const cellsOrdered = BoardHelper.buildCells(cells, players, playersProgress);
     const cellsOrderedRev = cellsOrdered.lines.slice().reverse();
 
     // board geometry
