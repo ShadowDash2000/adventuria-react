@@ -1,12 +1,12 @@
 import { Box, Flex, Heading, Image } from '@chakra-ui/react';
-import type { ItemRecord } from '@shared/types/item';
 import { useAppContext } from '@context/AppContext';
+import type { ItemView } from '@components/actions/roll-wheel/items-wheel/view';
 
 interface WheelItemInfoProps {
-    item: ItemRecord;
+    item: ItemView;
 }
 
-export const WheelItemInfo = ({ item }: WheelItemInfoProps) => {
+export const ItemInfo = ({ item }: WheelItemInfoProps) => {
     const { pb } = useAppContext();
     const icon = pb.files.getURL(item, item.icon);
 

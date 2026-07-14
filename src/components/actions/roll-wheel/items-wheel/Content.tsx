@@ -1,58 +1,63 @@
 import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import type { ActivityRecord } from '@shared/types/activity';
-import { ActivityInfo } from './ActivityInfo';
-import { useEffect, useRef, useState } from 'react';
+import {
+    invalidatePlayerProgress,
+    invalidatePlayerProgressAuth,
+    queryKeys,
+} from '@shared/queryClient';
+import { ItemInfo } from './ItemInfo';
+import { useRef, useState } from 'react';
 import { WheelOFortune, type WheelOFortuneHandle } from '../WheelOFortune';
 import { useWheel, type SpinResult } from '../useWheel';
 import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
-import { queryKeys } from '@shared/queryClient';
+import type { ItemView } from '@components/actions/roll-wheel/items-wheel/view';
 
-export const ActivitiesWheelContent = () => {
-    const { pb } = useAppAuthContext();
+export const Content = () => {
+    const {
+        pb,
+        player,
+        playerProgress,
+        isPlayerProgressSuccess,
+        isPlayerProgressPending,
+        isPlayerProgressError,
+        playerProgressError,
+    } = useAppAuthContext();
+    const [loading, setLoading] = useState(false);
     const wheelRef = useRef<WheelOFortuneHandle>(null);
     const { volume, setVolume, setVolumeImmediate } = useAudioPlayer(AudioKey.music);
-    const [wasSpinned, setWasSpinned] = useState(false);
 
-    const wheelVariants = useQuery({
-        queryFn: () => getWheelVariants(pb.authStore.token),
-        queryKey: [...queryKeys.activityWheel],
+    const wheelView = useQuery({
+        queryFn: () => getWheelView(pb.authStore.token),
+        queryKey: [...queryKeys.itemsWheel],
         refetchOnWindowFocus: false,
     });
 
-    const audioPresetFilter = wheelVariants.data?.data?.audio_preset_id
-        ? { audioPresetId: wheelVariants.data.data.audio_preset_id }
-        : { audioPresetSlug: 'roll-wheel' };
-
     const { spinning, handleSpin, currentItemIndex, setCurrentItemIndex, audioPreset } = useWheel({
         wheelRef,
-        enabled: wheelVariants.isSuccess,
         spinRequest: () => rollWheelRequest(pb.authStore.token),
-        ...audioPresetFilter,
+        audioPresetSlug: 'roll-items',
+        onSpinComplete: async () => {
+            await invalidatePlayerProgressAuth();
+            await invalidatePlayerProgress(player.id);
+        },
     });
 
-    useEffect(() => {
-        if (spinning) {
-            setWasSpinned(true);
-        }
-    }, [spinning]);
-
-    if (wheelVariants.isPending || audioPreset.isPending) return <Spinner />;
-    if (wheelVariants.isError) return <Text>Error: {wheelVariants.error?.message}</Text>;
+    if (isPlayerProgressPending || wheelView.isPending || audioPreset.isPending) return <Spinner />;
+    if (isPlayerProgressError) return <Text>Error: {playerProgressError?.message}</Text>;
+    if (wheelView.isError) return <Text>Error: {wheelView.error?.message}</Text>;
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
 
-    const wheelItems = wheelVariants.data
-        ? wheelVariants.data.data.items.map(activity => ({
-              key: activity.id,
-              image: activity.cover || pb.files.getURL(activity, activity.cover_alt),
-              title: activity.name,
+    const wheelItems = wheelView.data
+        ? wheelView.data.data.map(item => ({
+              key: item.id,
+              image: pb.files.getURL(item, item.icon),
+              title: item.name,
           }))
         : [];
-    const currentActivity = wheelVariants.data.data.items[currentItemIndex];
 
     return (
         <>
@@ -65,13 +70,30 @@ export const ActivitiesWheelContent = () => {
                 pt={2}
                 px={4}
             >
-                {currentActivity && <ActivityInfo activity={currentActivity} />}
+                <ItemInfo item={wheelView.data.data[currentItemIndex]} />
             </Flex>
             <VStack gap={3} justify="center">
                 <WheelOFortune ref={wheelRef} items={wheelItems} />
                 <VStack w="full" gap={3} justify="center">
-                    <Button disabled={spinning || wasSpinned} onClick={handleSpin}>
-                        Крутить
+                    <Button
+                        loading={loading}
+                        disabled={
+                            spinning ||
+                            !isPlayerProgressSuccess ||
+                            playerProgress.item_wheels_count === 0
+                        }
+                        onClick={async () => {
+                            try {
+                                setLoading(true);
+                                await handleSpin();
+                            } catch (e) {
+                                console.error(e);
+                            } finally {
+                                setLoading(false);
+                            }
+                        }}
+                    >
+                        {`Крутить (x${playerProgress?.item_wheels_count})`}
                     </Button>
                     <SliderDebounced
                         w="full"
@@ -98,25 +120,18 @@ export const ActivitiesWheelContent = () => {
                         {(item, index) => (
                             <HStack
                                 key={item.key}
-                                data-active={currentItemIndex === index}
-                                minH={20}
+                                h={20}
                                 align="center"
                                 gap={4}
                                 cursor="pointer"
                                 px={4}
-                                _hover={{ bg: 'grey' }}
-                                css={{ '&[data-active=true]': { bg: 'black' } }}
                                 onClick={() => {
                                     setCurrentItemIndex(index);
                                 }}
+                                _hover={{ bg: 'grey' }}
+                                bg={currentItemIndex === index ? 'black' : ''}
                             >
-                                <Image
-                                    src={item.image}
-                                    h="full"
-                                    pointerEvents="none"
-                                    aspectRatio="2/3"
-                                    objectFit="contain"
-                                />
+                                <Image src={item.image} h="100%" pointerEvents="none" />
                                 <Text pointerEvents="none">{item.title}</Text>
                             </HStack>
                         )}
@@ -128,43 +143,25 @@ export const ActivitiesWheelContent = () => {
 };
 
 const rollWheelRequest = async (authToken: string) => {
-    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/roll-wheel`, {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/roll-item`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}` },
     });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to roll wheel`);
-    }
 
     return (await res.json()) as SpinResult;
 };
 
-type GetWheelVariantsData = { items: ActivityRecord[]; audio_preset_id?: string };
+type GetWheelViewSuccess = { success: true; data: ItemView[]; message?: string; error?: never };
 
-type GetWheelVariantsSuccess = { success: true; data: GetWheelVariantsData; error?: never };
+type GetWheelViewError = { success: false; data: never; message: string; error: string };
 
-type GetWheelVariantsError = { success: false; data: never; error: string };
+type GetWheelViewResult = GetWheelViewSuccess | GetWheelViewError;
 
-type GetWheelVariantsResult = GetWheelVariantsSuccess | GetWheelVariantsError;
-
-const getWheelVariants = async (authToken: string) => {
-    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/action-variants?action=rollWheel`, {
+const getWheelView = async (authToken: string) => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/action-view?action=roll_item`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${authToken}` },
     });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to get wheel variants`);
-    }
 
-    return (await res.json()) as GetWheelVariantsResult;
+    return (await res.json()) as GetWheelViewResult;
 };

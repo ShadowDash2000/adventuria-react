@@ -8,6 +8,7 @@ import type { RecordIdString } from '@shared/types/pocketbase';
 import { useRollWheelStore } from './useRollWheelStore';
 import { audioPresetSchema, audioSchema, pbCollections } from '@shared/pbSchema';
 import { dotExpand, joinExpand } from '@shared/pbExpand';
+import { handleApiResponse } from '@shared/helpers/api';
 
 interface RollWheelBaseProps {
     wheelRef: RefObject<WheelOFortuneHandle | null>;
@@ -28,8 +29,8 @@ interface RollWheelPropsWithId extends RollWheelBaseProps {
 
 type RollWheelProps = RollWheelPropsWithSlug | RollWheelPropsWithId;
 
-export type SpinSuccess = { success: true; data: SpinResultData; error?: never };
-export type SpinError = { success: false; error: string; data?: never };
+export type SpinSuccess = { success: true; data: SpinResultData; message?: string; error?: never };
+export type SpinError = { success: false; message?: string; error: string; data?: never };
 export type SpinResult = SpinSuccess | SpinError;
 export type SpinResultData = { fillerItems: FillerItem[]; winnerId: RecordIdString };
 export type FillerItem = { id: RecordIdString; name: string; icon: string };
@@ -59,7 +60,7 @@ export const useWheel = ({
     const audioPreset = useQuery({
         queryFn: async () => {
             return pb
-                .collection(pbCollections.audio_presets)
+                .collection(pbCollections.audioPresets)
                 .getFirstListItem<AudioPresetRecord>(audioFilter, {
                     expand: audioPresetSchema.audio,
                     fields: joinExpand(
@@ -82,7 +83,9 @@ export const useWheel = ({
 
         const res = await spinRequest();
 
-        if (!res.success) return;
+        if (!handleApiResponse(res)) {
+            return;
+        }
 
         let duration = 10;
         if (audioPreset.isSuccess) {

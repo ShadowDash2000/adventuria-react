@@ -7,8 +7,10 @@ import { Drop } from './drop/drop';
 import { Reroll } from './reroll/reroll';
 import { Move } from './move/move';
 import { Teleport } from './teleport/teleport';
-import { BuyItem } from '@components/actions/buy-item/buy-item';
+import { Buy } from '@components/actions/buy/buy';
 import { RollItemOnCell } from '@components/actions/roll-item-on-cell/roll-item-on-cell';
+import { GenerateWheel } from '@components/actions/generate-wheel/generate-wheel';
+import { NeedToRollWheel } from '@components/actions/need-to-roll-wheel/need_to_roll_wheel';
 
 type ActionFactoryItem = { order: number; dispenser: ActionDispenser };
 
@@ -17,10 +19,12 @@ export class ActionFactory {
         done: { order: 0, dispenser: new Done() },
         drop: { order: 0, dispenser: new Drop() },
         reroll: { order: 0, dispenser: new Reroll() },
-        rollDice: { order: 0, dispenser: new RollDice() },
-        rollWheel: { order: 0, dispenser: new RollWheel() },
-        buyItem: { order: 5, dispenser: new BuyItem() },
-        rollItemOnCell: { order: 0, dispenser: new RollItemOnCell() },
+        roll_dice: { order: 0, dispenser: new RollDice() },
+        generate_wheel: { order: 0, dispenser: new GenerateWheel() },
+        need_to_roll_wheel: { order: 0, dispenser: new NeedToRollWheel() },
+        roll_wheel: { order: 0, dispenser: new RollWheel() },
+        buy: { order: 5, dispenser: new Buy() },
+        roll_item_on_cell: { order: 0, dispenser: new RollItemOnCell() },
         move: { order: 0, dispenser: new Move() },
         teleport: { order: 0, dispenser: new Teleport() },
     };

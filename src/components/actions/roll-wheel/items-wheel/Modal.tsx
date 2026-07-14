@@ -3,11 +3,11 @@ import { CloseButton, Dialog, IconButton, Portal, Spinner } from '@chakra-ui/rea
 import { Tooltip } from '@ui/tooltip';
 import { useState } from 'react';
 import { useAppAuthContext } from '@context/AppContext';
-import { ItemsWheelContent } from './ItemWheelContent';
+import { Content } from './Content';
 import { useRollWheelStore } from '../useRollWheelStore';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 
-export const ItemsWheelModal = () => {
+export const Modal = () => {
     const { playerProgress, isPlayerProgressSuccess, availableActions } = useAppAuthContext();
     const [open, setOpen] = useState(false);
     const isSpinning = useRollWheelStore(state => state.isSpinning);
@@ -34,7 +34,7 @@ export const ItemsWheelModal = () => {
                         gap={0}
                         disabled={
                             playerProgress.item_wheels_count === 0 ||
-                            !availableActions.includes('rollItem') ||
+                            !availableActions.includes('roll_item') ||
                             isSpinning ||
                             isRolling
                         }
@@ -50,7 +50,7 @@ export const ItemsWheelModal = () => {
                 <Dialog.Positioner>
                     <Dialog.Content bg="none" boxShadow="none" mt={0}>
                         <Dialog.Body display="flex" justifyContent="space-around" p={0}>
-                            <ItemsWheelContent />
+                            <Content />
                         </Dialog.Body>
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />

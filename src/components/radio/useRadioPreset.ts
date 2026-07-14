@@ -10,7 +10,7 @@ export const useRadioPreset = () => {
     return useQuery({
         queryFn: async () => {
             return pb
-                .collection(pbCollections.audio_presets)
+                .collection(pbCollections.audioPresets)
                 .getFirstListItem<AudioPresetRecord>(`${audioPresetSchema.slug} = "radio"`, {
                     expand: audioPresetSchema.audio,
                 });

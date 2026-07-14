@@ -1,11 +1,11 @@
 import { Status } from '@chakra-ui/react';
 import type { ReactNode } from 'react';
 import { ActionDispenser } from '../action-base';
-import { DoneModal } from './DoneModal';
+import { Modal } from './Modal';
 
 export class Done extends ActionDispenser {
     buttonNode(): ReactNode {
-        return <DoneModal key={this.key()} />;
+        return <Modal key={this.key()} />;
     }
 
     color() {

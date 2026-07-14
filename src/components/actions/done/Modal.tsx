@@ -1,4 +1,4 @@
-import { ButtonGroup, CloseButton, Dialog, Flex, Portal, VStack, Text } from '@chakra-ui/react';
+import { ButtonGroup, CloseButton, Dialog, Flex, Portal, VStack, Heading } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Content } from '@tiptap/react';
 import { useAppContext } from '@context/AppContext';
@@ -6,22 +6,22 @@ import { LuNotebookPen } from 'react-icons/lu';
 import { ActionTextEditor } from '@components/profile/ActionTextEditor';
 import { invalidateAllActions, invalidatePlayerProgressAuth } from '@shared/queryClient';
 import { Button } from '@theme/button';
+import { handleApiResponse } from '@shared/helpers/api';
+import { ReviewRating } from '@shared/components/ReviewRating';
 
-export const DoneModal = () => {
+export const Modal = () => {
     const { pb, availableActions } = useAppContext();
     const [content, setContent] = useState<Content | undefined>(null);
     const [actionType, setActionType] = useState<string>('');
     const [openConfirm, setOpenConfirm] = useState(false);
     const [titleConfirm, setTitleConfirm] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [score, setScore] = useState<number>(3);
 
     const handleDone = async (actionType: string) => {
-        setError(null);
-        const res = await doneRequest(pb.authStore.token, actionType, content);
+        const res = await doneRequest(pb.authStore.token, actionType, content ?? '', score);
 
-        if (!res.success) {
-            setError(res.error);
+        if (!handleApiResponse(res)) {
             return;
         }
 
@@ -51,6 +51,13 @@ export const DoneModal = () => {
                                         placeholder="Введите комментарий..."
                                         content={content}
                                         setContent={setContent}
+                                    />
+                                </VStack>
+                                <VStack w="full" py={4}>
+                                    <Heading as="h3">Оценка</Heading>
+                                    <ReviewRating
+                                        value={score}
+                                        onValueChange={e => setScore(e.value)}
                                     />
                                 </VStack>
                                 <ButtonGroup>
@@ -103,11 +110,6 @@ export const DoneModal = () => {
                                                 <Dialog.Title>{titleConfirm}</Dialog.Title>
                                             </Dialog.Header>
                                             <Dialog.Body>
-                                                {!!error && (
-                                                    <Text color="red.500" mb="2">
-                                                        {error}
-                                                    </Text>
-                                                )}
                                                 <ButtonGroup>
                                                     <Button
                                                         disabled={loading}
@@ -126,11 +128,6 @@ export const DoneModal = () => {
                                                                 await handleDone(actionType);
                                                             } catch (e) {
                                                                 console.error(e);
-                                                                const message =
-                                                                    e instanceof Error
-                                                                        ? e.message
-                                                                        : 'Unknown error';
-                                                                setError(message);
                                                             } finally {
                                                                 setLoading(false);
                                                             }
@@ -158,26 +155,23 @@ export const DoneModal = () => {
     );
 };
 
-type DoneSuccess = { success: true; error?: never };
+type DoneSuccess = { success: true; message?: string; error?: never };
 
-type DoneError = { success: false; error: string };
+type DoneError = { success: false; message: string; error: string };
 
 type DoneResult = DoneSuccess | DoneError;
 
-const doneRequest = async (authToken: string, actionType: string, comment?: Content) => {
+const doneRequest = async (
+    authToken: string,
+    actionType: string,
+    comment: Content,
+    score: number,
+) => {
     const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/${actionType}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ comment: comment || '' }),
+        body: JSON.stringify({ comment: comment, score: score }),
     });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to perform action`);
-    }
 
     return (await res.json()) as DoneResult;
 };

@@ -1,7 +1,6 @@
 import { useBoardInnerContext } from '@components/board';
 import { For, HStack, IconButton, VStack, Text, Box } from '@chakra-ui/react';
 import { ToggleTip } from '@ui/toggle-tip';
-import { BoardHelper } from '../BoardHelper';
 import type { PlayerRecord } from '@shared/types/player';
 import { PlayerAvatar } from '../../PlayerAvatar';
 import { CELL_MAX_PLAYERS } from '../Board';
@@ -30,8 +29,9 @@ interface CellTooltipProps {
 }
 
 const CellPlayers = ({ cellIndex, players }: CellTooltipProps) => {
-    const { rows, cols, cellWidth, cellHeight } = useBoardInnerContext();
-    const position = BoardHelper.getCoords(rows, cols, cellIndex);
+    const { cellWidth, cellHeight, topology, defaultWorldSlug } = useBoardInnerContext();
+    const position = topology.positionByCellIndex.get(cellIndex);
+    if (!position || (defaultWorldSlug && position.worldId !== defaultWorldSlug)) return null;
 
     const x = cellWidth * position.col + cellWidth / 2;
     const y = -(cellHeight * position.row) - cellHeight / 2;

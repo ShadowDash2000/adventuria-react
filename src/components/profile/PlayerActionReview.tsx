@@ -1,17 +1,11 @@
 import type { CSSProperties } from 'react';
-import { Collapsible, Stack, VStack } from '@chakra-ui/react';
+import { Collapsible, Heading, Stack, VStack } from '@chakra-ui/react';
 import { ActionTextEditor } from '@components/profile/ActionTextEditor';
 import type { HTMLContent } from '@tiptap/react';
 import { Button } from '@theme/button';
 import { LuChevronDown } from 'react-icons/lu';
 import HTMLReactParser, { type DOMNode, attributesToProps } from 'html-react-parser';
-
-interface PlayerActionCommentProps {
-    isEditing: boolean;
-    comment: string;
-    draft: HTMLContent;
-    setDraft: (content: HTMLContent) => void;
-}
+import { ReviewRating } from '@shared/components/ReviewRating';
 
 const COMMENT_MAX_LENGTH = 1000;
 const COMMENT_COLLAPSIBLE_IMAGES_COUNT = 2;
@@ -51,12 +45,23 @@ const renderComment = (html: string) =>
         },
     });
 
-export const PlayerActionComment = ({
+interface PlayerActionReviewProps {
+    isEditing: boolean;
+    comment: string;
+    score: number;
+    setScore: (score: number) => void;
+    draft: HTMLContent;
+    setDraft: (content: HTMLContent) => void;
+}
+
+export const PlayerActionReview = ({
     isEditing,
     comment,
+    score,
+    setScore,
     draft,
     setDraft,
-}: PlayerActionCommentProps) => {
+}: PlayerActionReviewProps) => {
     const isCollapsible = shouldCollapseComment(comment);
 
     return (
@@ -69,6 +74,10 @@ export const PlayerActionComment = ({
                         setContent={content => setDraft(content as HTMLContent)}
                         editable={isEditing}
                     />
+                    <VStack w="full" py={4}>
+                        <Heading as="h3">Оценка</Heading>
+                        <ReviewRating value={score} onValueChange={e => setScore(e.value)} />
+                    </VStack>
                 </VStack>
             ) : isCollapsible ? (
                 <Collapsible.Root collapsedHeight={200}>

@@ -25,8 +25,9 @@ export const pbCollections = {
     inventory: 'inventory',
     settings: 'settings',
     rules: 'rules',
-    audio_presets: 'audio_presets',
+    audioPresets: 'audio_presets',
     audio: 'audio',
+    worlds: 'worlds',
 };
 
 export const playerSchema = {
@@ -44,6 +45,8 @@ export const playerProgressSchema = {
     id: 'id',
     player: 'player',
     season: 'season',
+    currentWorld: 'current_world',
+    canMove: 'can_move',
     points: 'points',
     balance: 'balance',
     cellsPassed: 'cells_passed',
@@ -60,11 +63,10 @@ export const actionSchema = {
     cell: 'cell',
     type: 'type',
     activity: 'activity',
-    comment: 'comment',
+    review: 'review',
     cellsPassed: 'cells_passed',
     itemsList: 'items_list',
     usedItems: 'used_items',
-    canMove: 'can_move',
     customActivityFilter: 'custom_activity_filter',
 };
 
@@ -128,6 +130,7 @@ export const cellSchema = {
     disabled: 'disabled',
     sort: 'sort',
     type: 'type',
+    world: 'world',
     filter: 'filter',
     audioPreset: 'audio_preset',
     icon: 'icon',
@@ -181,29 +184,40 @@ export const activitiesTagsSchema = { id: 'id', activity: 'activity', tag: 'tag'
 
 export const activitiesThemesSchema = { id: 'id', activity: 'activity', theme: 'theme' };
 
-export const genresSchema = { id: 'id', id_db: 'id_db', name: 'name', checksum: 'checksum' };
+export const genresSchema = { id: 'id', idDb: 'id_db', name: 'name', checksum: 'checksum' };
 
 export const activityFilterSchema = {
     id: 'id',
     type: 'type',
     name: 'name',
     platforms: 'platforms',
-    platforms_strict: 'platforms_strict',
+    platformsStrict: 'platforms_strict',
     game_types: 'game_types',
     developers: 'developers',
     publishers: 'publishers',
     genres: 'genres',
     tags: 'tags',
     themes: 'themes',
-    min_price: 'min_price',
-    max_price: 'max_price',
-    release_date_from: 'release_date_from',
-    release_date_to: 'release_date_to',
-    min_campaign_time: 'min_campaign_time',
-    max_campaign_time: 'max_campaign_time',
+    minPrice: 'min_price',
+    maxPrice: 'max_price',
+    releaseDateFrom: 'release_date_from',
+    releaseDateTo: 'release_date_to',
+    minCampaignTime: 'min_campaign_time',
+    maxCampaignTime: 'max_campaign_time',
     activities: 'activities',
 };
 
 export const audioPresetSchema = { id: 'id', name: 'name', slug: 'slug', audio: 'audio' };
 
 export const audioSchema = { id: 'id', name: 'name', audio: 'audio', duration: 'duration' };
+
+export const worldSchema = {
+    id: 'id',
+    name: 'name',
+    slug: 'slug',
+    sort: 'sort',
+    isLoop: 'is_loop',
+    isDefaultWorld: 'is_default_world',
+    transitionToWorld: 'transition_to_world',
+    effects: 'effects',
+};

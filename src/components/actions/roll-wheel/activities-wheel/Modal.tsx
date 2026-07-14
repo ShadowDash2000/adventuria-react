@@ -1,12 +1,12 @@
 import { LuFerrisWheel } from 'react-icons/lu';
 import { CloseButton, Dialog, Portal } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { ActivitiesWheelContent } from './ActivitiesWheelContent';
+import { Content } from './Content';
 import { useRollWheelStore } from '../useRollWheelStore';
 import { invalidateAllActions } from '@shared/queryClient';
 import { Button } from '@theme/button';
 
-export const ActivitiesWheelModal = () => {
+export const Modal = () => {
     const [open, setOpen] = useState(false);
     const [wasSpinned, setWasSpinned] = useState(false);
     const isSpinning = useRollWheelStore(state => state.isSpinning);
@@ -45,7 +45,7 @@ export const ActivitiesWheelModal = () => {
                 <Dialog.Positioner>
                     <Dialog.Content bg="none" boxShadow="none" mt={0}>
                         <Dialog.Body display="flex" justifyContent="space-around" p={0}>
-                            <ActivitiesWheelContent />
+                            <Content />
                         </Dialog.Body>
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />

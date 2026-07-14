@@ -14,10 +14,9 @@ export type Type_Effect_Creator = (props: EffectCreatorProps) => JSX.Element;
 
 export class EffectFactory {
     private static effects: Record<string, Type_Effect_Creator | null> = {
-        cellPointsDivide: null,
-        addGameGenre: createAddGameGenre,
-        chooseGame: createChooseGame,
-        paidMovementInRadius: createPaidMovementInRadius,
+        add_game_genre: createAddGameGenre,
+        choose_activity: createChooseGame,
+        paid_movement_in_radius: createPaidMovementInRadius,
     };
 
     static get(t: string): Type_Effect_Creator | null {

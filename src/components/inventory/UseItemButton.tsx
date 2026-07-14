@@ -14,6 +14,7 @@ import { CloseButton, Dialog, Flex, Portal } from '@chakra-ui/react';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import type { EffectRecord } from '@shared/types/effect';
 import { useState } from 'react';
+import { handleApiResponse } from '@shared/helpers/api';
 
 interface UseItemButtonProps {
     canUse: boolean;
@@ -34,7 +35,16 @@ export const UseItemButton = ({
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (formData: FormData) => {
-        await itemUseRequest(pb.authStore.token, invItemId, Object.fromEntries(formData));
+        const res = await useItemRequest(
+            pb.authStore.token,
+            invItemId,
+            Object.fromEntries(formData),
+        );
+
+        if (!handleApiResponse(res)) {
+            return;
+        }
+
         decrementKbdBlock();
         await invalidateAllActions();
         await invalidatePlayerProgressAuth();
@@ -43,7 +53,12 @@ export const UseItemButton = ({
     };
 
     const handleItemUse = async () => {
-        await itemUseRequest(pb.authStore.token, invItemId);
+        const res = await useItemRequest(pb.authStore.token, invItemId);
+
+        if (!handleApiResponse(res)) {
+            return;
+        }
+
         await invalidateAllActions();
         await invalidatePlayerProgressAuth();
         await invalidatePlayerProgress(player.id);
@@ -114,6 +129,7 @@ export const UseItemButton = ({
                 </Dialog.Root>
             ) : (
                 <Button
+                    loading={loading}
                     disabled={!canUse}
                     colorPalette="green"
                     onClick={() => {
@@ -130,7 +146,13 @@ export const UseItemButton = ({
     );
 };
 
-const itemUseRequest = async (
+type UseItemSuccess = { success: true; message?: string; error?: never };
+
+type UseItemError = { success: false; message: string; error: string };
+
+type UseItemResult = UseItemSuccess | UseItemError;
+
+const useItemRequest = async (
     authToken: string,
     itemId: RecordIdString,
     data?: Record<string, unknown>,
@@ -138,14 +160,8 @@ const itemUseRequest = async (
     const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/use-item`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemId: itemId, data: data }),
+        body: JSON.stringify({ item_id: itemId, data: data }),
     });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to use item`);
-    }
+
+    return (await res.json()) as UseItemResult;
 };

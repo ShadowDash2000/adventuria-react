@@ -33,7 +33,10 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     });
 
     const { data: availableActions = [] } = useQuery({
-        queryFn: async () => await fetchAvailableActions(pb.authStore.token),
+        queryFn: async () => {
+            const actions = await fetchAvailableActions(pb.authStore.token);
+            return actions.success ? actions.data : [];
+        },
         enabled: isAuth,
         queryKey: [...queryKeys.availableActions, isAuth, pb.authStore.token],
         refetchOnWindowFocus: false,
@@ -100,7 +103,13 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     return <AppContext.Provider value={ctx}>{children}</AppContext.Provider>;
 };
 
-const fetchAvailableActions = async (authToken: string): Promise<string[]> => {
+type AvailableActionsSuccess = { success: true; data: string[]; error?: never };
+
+type AvailableActionsError = { success: false; data: never; error: string };
+
+type AvailableActionsResult = AvailableActionsSuccess | AvailableActionsError;
+
+const fetchAvailableActions = async (authToken: string): Promise<AvailableActionsResult> => {
     const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/available-actions`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${authToken}` },
@@ -112,5 +121,5 @@ const fetchAvailableActions = async (authToken: string): Promise<string[]> => {
         });
     }
 
-    return (await res.json()) as string[];
+    return (await res.json()) as AvailableActionsResult;
 };

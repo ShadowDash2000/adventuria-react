@@ -3,45 +3,28 @@ import { Portal, Select, useListCollection } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import type { CellRecord } from '@shared/types/cell';
 
 interface PaidMovementInRadiusSelectProps {
-    invItemId: RecordIdString;
     effectId: RecordIdString;
 }
 
-export const PaidMovementInRadiusSelect = ({
-    invItemId,
-    effectId,
-}: PaidMovementInRadiusSelectProps) => {
+export const PaidMovementInRadiusSelect = ({ effectId }: PaidMovementInRadiusSelectProps) => {
     const { pb } = useAppAuthContext();
 
-    const { collection, set: setCollection } = useListCollection<CellRecord>({
+    const { collection, set: setCollection } = useListCollection<CellView>({
         initialItems: [],
         itemToString: item => item.name,
         itemToValue: item => item.id,
     });
 
     const cells = useQuery({
-        queryFn: async () => {
-            const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/get-item-effect-variants`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${pb.authStore.token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ inv_item_id: invItemId, effect_id: effectId }),
-            });
-
-            const data: CellRecord[] = await res.json();
-            return data;
-        },
-        queryKey: ['paid-movement-in-radius', invItemId, effectId],
+        queryFn: () => getEffectView(pb.authStore.token, effectId),
+        queryKey: ['paid-movement-in-radius', effectId],
         refetchOnWindowFocus: false,
     });
 
     useEffect(() => {
-        setCollection(cells.data || []);
+        setCollection(cells.data?.data || []);
     }, [cells.data]);
 
     return (
@@ -70,4 +53,22 @@ export const PaidMovementInRadiusSelect = ({
             </Portal>
         </Select.Root>
     );
+};
+
+type CellView = { id: RecordIdString; name: string };
+
+type GetEffectViewSuccess = { success: true; data: CellView[]; message?: string; error?: never };
+
+type GetEffectViewError = { success: false; data: never; message: string; error: string };
+
+type GetEffectViewResult = GetEffectViewSuccess | GetEffectViewError;
+
+const getEffectView = async (authToken: string, effectId: RecordIdString) => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/effect-view`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ effect_id: effectId }),
+    });
+
+    return (await res.json()) as GetEffectViewResult;
 };

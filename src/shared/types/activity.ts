@@ -26,6 +26,7 @@ export type ActivityRecord = {
     genres: RecordIdString[];
     tags: RecordIdString[];
     themes: RecordIdString[];
+    game_type: string;
     steam_app_id: number;
     steam_app_price: number;
     hltb_id: number;

@@ -1,6 +1,6 @@
 import { VStack } from '@chakra-ui/react';
 import { PlayerInventoryButton } from '@components/inventory/PlayerInventoryButton';
-import { ItemsWheelModal } from '@components/actions/roll-wheel/items-wheel/ItemsWheelModal';
+import { Modal } from '@components/actions/roll-wheel/items-wheel/Modal';
 import { RadioButton } from '@components/radio/RadioButton';
 import { useAppAuthContext } from '@context/AppContext';
 import { VolumeButton } from '@components/player-menu/VolumeButton';
@@ -26,7 +26,7 @@ export const PlayerMenuAuth = () => {
                 <PlayerBalance />
                 <VStack justify="center" align="start">
                     <PlayerInventoryButton player={player} kbd={true} />
-                    <ItemsWheelModal />
+                    <Modal />
                     <RadioButton />
                     <VolumeButton />
                 </VStack>

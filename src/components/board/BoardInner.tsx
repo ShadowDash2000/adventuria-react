@@ -28,16 +28,24 @@ export const BoardInner = () => {
     >(new Map(playersProgressRaw.map(p => [p.player, p])));
 
     const cellsOrdered = BoardHelper.buildCells(cells, players, playersProgress);
-    const cellsOrderedRev = cellsOrdered.lines.slice().reverse();
+    const defaultWorldSlug = cellsOrdered.topology.defaultWorldSlug;
+    const defaultWorldId = defaultWorldSlug
+        ? cellsOrdered.topology.worldBySlug.get(defaultWorldSlug)?.id
+        : undefined;
+    const defaultWorldSize = defaultWorldId
+        ? cellsOrdered.worldSizesById.get(defaultWorldId)
+        : undefined;
+    const currentWorldCellsOrdered = defaultWorldSlug
+        ? cellsOrdered.lines.get(defaultWorldSlug) || []
+        : [];
+    const cellsOrderedRev = currentWorldCellsOrdered.slice().reverse();
 
     // board geometry
     const [boardDimensions, setBoardDimensions] = useState<Dimension>({ width: 0, height: 0 });
 
-    // derived grid size
-    const rows = cellsOrdered.lines.length;
-    const cols = rows > 0 ? cellsOrdered.lines[0].length : 0;
-
     // derived cell size in px based on container size
+    const rows = defaultWorldSize?.rows || 0;
+    const cols = defaultWorldSize?.cols || 0;
     const cellWidth = cols ? Math.floor(boardDimensions.width / Math.max(cols, 1)) : 0;
     const cellHeight = rows ? Math.floor(boardDimensions.height / Math.max(rows, 1)) : 0;
 
@@ -79,13 +87,18 @@ export const BoardInner = () => {
                                 useRollDiceStore.getState().isRolling
                             )
                         ) {
+                            const playerWorldId = prev.get(e.record.player)!.current_world;
+                            const worldSize = cellsOrdered.worldSizesById.get(playerWorldId);
+                            if (!worldSize) return prev;
+
                             usePlayersStore
                                 .getState()
                                 .addPaths(
                                     e.record.player,
                                     BoardHelper.createPath(
-                                        rows,
-                                        cols,
+                                        playerWorldId,
+                                        worldSize.rows,
+                                        worldSize.cols,
                                         prev.get(e.record.player)!.cells_passed,
                                         e.record.cells_passed,
                                     ),
@@ -103,18 +116,20 @@ export const BoardInner = () => {
         return () => {
             pb.collection(pbCollections.players).unsubscribe();
         };
-    }, [pb, isAuth]);
+    }, [pb, isAuth, cellsOrdered.worldSizesById]);
 
     return (
         <BoardInnerContext.Provider
             value={{
-                cellsOrdered: cellsOrdered.lines,
+                cellsOrdered: currentWorldCellsOrdered,
                 playersByCellIndex: cellsOrdered.playersByCellIndex,
                 cellsOrderedRev,
+                topology: cellsOrdered.topology,
+                defaultWorldId,
+                defaultWorldSlug,
+                worldSizesById: cellsOrdered.worldSizesById,
                 players: players,
                 playersProgress,
-                rows,
-                cols,
                 cellWidth,
                 cellHeight,
             }}

@@ -53,7 +53,12 @@ export const ActionsList = ({ playerName, perPage = 10, ...rest }: ActionsListPr
                     .map(f => `${f.field} = "${f.value}"`)
                     .join(' && '),
                 sort: '-created',
-                expand: joinExpand(actionSchema.activity, actionSchema.cell, actionSchema.player),
+                expand: joinExpand(
+                    actionSchema.activity,
+                    actionSchema.cell,
+                    actionSchema.player,
+                    actionSchema.review,
+                ),
             }),
         getNextPageParam: (lastPage, _allPages, lastPageParam) => {
             if (lastPage.page === lastPage.totalPages) return null;

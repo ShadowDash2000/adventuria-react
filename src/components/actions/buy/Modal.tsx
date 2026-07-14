@@ -1,6 +1,6 @@
 import { Box, Dialog, Portal, Image, Spinner, Text } from '@chakra-ui/react';
 import { LuShoppingCart } from 'react-icons/lu';
-import { BuyItemContent } from './BuyItemContent';
+import { Content } from './Content';
 import ShopImage from '@public/shop.gif';
 import CasinoImage from '@public/shop-casino.png';
 import { Button } from '@theme/button';
@@ -11,7 +11,7 @@ import type { ClientResponseError } from 'pocketbase';
 
 const bgImage: Record<string, string> = { shop: ShopImage, casino: CasinoImage };
 
-export const BuyItemModal = () => {
+export const Modal = () => {
     const { pb, player } = useAppAuthContext();
     const action = useQuery(latestActionQuery(pb, player.id, { expand: 'cell' }));
 
@@ -47,7 +47,7 @@ export const BuyItemModal = () => {
                                 w="full"
                                 userSelect="none"
                             />
-                            <BuyItemContent />
+                            <Content />
                         </Box>
                     </Dialog.Content>
                 </Dialog.Positioner>

@@ -1,11 +1,14 @@
 import type { AuthRecord } from 'pocketbase';
 import type { IsoDateString, RecordIdString } from '@shared/types/pocketbase';
+import type { WorldRecord } from '@shared/types/world';
 
 export type PlayerProgressRecord = {
     created: IsoDateString;
     updated: IsoDateString;
     player: RecordIdString;
     season: RecordIdString;
+    current_world: RecordIdString;
+    can_move: boolean;
     points: number;
     balance: number;
     cells_passed: number;
@@ -14,6 +17,7 @@ export type PlayerProgressRecord = {
     item_wheels_count: number;
     max_inventory_slots: number;
     stats?: PlayerStats;
+    expand?: PlayerProgressRecordExpand;
 } & AuthRecord;
 
 export type PlayerStats = {
@@ -26,3 +30,5 @@ export type PlayerStats = {
     maxDiceRoll: number;
     wheelRolled: number;
 };
+
+export type PlayerProgressRecordExpand = { current_world: WorldRecord };

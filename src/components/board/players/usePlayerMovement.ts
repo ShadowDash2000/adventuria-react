@@ -30,7 +30,7 @@ export const usePlayerMovement = ({
     playerRef,
 }: PlayerMovementProps): PlayerMovementReturn => {
     const { player: playerAuth } = useAppContext();
-    const { rows, cols, cellWidth, cellHeight, cellsOrdered } = useBoardInnerContext();
+    const { cellWidth, cellHeight, cellsOrdered, worldSizesById } = useBoardInnerContext();
     const isCurrentPlayer = playerAuth ? playerProgress.player === playerAuth.id : false;
     const [moving, setMoving] = useState<boolean>(false);
     const { incrementBlocked, decrementBlocked } = useKbdSettings(KbdKey.inventory);
@@ -68,7 +68,17 @@ export const usePlayerMovement = ({
     };
 
     const [initialState] = useState(() => {
-        const pos = BoardHelper.getCoords(rows, cols, playerProgress.cells_passed);
+        const worldId = playerProgress.current_world;
+        const worldSize = worldSizesById.get(worldId);
+        if (!worldSize) {
+            return { position: { x: 0, y: 0, offsetX: 0, offsetY: 0 }, visible: false };
+        }
+        const pos = BoardHelper.getCoords(
+            worldId,
+            worldSize.rows,
+            worldSize.cols,
+            playerProgress.cells_passed,
+        );
         return calculateState(pos.row, pos.col);
     });
 
@@ -91,8 +101,26 @@ export const usePlayerMovement = ({
 
     useEffect(() => {
         if (moving || paths || (useRollDiceStore.getState().isRolling && isCurrentPlayer)) return;
-        const pos = BoardHelper.getCoords(rows, cols, playerProgress.cells_passed);
-        move(pos.row, pos.col);
+
+        const worldId = playerProgress.current_world;
+        const worldSize = worldSizesById.get(worldId);
+        if (!worldSize) {
+            setVisible(false);
+            return;
+        } else {
+            const pos = BoardHelper.getCoords(
+                worldId,
+                worldSize.rows,
+                worldSize.cols,
+                playerProgress.cells_passed,
+            );
+            if (!pos) {
+                setVisible(false);
+                return;
+            }
+
+            move(pos.row, pos.col);
+        }
     }, [cellWidth, cellHeight, cellsOrdered]);
 
     useEffect(() => {

@@ -10,6 +10,7 @@ import { useAppAuthContext } from '@context/AppContext';
 import { ButtonGroup, CloseButton, Dialog, Portal, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Coin } from '@shared/components/Coin';
+import { handleApiResponse } from '@shared/helpers/api';
 
 interface DropItemButtonProps {
     canDrop: boolean;
@@ -20,17 +21,19 @@ interface DropItemButtonProps {
 export const DropItemButton = ({ canDrop, invItem, onItemDrop }: DropItemButtonProps) => {
     const { pb, player } = useAppAuthContext();
     const [openConfirm, setOpenConfirm] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleDrop = async () => {
-        try {
-            await itemDropRequest(pb.authStore.token, invItem.id);
-            await invalidateInventory(player.id);
-            await invalidatePlayerProgressAuth();
-            await invalidatePlayerProgress(player.id);
-            onItemDrop?.();
-        } catch (e) {
-            console.error(e);
+        const res = await dropItemRequest(pb.authStore.token, invItem.id);
+
+        if (!handleApiResponse(res)) {
+            return;
         }
+
+        await invalidateInventory(player.id);
+        await invalidatePlayerProgressAuth();
+        await invalidatePlayerProgress(player.id);
+        onItemDrop?.();
     };
 
     return (
@@ -65,10 +68,18 @@ export const DropItemButton = ({ canDrop, invItem, onItemDrop }: DropItemButtonP
                                     Отмена
                                 </Button>
                                 <Button
+                                    loading={loading}
                                     colorPalette="green"
                                     onClick={async () => {
-                                        await handleDrop();
-                                        setOpenConfirm(false);
+                                        try {
+                                            setLoading(true);
+                                            await handleDrop();
+                                            setOpenConfirm(false);
+                                        } catch (e) {
+                                            console.error(e);
+                                        } finally {
+                                            setLoading(false);
+                                        }
                                     }}
                                 >
                                     Подтвердить
@@ -85,18 +96,18 @@ export const DropItemButton = ({ canDrop, invItem, onItemDrop }: DropItemButtonP
     );
 };
 
-const itemDropRequest = async (authToken: string, itemId: RecordIdString) => {
+type DropItemSuccess = { success: true; message?: string; error?: never };
+
+type DropItemError = { success: false; message: string; error: string };
+
+type DropItemResult = DropItemSuccess | DropItemError;
+
+const dropItemRequest = async (authToken: string, itemId: RecordIdString) => {
     const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/drop-item`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemId: itemId }),
+        body: JSON.stringify({ item_id: itemId }),
     });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to drop item`);
-    }
+
+    return (await res.json()) as DropItemResult;
 };

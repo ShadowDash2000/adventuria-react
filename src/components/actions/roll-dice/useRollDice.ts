@@ -1,5 +1,4 @@
 import { DiceFactory, type DiceFactoryItem, type DiceType } from './dices';
-import type { CellRecord } from '@shared/types/cell';
 import { useAppAuthContext } from '@context/AppContext';
 import { useBoardInnerContext } from '@components/board';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
@@ -12,19 +11,22 @@ import { performFadeOut } from '@components/actions/roll-dice/dices/roll';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { usePlayer } from '@components/board/players/usePlayer';
 import { audioPresetSchema, pbCollections } from '@shared/pbSchema';
+import type { RecordIdString } from '@shared/types/pocketbase';
 
-type MoveEvent = {
-    steps: number;
+type Move = {
+    type: string;
+    world_id: RecordIdString;
+    world_slug: string;
+    cell_local_order: number;
+    cell_global_order: number;
     total_steps: number;
     prev_total_steps: number;
-    current_cell: CellRecord;
-    laps: number;
 };
 
 type RollDiceResultData = {
     roll: number;
     dice_rolls: Array<{ type: DiceType; roll: number }>;
-    path: Array<MoveEvent>;
+    moves: Array<Move>;
 };
 
 type RollDiceResult =
@@ -52,7 +54,7 @@ const DEFAULT_ANIMATION_DURATION = 10;
 
 export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
     const { pb, player } = useAppAuthContext();
-    const { rows, cols } = useBoardInnerContext();
+    const { worldSizesById } = useBoardInnerContext();
     const { play } = useAudioPlayer(AudioKey.music);
     const { addPaths, setMoveTime } = usePlayer(player.id);
 
@@ -67,7 +69,7 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
     const audioPreset = useQuery({
         queryFn: async () => {
             return pb
-                .collection(pbCollections.audio_presets)
+                .collection(pbCollections.audioPresets)
                 .getFirstListItem<AudioPresetRecord>(`${audioPresetSchema.slug} = "roll-dice"`, {
                     expand: 'audio',
                 });
@@ -112,14 +114,31 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
         setPendingRolls(rollValues);
 
         const paths: CellPosition[] = [];
-        for (const move of res.data.path) {
-            if (paths.length > 0) {
-                paths.push(BoardHelper.getCoords(rows, cols, move.total_steps));
-            } else {
-                paths.push(
-                    ...BoardHelper.createPath(rows, cols, move.prev_total_steps, move.total_steps),
+
+        for (const move of res.data.moves) {
+            const worldSize = worldSizesById.get(move.world_id);
+            if (!worldSize) continue;
+
+            if (move.type === 'path') {
+                const path = BoardHelper.createPath(
+                    move.world_id,
+                    worldSize.rows,
+                    worldSize.cols,
+                    move.prev_total_steps,
+                    move.total_steps,
                 );
+                paths.push(...path);
+                continue;
             }
+
+            paths.push(
+                BoardHelper.getCoords(
+                    move.world_id,
+                    worldSize.rows,
+                    worldSize.cols,
+                    move.cell_global_order,
+                ),
+            );
         }
 
         addPaths(paths);

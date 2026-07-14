@@ -12,12 +12,19 @@ import { Button } from '@theme/button';
 import type { ClientResponseError } from 'pocketbase';
 import { Coin } from '@shared/components/Coin';
 import { useState } from 'react';
+import { handleApiResponse } from '@shared/helpers/api';
 
 export const RefreshShopButton = ({ ...props }: ButtonProps) => {
-    const { pb, player, availableActions } = useAppAuthContext();
+    const {
+        pb,
+        availableActions,
+        playerProgress,
+        isPlayerProgressPending,
+        isPlayerProgressSuccess,
+    } = useAppAuthContext();
     const [loading, setLoading] = useState(false);
 
-    const isRefreshShopAvailable = availableActions.includes('refreshShop');
+    const isRefreshShopAvailable = availableActions.includes('refresh_shop');
     const refreshShopView = useQuery({
         queryFn: () => getRefreshShopView(pb.authStore.token),
         queryKey: [...queryKeys.refreshShopView],
@@ -28,7 +35,9 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
     const handleRefreshShop = async () => {
         const res = await refreshShopRequest(pb.authStore.token);
 
-        if (!res.success) return;
+        if (!handleApiResponse(res)) {
+            return;
+        }
 
         await invalidatePlayerProgressAuth();
         await invalidateAvailableActions();
@@ -52,8 +61,11 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
     return (
         <Button
             {...props}
-            loading={loading}
-            disabled={player.balance < refreshShopView.data.data.refresh_price}
+            loading={loading || isPlayerProgressPending}
+            disabled={
+                isPlayerProgressSuccess &&
+                playerProgress.balance < refreshShopView.data.data.refresh_price
+            }
             onClick={async () => {
                 try {
                     setLoading(true);
@@ -80,25 +92,17 @@ type GetRefreshShopViewError = { success: false; data: never; error: string };
 type GetRefreshShopViewResult = GetRefreshShopViewSuccess | GetRefreshShopViewError;
 
 const getRefreshShopView = async (authToken: string) => {
-    const res = await fetch(
-        `${import.meta.env.VITE_PB_URL}/api/action-variants?action=refreshShop`,
-        { method: 'GET', headers: { Authorization: `Bearer ${authToken}` } },
-    );
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to get refresh items view`);
-    }
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/action-view?action=refresh_shop`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${authToken}` },
+    });
 
     return (await res.json()) as GetRefreshShopViewResult;
 };
 
-type RefreshShopSuccess = { success: true; error?: never };
+type RefreshShopSuccess = { success: true; message?: string; error?: never };
 
-type RefreshShopError = { success: false; error: string };
+type RefreshShopError = { success: false; message: string; error: string };
 
 type RefreshResult = RefreshShopSuccess | RefreshShopError;
 
@@ -107,14 +111,6 @@ const refreshShopRequest = async (authToken: string) => {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
     });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to perform action`);
-    }
 
     return (await res.json()) as RefreshResult;
 };

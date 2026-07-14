@@ -1,18 +1,18 @@
-import type { ItemRecord } from '@shared/types/item';
 import type { ClientResponseError } from 'pocketbase';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import { For, Grid, GridItem, Spinner, Text, VStack } from '@chakra-ui/react';
-import { Item } from '@components/actions/buy-item/Item';
+import { Item } from '@components/actions/buy/Item';
 import { RefreshShopButton } from './RefreshShopButton';
 import { MotionBox } from '@shared/components/MotionBox';
+import type { RecordIdString } from '@shared/types/pocketbase';
 
-export const BuyItemContent = () => {
+export const Content = () => {
     const { pb } = useAppAuthContext();
 
     const items = useQuery({
-        queryFn: () => getBuyVariants(pb.authStore.token),
+        queryFn: () => getBuyView(pb.authStore.token),
         queryKey: [...queryKeys.shopItems],
         refetchOnWindowFocus: false,
     });
@@ -44,16 +44,24 @@ export const BuyItemContent = () => {
     );
 };
 
-type GetBuyVariantsData = { items: ItemRecord[] };
+export type ItemView = {
+    id: RecordIdString;
+    name: string;
+    description: string;
+    icon: string;
+    price: number;
+};
 
-type GetBuyVariantsSuccess = { success: true; data: GetBuyVariantsData; error?: never };
+type GetBuyViewData = { items: ItemView[] };
 
-type GetBuyVariantsError = { success: false; data: never; error: never };
+type GetBuyViewSuccess = { success: true; data: GetBuyViewData; error?: never };
 
-type GetBuyVariantsResult = GetBuyVariantsSuccess | GetBuyVariantsError;
+type GetBuyViewError = { success: false; data: never; error: never };
 
-const getBuyVariants = async (authToken: string) => {
-    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/action-variants?action=buyItem`, {
+type GetBuyViewResult = GetBuyViewSuccess | GetBuyViewError;
+
+const getBuyView = async (authToken: string) => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/action-view?action=buy`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${authToken}` },
     });
@@ -63,8 +71,8 @@ const getBuyVariants = async (authToken: string) => {
             .then(res => res.error)
             .catch(() => '');
         const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to get buy variants`);
+        throw new Error(error || text || `Failed to get buy view`);
     }
 
-    return (await res.json()) as GetBuyVariantsResult;
+    return (await res.json()) as GetBuyViewResult;
 };

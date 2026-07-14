@@ -2,6 +2,7 @@ import type { RecordModel } from 'pocketbase';
 import type { IsoDateString, RecordIdString } from '@shared/types/pocketbase';
 import type { ActivityFilterRecord } from '@shared/types/filter';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
+import type { WorldRecord } from '@shared/types/world';
 
 export type CellRecord = {
     created: IsoDateString;
@@ -9,6 +10,7 @@ export type CellRecord = {
     disabled: boolean;
     sort: number;
     type: string;
+    world: RecordIdString;
     filter: RecordIdString;
     audio_preset: RecordIdString;
     icon: string;
@@ -28,4 +30,5 @@ export type CellRecord = {
 export type FilterRecordExpand = Partial<{
     filter: ActivityFilterRecord;
     audio_preset: AudioPresetRecord;
+    world: WorldRecord;
 }>;

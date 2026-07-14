@@ -3,7 +3,7 @@ import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import type { ItemRecord } from '@shared/types/item';
 import { invalidatePlayerProgressAuth } from '@shared/queryClient';
-import { WheelItemInfo } from '@components/actions/roll-wheel/items-wheel/WheeItemInfo';
+import { ItemInfo } from '@components/actions/roll-wheel/items-wheel/ItemInfo';
 import { useEffect, useRef, useState } from 'react';
 import {
     WheelOFortune,
@@ -92,7 +92,7 @@ export const ItemsWheelContent = () => {
                 pt={2}
                 px={4}
             >
-                <WheelItemInfo item={items.data[currentItemIndex]} />
+                <ItemInfo item={items.data[currentItemIndex]} />
             </Flex>
             <VStack gap={3} justify="center">
                 <WheelOFortune ref={wheelRef} items={wheelItems} />

@@ -7,8 +7,14 @@ import { useQuery } from '@tanstack/react-query';
 import { Spinner, Text } from '@chakra-ui/react';
 import { BoardDataContext } from '.';
 import { queryKeys } from '@shared/queryClient';
-import { cellSchema, pbCollections, playerProgressSchema, playerSchema } from '@shared/pbSchema';
-import { joinExpand } from '@shared/pbExpand';
+import {
+    cellSchema,
+    pbCollections,
+    playerProgressSchema,
+    playerSchema,
+    worldSchema,
+} from '@shared/pbSchema';
+import { dotExpand, joinExpand } from '@shared/pbExpand';
 import { eq } from '@shared/pbFilter';
 
 export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
@@ -42,6 +48,7 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
                     fields: joinExpand(
                         playerProgressSchema.id,
                         playerProgressSchema.player,
+                        playerProgressSchema.currentWorld,
                         playerProgressSchema.cellsPassed,
                         'updated',
                         'collectionName',
@@ -59,6 +66,14 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
                 .getFullList<CellRecord>({
                     sort: cellSchema.sort,
                     filter: `${cellSchema.disabled} = false`,
+                    fields: joinExpand(
+                        '*',
+                        dotExpand('expand', cellSchema.world, worldSchema.id),
+                        dotExpand('expand', cellSchema.world, worldSchema.slug),
+                        dotExpand('expand', cellSchema.world, worldSchema.isLoop),
+                        dotExpand('expand', cellSchema.world, worldSchema.transitionToWorld),
+                    ),
+                    expand: cellSchema.world,
                 }),
         refetchOnWindowFocus: false,
         queryKey: queryKeys.cells,

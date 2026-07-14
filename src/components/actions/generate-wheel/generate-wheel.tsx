@@ -1,11 +1,11 @@
 import { Status } from '@chakra-ui/react';
 import { type ReactElement } from 'react';
 import { ActionDispenser } from '../action-base';
-import { RollDiceButton } from './RollDiceButton';
+import { Button } from './Button';
 
-export class RollDice extends ActionDispenser {
+export class GenerateWheel extends ActionDispenser {
     buttonNode(): ReactElement {
-        return <RollDiceButton key={this.key()} />;
+        return <Button key={this.key()} />;
     }
 
     color() {
@@ -13,11 +13,11 @@ export class RollDice extends ActionDispenser {
     }
 
     name() {
-        return 'Бросил кубики';
+        return '';
     }
 
     key() {
-        return 'roll_dice';
+        return 'generate_wheel';
     }
 
     statusNode() {

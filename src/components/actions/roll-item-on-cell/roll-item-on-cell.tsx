@@ -17,7 +17,7 @@ export class RollItemOnCell extends ActionDispenser {
     }
 
     key() {
-        return 'roll-item-on-cell';
+        return 'roll_item_on_cell';
     }
 
     statusNode() {

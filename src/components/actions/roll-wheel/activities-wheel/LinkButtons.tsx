@@ -1,13 +1,14 @@
 import { Button, ButtonGroup } from '@theme/button';
 import { Link } from 'react-router-dom';
 import { type ButtonGroupProps } from '@chakra-ui/react';
-import { ActivityType, type ActivityRecord } from '@shared/types/activity';
+import { ActivityType } from '@shared/types/activity';
+import type { ActivityView } from '@components/actions/roll-wheel/activities-wheel/view';
 
 interface ActivityLinkButtonsProps extends ButtonGroupProps {
-    activity: ActivityRecord;
+    activity: ActivityView;
 }
 
-export const ActivityLinkButtons = ({ activity, ...rest }: ActivityLinkButtonsProps) => {
+export const LinkButtons = ({ activity, ...rest }: ActivityLinkButtonsProps) => {
     return (
         <ButtonGroup {...rest}>
             {activity.steam_app_id > 0 && (

@@ -25,6 +25,7 @@ export const queryKeys = {
     rules: ['rules'],
     cells: ['cells'],
     activityWheel: ['activity-wheel'],
+    itemsWheel: ['items-wheel'],
     refreshShopView: ['refresh-shop-view'],
     cell: (cellId: RecordIdString) => ['cells', 'cell', cellId],
     inventory: (playerId: RecordIdString) => ['inventory', playerId],

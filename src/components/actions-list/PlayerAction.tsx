@@ -9,10 +9,11 @@ import { PlayerAvatar } from '../PlayerAvatar';
 import { InfoTip } from '@ui/toggle-tip';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
 import { Button } from '@theme/button';
-import { PlayerActionComment } from '@components/profile/PlayerActionComment';
+import { PlayerActionReview } from '@components/profile/PlayerActionReview';
 import { useCellsStore } from '@components/board/useCellsStore';
-import { ActivityLinkButtons } from '@components/actions/roll-wheel/activities-wheel/ActivityLinkButtons';
+import { LinkButtons } from '@components/actions/roll-wheel/activities-wheel/LinkButtons';
 import { UsedItems } from './UsedItems';
+import { handleApiResponse } from '@shared/helpers/api';
 
 type ActionProps = { action: ActionRecord };
 
@@ -24,16 +25,21 @@ export const PlayerAction = ({ action }: ActionProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [comment, setComment] = useState<string>(action.comment);
-    const [draft, setDraft] = useState<string>(action.comment);
+    const [comment, setComment] = useState<string>(action.expand?.review?.comment ?? '');
+    const [score, setScore] = useState<number>(action.expand?.review?.score ?? 0);
+    const [draft, setDraft] = useState<string>(action.expand?.review?.comment ?? '');
     const activity = action.expand?.activity;
 
     const canEdit = isAuth && authPlayer.id && action.player === authPlayer.id;
 
     useEffect(() => {
-        setComment(action.comment ?? '');
-        setDraft(action.comment ?? '');
-    }, [action.comment]);
+        setComment(action.expand?.review?.comment ?? '');
+        setDraft(action.expand?.review?.comment ?? '');
+    }, [action.expand?.review?.comment]);
+
+    useEffect(() => {
+        setScore(action.expand?.review?.score ?? 0);
+    }, [action.expand?.review?.score]);
 
     useEffect(() => {
         if (isEditing) {
@@ -45,19 +51,16 @@ export const PlayerAction = ({ action }: ActionProps) => {
         setSaving(true);
         setError(null);
 
-        try {
-            const res = await updateActionRequest(pb.authStore.token, action.id, draft);
-            if (res.success) {
-                setComment(draft);
-                setIsEditing(false);
-            } else {
-                setError(res.error);
-            }
-        } catch (e: unknown) {
-            const message = e instanceof Error ? e.message : 'Unknown error';
-            setError(message);
+        const res = await updateActionRequest(pb.authStore.token, action.id, draft, score);
+
+        if (!handleApiResponse(res)) {
+            setError(res.message);
+            setSaving(false);
+            return;
         }
 
+        setComment(draft);
+        setIsEditing(false);
         setSaving(false);
     };
 
@@ -86,8 +89,8 @@ export const PlayerAction = ({ action }: ActionProps) => {
                     <VStack minW="15%" flexShrink={0}>
                         {activity && (
                             <>
-                                <ActivityLinkButtons
-                                    activity={activity}
+                                <LinkButtons
+                                    activity={{ ...activity }}
                                     justify="center"
                                     size="sm"
                                     gap={0}
@@ -140,15 +143,23 @@ export const PlayerAction = ({ action }: ActionProps) => {
                                         </InfoTip>
                                     </DataList.ItemValue>
                                 </DataList.Item>
+                                {action.expand?.review && (
+                                    <DataList.Item key="score">
+                                        <DataList.ItemLabel>Оценка</DataList.ItemLabel>
+                                        <DataList.ItemValue>{score}/10</DataList.ItemValue>
+                                    </DataList.Item>
+                                )}
                             </DataList.Root>
                             <HStack>
                                 <UsedItems action={action} />
                             </HStack>
                         </VStack>
                         <Card.Description as="div" w="full">
-                            <PlayerActionComment
+                            <PlayerActionReview
                                 isEditing={isEditing}
                                 comment={comment}
+                                score={score}
+                                setScore={setScore}
                                 draft={draft}
                                 setDraft={setDraft}
                             />
@@ -194,9 +205,9 @@ export const PlayerAction = ({ action }: ActionProps) => {
     );
 };
 
-type UpdateActionSuccess = { success: true; error?: never };
+type UpdateActionSuccess = { success: true; message?: string; error?: never };
 
-type UpdateActionError = { success: false; error: string };
+type UpdateActionError = { success: false; message: string; error: string };
 
 type UpdateActionResult = UpdateActionSuccess | UpdateActionError;
 
@@ -204,24 +215,18 @@ const updateActionRequest = async (
     authToken: string,
     actionId: RecordIdString,
     comment: string,
+    score: number,
 ) => {
     const formData = new FormData();
     formData.append('action_id', actionId);
     formData.append('comment', comment);
+    formData.append('score', score.toString());
 
     const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/update-action`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}` },
         body: formData,
     });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to update action`);
-    }
 
     return (await res.json()) as UpdateActionResult;
 };

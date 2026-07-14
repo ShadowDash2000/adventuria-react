@@ -12,9 +12,12 @@ import {
 import PriceBadgeImage from '@public/price-badge.png';
 import { Coin } from '@shared/components/Coin';
 import { MotionVStack } from '@shared/components/MotionVStack';
+import { handleApiResponse } from '@shared/helpers/api';
+import { useState } from 'react';
+import type { ItemView } from '@components/actions/buy/Content';
 
 interface ItemProps {
-    item: ItemRecord;
+    item: ItemView;
     imageHeight?: string;
     imageWidth?: string;
 }
@@ -24,18 +27,20 @@ const BADGE_ROTATION = 'rotate(35deg)';
 
 export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
     const { pb } = useAppAuthContext();
+    const [loading, setLoading] = useState(false);
     const icon = pb.files.getURL(item, item.icon);
 
     const handleBuy = async () => {
-        try {
-            await buyItemRequest(pb.authStore.token, item.id);
-            await invalidateAvailableActions();
-            await invalidateLatestAction();
-            await invalidateShopItems();
-            await invalidatePlayerProgressAuth();
-        } catch (e) {
-            console.error(e);
+        const res = await buyItemRequest(pb.authStore.token, item.id);
+
+        if (!handleApiResponse(res)) {
+            return;
         }
+
+        await invalidateAvailableActions();
+        await invalidateLatestAction();
+        await invalidateShopItems();
+        await invalidatePlayerProgressAuth();
     };
 
     const imageProps: ImageProps = {
@@ -61,7 +66,16 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
                     filter: 'brightness(1.1) drop-shadow(0 0 0.5rem black)',
                 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                onClick={handleBuy}
+                onClick={async () => {
+                    try {
+                        setLoading(true);
+                        await handleBuy();
+                    } catch (e) {
+                        console.error(e);
+                    } finally {
+                        setLoading(false);
+                    }
+                }}
             >
                 <Image {...imageProps} />
                 <Float translate="15% 50%">
@@ -113,14 +127,6 @@ const buyItemRequest = async (authToken: string, itemId: RecordIdString) => {
         headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ item_id: itemId }),
     });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to perform action`);
-    }
 
     return (await res.json()) as BuyItemResult;
 };
