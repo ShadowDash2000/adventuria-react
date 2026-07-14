@@ -11,6 +11,7 @@ export type PlayerProgressRecord = {
     can_move: boolean;
     points: number;
     balance: number;
+    energy: number;
     cells_passed: number;
     is_in_jail: boolean;
     drops_in_a_row: number;

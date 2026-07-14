@@ -9,6 +9,7 @@ export type SettingsRecord = {
     current_week: number;
     event_ended: boolean;
     block_all_actions: boolean;
+    energy_default: number;
     max_inventory_slots: number;
     points_for_drop: number;
     drops_to_jail: number;

@@ -1,4 +1,3 @@
-import type { ClientResponseError } from 'pocketbase';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
@@ -12,7 +11,15 @@ export const Content = () => {
     const { pb } = useAppAuthContext();
 
     const items = useQuery({
-        queryFn: () => getBuyView(pb.authStore.token),
+        queryFn: async () => {
+            const res = await getBuyView(pb.authStore.token);
+
+            if (!res.success) {
+                throw new Error(res.message);
+            }
+
+            return res;
+        },
         queryKey: [...queryKeys.shopItems],
         refetchOnWindowFocus: false,
     });
@@ -22,8 +29,7 @@ export const Content = () => {
     }
 
     if (items.isError) {
-        const e = items.error as ClientResponseError;
-        return <Text>Error: {e.message}</Text>;
+        return <Text color="red.500">{items.error.message}</Text>;
     }
 
     return (
@@ -54,9 +60,9 @@ export type ItemView = {
 
 type GetBuyViewData = { items: ItemView[] };
 
-type GetBuyViewSuccess = { success: true; data: GetBuyViewData; error?: never };
+type GetBuyViewSuccess = { success: true; data: GetBuyViewData; message?: string; error?: never };
 
-type GetBuyViewError = { success: false; data: never; error: never };
+type GetBuyViewError = { success: false; data: never; message: string; error: never };
 
 type GetBuyViewResult = GetBuyViewSuccess | GetBuyViewError;
 
@@ -65,14 +71,6 @@ const getBuyView = async (authToken: string) => {
         method: 'GET',
         headers: { Authorization: `Bearer ${authToken}` },
     });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to get buy view`);
-    }
 
     return (await res.json()) as GetBuyViewResult;
 };

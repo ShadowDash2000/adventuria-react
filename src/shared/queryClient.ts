@@ -20,6 +20,7 @@ export const queryKeys = {
     radioAudioPreset: ['radio-audio-preset'],
     activities: ['activities'],
     shopItems: ['shop-items'],
+    completeActivityView: ['complete-activity-view'],
     items: ['items'],
     settings: ['settings'],
     rules: ['rules'],

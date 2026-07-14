@@ -19,7 +19,15 @@ export const Content = () => {
     const [wasSpinned, setWasSpinned] = useState(false);
 
     const wheelView = useQuery({
-        queryFn: () => getWheelView(pb.authStore.token),
+        queryFn: async () => {
+            const res = await getWheelView(pb.authStore.token);
+
+            if (!res.success) {
+                throw new Error(res.message);
+            }
+
+            return res;
+        },
         queryKey: [...queryKeys.activityWheel],
         refetchOnWindowFocus: false,
     });
@@ -42,8 +50,9 @@ export const Content = () => {
     }, [spinning]);
 
     if (wheelView.isPending || audioPreset.isPending) return <Spinner />;
-    if (wheelView.isError) return <Text>Error: {wheelView.error?.message}</Text>;
-    if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
+    if (wheelView.isError) return <Text color="red.500">{wheelView.error.message}</Text>;
+    if (audioPreset.isError)
+        return <Text color="red.500">Error: {audioPreset.error?.message}</Text>;
 
     const wheelItems = wheelView.data
         ? wheelView.data.data.items.map(activityView => ({

@@ -1,22 +1,22 @@
 import type { ReactNode } from 'react';
 import { ActionDispenser } from '../action-base';
-import { Modal } from '@components/actions/buy/Modal';
+import { Modal } from './Modal';
 
-export class Buy extends ActionDispenser {
+export class CompleteActivity extends ActionDispenser {
     buttonNode(): ReactNode {
         return <Modal key={this.key()} />;
     }
 
     color() {
-        return 'purple';
+        return '';
     }
 
     name() {
-        return 'Магаз';
+        return '';
     }
 
     key() {
-        return 'shop';
+        return 'complete_activity';
     }
 
     statusNode() {

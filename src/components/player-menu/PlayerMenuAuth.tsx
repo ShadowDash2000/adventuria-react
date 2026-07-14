@@ -6,6 +6,7 @@ import { useAppAuthContext } from '@context/AppContext';
 import { VolumeButton } from '@components/player-menu/VolumeButton';
 import { PlayerBalance } from '@components/player-menu/PlayerBalance';
 import { PlayerDrops } from '@components/player-menu/PlayerDrops';
+import { Energy } from '@components/player-menu/Energy';
 
 export const PlayerMenuAuth = () => {
     const { player } = useAppAuthContext();
@@ -23,6 +24,7 @@ export const PlayerMenuAuth = () => {
                 align="left"
             >
                 <PlayerDrops />
+                <Energy />
                 <PlayerBalance />
                 <VStack justify="center" align="start">
                     <PlayerInventoryButton player={player} kbd={true} />
