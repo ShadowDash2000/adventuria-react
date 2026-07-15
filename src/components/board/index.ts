@@ -3,6 +3,7 @@ import { BoardContextType, BoardInnerContextType } from './types';
 import type { PlayerRecord } from '@shared/types/player';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import type { CellRecord } from '@shared/types/cell';
+import type { WorldRecord } from '@shared/types/world';
 
 export const BoardContext = createContext<BoardContextType>({} as BoardContextType);
 
@@ -19,4 +20,5 @@ export const BoardDataContext = createContext({
     players: [] as PlayerRecord[],
     playersProgress: [] as PlayerProgressRecord[],
     cells: [] as CellRecord[],
+    worlds: [] as WorldRecord[],
 });

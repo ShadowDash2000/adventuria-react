@@ -6,7 +6,7 @@ import { CELL_MAX_PLAYERS, CELL_MAX_PLAYERS_LINE } from '../Board';
 import { usePlayer } from '@components/board/players/usePlayer';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
-import { invalidatePlayers } from '@shared/queryClient';
+import { invalidatePlayerProgress, invalidatePlayers } from '@shared/queryClient';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
 
 type PlayerPosition = { x: number; y: number; offsetX: number; offsetY: number };
@@ -30,7 +30,7 @@ export const usePlayerMovement = ({
     playerRef,
 }: PlayerMovementProps): PlayerMovementReturn => {
     const { player: playerAuth } = useAppContext();
-    const { cellWidth, cellHeight, cellsOrdered, worldSizesById } = useBoardInnerContext();
+    const { cellWidth, cellHeight, cellsOrdered, worldsById } = useBoardInnerContext();
     const isCurrentPlayer = playerAuth ? playerProgress.player === playerAuth.id : false;
     const [moving, setMoving] = useState<boolean>(false);
     const { incrementBlocked, decrementBlocked } = useKbdSettings(KbdKey.inventory);
@@ -69,16 +69,11 @@ export const usePlayerMovement = ({
 
     const [initialState] = useState(() => {
         const worldId = playerProgress.current_world;
-        const worldSize = worldSizesById.get(worldId);
-        if (!worldSize) {
+        const world = worldsById.get(worldId);
+        if (!world?.cellsCount) {
             return { position: { x: 0, y: 0, offsetX: 0, offsetY: 0 }, visible: false };
         }
-        const pos = BoardHelper.getCoords(
-            worldId,
-            worldSize.rows,
-            worldSize.cols,
-            playerProgress.cells_passed,
-        );
+        const pos = BoardHelper.getCoords(world, playerProgress.cells_passed);
         return calculateState(pos.row, pos.col);
     });
 
@@ -103,17 +98,12 @@ export const usePlayerMovement = ({
         if (moving || paths || (useRollDiceStore.getState().isRolling && isCurrentPlayer)) return;
 
         const worldId = playerProgress.current_world;
-        const worldSize = worldSizesById.get(worldId);
-        if (!worldSize) {
+        const world = worldsById.get(worldId);
+        if (!world?.cellsCount) {
             setVisible(false);
             return;
         } else {
-            const pos = BoardHelper.getCoords(
-                worldId,
-                worldSize.rows,
-                worldSize.cols,
-                playerProgress.cells_passed,
-            );
+            const pos = BoardHelper.getCoords(world, playerProgress.cells_passed);
             if (!pos) {
                 setVisible(false);
                 return;
@@ -121,7 +111,7 @@ export const usePlayerMovement = ({
 
             move(pos.row, pos.col);
         }
-    }, [cellWidth, cellHeight, cellsOrdered]);
+    }, [moving, paths, cellWidth, cellHeight, cellsOrdered]);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -170,7 +160,7 @@ export const usePlayerMovement = ({
             clearMoveTime();
             isMovingRef.current = false;
 
-            void invalidatePlayers();
+            void invalidatePlayerProgress(playerProgress.player);
         };
 
         if (isCurrentPlayer) {

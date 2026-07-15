@@ -25,6 +25,7 @@ export const queryKeys = {
     settings: ['settings'],
     rules: ['rules'],
     cells: ['cells'],
+    worlds: ['worlds'],
     activityWheel: ['activity-wheel'],
     itemsWheel: ['items-wheel'],
     refreshShopView: ['refresh-shop-view'],

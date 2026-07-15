@@ -29,9 +29,9 @@ interface CellTooltipProps {
 }
 
 const CellPlayers = ({ cellIndex, players }: CellTooltipProps) => {
-    const { cellWidth, cellHeight, topology, defaultWorldSlug } = useBoardInnerContext();
-    const position = topology.positionByCellIndex.get(cellIndex);
-    if (!position || (defaultWorldSlug && position.worldId !== defaultWorldSlug)) return null;
+    const { cellWidth, cellHeight, positionByCellIndex } = useBoardInnerContext();
+    const position = positionByCellIndex.get(cellIndex);
+    if (!position) return null;
 
     const x = cellWidth * position.col + cellWidth / 2;
     const y = -(cellHeight * position.row) - cellHeight / 2;

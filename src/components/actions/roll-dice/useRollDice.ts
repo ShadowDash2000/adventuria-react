@@ -54,7 +54,7 @@ const DEFAULT_ANIMATION_DURATION = 10;
 
 export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
     const { pb, player } = useAppAuthContext();
-    const { worldSizesById } = useBoardInnerContext();
+    const { worldsById } = useBoardInnerContext();
     const { play } = useAudioPlayer(AudioKey.music);
     const { addPaths, setMoveTime } = usePlayer(player.id);
 
@@ -116,29 +116,16 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
         const paths: CellPosition[] = [];
 
         for (const move of res.data.moves) {
-            const worldSize = worldSizesById.get(move.world_id);
-            if (!worldSize) continue;
+            const world = worldsById.get(move.world_id);
+            if (!world?.cellsCount) continue;
 
             if (move.type === 'path') {
-                const path = BoardHelper.createPath(
-                    move.world_id,
-                    worldSize.rows,
-                    worldSize.cols,
-                    move.prev_total_steps,
-                    move.total_steps,
-                );
+                const path = BoardHelper.createPath(world, move.prev_total_steps, move.total_steps);
                 paths.push(...path);
                 continue;
             }
 
-            paths.push(
-                BoardHelper.getCoords(
-                    move.world_id,
-                    worldSize.rows,
-                    worldSize.cols,
-                    move.cell_global_order,
-                ),
-            );
+            paths.push(BoardHelper.getCoords(world, move.cell_global_order));
         }
 
         addPaths(paths);

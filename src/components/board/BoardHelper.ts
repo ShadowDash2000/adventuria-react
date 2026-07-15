@@ -2,33 +2,28 @@ import type { CellRecord } from '@shared/types/cell';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import type { PlayerRecord } from '@shared/types/player';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
+import type { WorldRecord } from '@shared/types/world';
 
 export type CellPosition = { worldId: string; row: number; col: number };
 export type CellBoard = { players?: PlayerRecord[] } & CellRecord;
 
-type WorldTopology = {
+export type WorldBoard = {
     id: string;
-    slug: string;
-    isLoop: boolean;
-    transitionToWorldId?: string;
+    rowOffset: number;
     cellIndexes: number[];
+    lines: CellBoard[][];
+    rows: number;
+    cols: number;
+    cellsCount: number;
 };
 
-export type BoardTopology = {
-    totalCells: number;
-    defaultWorldSlug?: string;
-    worldBySlug: Map<string, WorldTopology>;
-    nextByCellIndex: Map<number, number>;
-    prevByCellIndex: Map<number, number>;
+export type BoardModel = {
+    worldsById: Map<string, WorldBoard>;
+    lines: CellBoard[][];
+    rows: number;
+    cols: number;
+    playersByCellIndex: Map<number, PlayerRecord[]>;
     positionByCellIndex: Map<number, CellPosition>;
-};
-
-const EMPTY_TOPOLOGY: BoardTopology = {
-    totalCells: 0,
-    worldBySlug: new Map(),
-    nextByCellIndex: new Map(),
-    prevByCellIndex: new Map(),
-    positionByCellIndex: new Map(),
 };
 
 export class BoardHelper {
@@ -40,224 +35,178 @@ export class BoardHelper {
         return ((a % m) + m) % m;
     }
 
-    static buildCells(
+    static buildBoard(
         cells: CellRecord[],
+        worlds: WorldRecord[],
         players: Map<RecordIdString, PlayerRecord>,
         playersProgress: Map<RecordIdString, PlayerProgressRecord>,
         lineSize = 7,
-    ): {
-        lines: Map<string, CellBoard[][]>;
-        worldSizesById: Map<string, { rows: number; cols: number; cellsCount: number }>;
-        playersByCellIndex: Map<number, PlayerRecord[]>;
-        topology: BoardTopology;
-    } {
-        if (cells.length === 0)
-            return {
-                lines: new Map(),
-                worldSizesById: new Map(),
-                playersByCellIndex: new Map(),
-                topology: EMPTY_TOPOLOGY,
-            };
+    ): BoardModel {
+        const worldsById = this.buildWorlds(cells, worlds);
+        const playersByCellIndex = this.placePlayers(players, playersProgress, worldsById);
+        const { lines, positionByCellIndex } = this.buildLayouts(
+            cells,
+            worldsById,
+            playersByCellIndex,
+            lineSize,
+        );
 
-        const playersByCellIndex = new Map<number, PlayerRecord[]>();
-        for (const [, player] of players) {
-            const playerProgress = playersProgress.get(player.id);
-            const cellsPassed = playerProgress?.cellsPassed || 0;
-            const cellIndex = BoardHelper.getPlayerCellIndex(cellsPassed, cells.length);
-            const prevPlayers = playersByCellIndex.get(cellIndex) || [];
-            playersByCellIndex.set(cellIndex, [...prevPlayers, player]);
-        }
+        return {
+            worldsById,
+            lines,
+            rows: lines.length,
+            cols: Math.max(0, ...Array.from(worldsById.values(), world => world.cols)),
+            playersByCellIndex,
+            positionByCellIndex,
+        };
+    }
 
-        playersByCellIndex.forEach(players => {
-            players.sort((a, b) => new Date(a.updated).getTime() - new Date(b.updated).getTime());
+    private static buildWorlds(
+        cells: CellRecord[],
+        worlds: WorldRecord[],
+    ): Map<string, WorldBoard> {
+        const worldsById = new Map<string, WorldBoard>();
+
+        worlds
+            .slice()
+            .sort((a, b) => a.sort - b.sort)
+            .forEach(world => {
+                worldsById.set(world.id, {
+                    id: world.id,
+                    rowOffset: 0,
+                    cellIndexes: [],
+                    lines: [],
+                    rows: 0,
+                    cols: 0,
+                    cellsCount: 0,
+                });
+            });
+
+        cells.forEach((cell, cellIndex) => {
+            worldsById.get(cell.world)?.cellIndexes.push(cellIndex);
         });
 
-        const lines = new Map<string, CellBoard[][]>();
-        const worldSizesById = new Map<
-            string,
-            { rows: number; cols: number; cellsCount: number }
-        >();
-        const positionByCellIndex = new Map<number, CellPosition>();
-        const worldBySlug = new Map<string, WorldTopology>();
-        const worldSlugById = new Map<string, string>();
+        return worldsById;
+    }
 
-        for (let i = 0; i < cells.length; i++) {
-            const world = cells[i].expand?.world;
-            if (!world?.slug) continue;
+    private static placePlayers(
+        players: Map<RecordIdString, PlayerRecord>,
+        playersProgress: Map<RecordIdString, PlayerProgressRecord>,
+        worldsById: Map<string, WorldBoard>,
+    ): Map<number, PlayerRecord[]> {
+        const playersByCellIndex = new Map<number, PlayerRecord[]>();
 
-            if (!worldBySlug.has(world.slug)) {
-                worldBySlug.set(world.slug, {
-                    id: world.id,
-                    slug: world.slug,
-                    isLoop: world.is_loop,
-                    transitionToWorldId: world.transition_to_world,
-                    cellIndexes: [],
-                });
-                worldSlugById.set(world.id, world.slug);
-            }
-            worldBySlug.get(world.slug)!.cellIndexes.push(i);
+        for (const [, player] of players) {
+            const progress = playersProgress.get(player.id);
+            if (!progress) continue;
+
+            const world = worldsById.get(progress.current_world);
+            if (!world?.cellIndexes.length) continue;
+
+            const localIndex = this.getPlayerCellIndex(
+                progress.cells_passed,
+                world.cellIndexes.length,
+            );
+            const cellIndex = world.cellIndexes[localIndex];
+            const cellPlayers = playersByCellIndex.get(cellIndex) || [];
+            playersByCellIndex.set(cellIndex, [...cellPlayers, player]);
         }
 
-        for (const [, world] of worldBySlug) {
-            const worldLines: CellBoard[][] = [];
-            const worldCells = world.cellIndexes;
-            const lineCapacity = Math.min(lineSize, worldCells.length);
+        playersByCellIndex.forEach(cellPlayers => {
+            cellPlayers.sort((a, b) => {
+                const aUpdated = playersProgress.get(a.id)?.updated;
+                const bUpdated = playersProgress.get(b.id)?.updated;
+                return new Date(aUpdated || 0).getTime() - new Date(bUpdated || 0).getTime();
+            });
+        });
 
-            for (let start = 0; start < worldCells.length; start += lineCapacity) {
-                const row = worldLines.length;
-                const lineIndexes = worldCells.slice(start, start + lineCapacity);
+        return playersByCellIndex;
+    }
+
+    private static buildLayouts(
+        cells: CellRecord[],
+        worldsById: Map<string, WorldBoard>,
+        playersByCellIndex: Map<number, PlayerRecord[]>,
+        lineSize: number,
+    ): { lines: CellBoard[][]; positionByCellIndex: Map<number, CellPosition> } {
+        const lines: CellBoard[][] = [];
+        const positionByCellIndex = new Map<number, CellPosition>();
+
+        for (const world of worldsById.values()) {
+            const worldLines: CellBoard[][] = [];
+            const cols = Math.min(lineSize, world.cellIndexes.length);
+            world.rowOffset = lines.length;
+
+            for (let start = 0; start < world.cellIndexes.length; start += cols) {
+                const localRow = worldLines.length;
+                const row = world.rowOffset + localRow;
+                const lineIndexes = world.cellIndexes.slice(start, start + cols);
                 const lineCells = lineIndexes.map(cellIndex => ({
                     ...cells[cellIndex],
                     players: playersByCellIndex.get(cellIndex),
                 }));
 
-                if (row % 2 === 1) lineCells.reverse();
+                if (localRow % 2 === 1) lineCells.reverse();
                 worldLines.push(lineCells);
 
                 lineIndexes.forEach((cellIndex, indexInLine) => {
-                    const col = row % 2 === 1 ? lineIndexes.length - 1 - indexInLine : indexInLine;
+                    const col =
+                        localRow % 2 === 1 ? lineIndexes.length - 1 - indexInLine : indexInLine;
                     positionByCellIndex.set(cellIndex, { worldId: world.id, row, col });
                 });
             }
 
-            lines.set(world.slug, worldLines);
-            worldSizesById.set(world.id, {
-                rows: worldLines.length,
-                cols: lineCapacity,
-                cellsCount: worldCells.length,
-            });
+            world.lines = worldLines;
+            world.rows = worldLines.length;
+            world.cols = cols;
+            world.cellsCount = world.cellIndexes.length;
+            lines.push(...worldLines);
         }
 
-        const nextByCellIndex = new Map<number, number>();
-        const prevByCellIndex = new Map<number, number>();
-
-        for (const [, world] of worldBySlug) {
-            const indexes = world.cellIndexes;
-            if (!indexes.length) continue;
-
-            for (let i = 0; i < indexes.length - 1; i++) {
-                nextByCellIndex.set(indexes[i], indexes[i + 1]);
-                prevByCellIndex.set(indexes[i + 1], indexes[i]);
-            }
-
-            const first = indexes[0];
-            const last = indexes[indexes.length - 1];
-
-            if (world.isLoop) {
-                nextByCellIndex.set(last, first);
-                prevByCellIndex.set(first, last);
-            } else {
-                const transitionWorldSlug = world.transitionToWorldId
-                    ? worldSlugById.get(world.transitionToWorldId)
-                    : undefined;
-                const transitionWorld = transitionWorldSlug
-                    ? worldBySlug.get(transitionWorldSlug)
-                    : undefined;
-                const transitionFirst = transitionWorld?.cellIndexes[0];
-
-                if (transitionFirst !== undefined) {
-                    nextByCellIndex.set(last, transitionFirst);
-                    prevByCellIndex.set(transitionFirst, last);
-                } else {
-                    nextByCellIndex.set(last, last);
-                }
-
-                if (!prevByCellIndex.has(first)) {
-                    prevByCellIndex.set(first, first);
-                }
-            }
-        }
-
-        const topology: BoardTopology = {
-            totalCells: cells.length,
-            defaultWorldSlug: cells[0]?.expand?.world?.slug,
-            worldBySlug,
-            nextByCellIndex,
-            prevByCellIndex,
-            positionByCellIndex,
-        };
-
-        return { lines, worldSizesById, playersByCellIndex: playersByCellIndex, topology };
+        return { lines, positionByCellIndex };
     }
 
-    static getPositionByCellsPassed(
-        topology: BoardTopology,
-        worldId: string,
-        cellsPassed: number,
-    ): CellPosition | null {
-        const cellIndex = this.getCellIndexByCellsPassed(topology, worldId, cellsPassed);
-        if (cellIndex === null) return null;
+    static getCoords(world: WorldBoard, cellIndex: number): CellPosition {
+        const normalizedIndex = this.mod(cellIndex, world.cellsCount);
+        const localRow = Math.floor(normalizedIndex / world.cols);
+        const rowStart = localRow * world.cols;
+        const rowLength = Math.min(world.cols, world.cellsCount - rowStart);
+        const rawCol = normalizedIndex - rowStart;
+        const col = localRow % 2 === 1 ? rowLength - 1 - rawCol : rawCol;
 
-        return topology.positionByCellIndex.get(cellIndex) || null;
-    }
-
-    private static getWorldById(topology: BoardTopology, worldId: string): WorldTopology | null {
-        for (const world of topology.worldBySlug.values()) {
-            if (world.id === worldId) return world;
-        }
-
-        return null;
-    }
-
-    private static getCellIndexByCellsPassed(
-        topology: BoardTopology,
-        worldId: string,
-        cellsPassed: number,
-    ): number | null {
-        const world = this.getWorldById(topology, worldId);
-        if (!world || world.cellIndexes.length === 0) return null;
-
-        const normalized = this.mod(cellsPassed, world.cellIndexes.length);
-
-        return world.cellIndexes[normalized] ?? null;
-    }
-
-    static getCoords(worldId: string, rows: number, cols: number, cellIndex: number): CellPosition {
-        const totalCells = rows * cols;
-        const normalizedIndex = ((cellIndex % totalCells) + totalCells) % totalCells;
-        const row = Math.floor(normalizedIndex / cols);
-        const isInverted = (row + 1) % 2 === 0;
-        const rawCol = normalizedIndex % cols;
-        const col = isInverted ? cols - 1 - rawCol : rawCol;
-
-        return { worldId: worldId, row, col };
+        return { worldId: world.id, row: world.rowOffset + localRow, col };
     }
 
     static createPath(
-        worldId: string,
-        rows: number,
-        cols: number,
+        world: WorldBoard,
         startCellsPassed: number,
         dstCellsPassed: number,
     ): CellPosition[] {
         const path: CellPosition[] = [];
-
         if (startCellsPassed === dstCellsPassed) return path;
 
         const direction = dstCellsPassed > startCellsPassed ? 1 : -1;
-
         let current = startCellsPassed;
+
         while (current !== dstCellsPassed) {
-            const currentRowStart = Math.floor(current / cols) * cols;
-            const currentRowEnd = currentRowStart + cols - 1;
+            const currentRowStart = Math.floor(current / world.cols) * world.cols;
+            const currentRowEnd = currentRowStart + world.cols - 1;
 
             let nextStep: number;
             if (direction === 1) {
-                if (current === currentRowEnd) {
-                    nextStep = current + 1;
-                } else {
-                    nextStep = dstCellsPassed > currentRowEnd ? currentRowEnd : dstCellsPassed;
-                }
+                nextStep =
+                    current === currentRowEnd
+                        ? current + 1
+                        : Math.min(dstCellsPassed, currentRowEnd);
             } else {
-                if (current === currentRowStart) {
-                    nextStep = current - 1;
-                } else {
-                    nextStep = dstCellsPassed < currentRowStart ? currentRowStart : dstCellsPassed;
-                }
+                nextStep =
+                    current === currentRowStart
+                        ? current - 1
+                        : Math.max(dstCellsPassed, currentRowStart);
             }
 
             current = nextStep;
-            path.push(BoardHelper.getCoords(worldId, rows, cols, current));
+            path.push(this.getCoords(world, current));
         }
 
         return path;
