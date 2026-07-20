@@ -29,7 +29,7 @@ import { eq } from '@shared/pbFilter';
 import { dotExpand, joinExpand } from '@shared/pbExpand';
 
 export const PlayersFloatingList = () => {
-    const { pb, settings, isSettingsSuccess } = useAppContext();
+    const { pb, currentSeason, isCurrentSeasonSuccess } = useAppContext();
     const open = usePlayerFloatingListStore(state => state.open);
     const setOpen = usePlayerFloatingListStore(state => state.setOpen);
 
@@ -38,7 +38,7 @@ export const PlayersFloatingList = () => {
             pb
                 .collection(pbCollections.playersProgress)
                 .getFullList<PlayerProgressRecord>({
-                    filter: eq(playerProgressSchema.season, settings!.current_season),
+                    filter: eq(playerProgressSchema.season, currentSeason!),
                     expand: playerProgressSchema.player,
                     fields: joinExpand(
                         playerProgressSchema.id,
@@ -47,10 +47,11 @@ export const PlayersFloatingList = () => {
                         dotExpand('expand', playerProgressSchema.player, playerSchema.name),
                         dotExpand('expand', playerProgressSchema.player, playerSchema.avatar),
                         dotExpand('expand', playerProgressSchema.player, playerSchema.color),
+                        dotExpand('expand', playerProgressSchema.player, playerSchema.isStreamLive),
                     ),
                 }),
         queryKey: [queryKeys.playersProgress, 'floating-list'],
-        enabled: isSettingsSuccess,
+        enabled: isCurrentSeasonSuccess,
     });
 
     if (playersProgress.isPending) return <Spinner />;

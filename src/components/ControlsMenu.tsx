@@ -10,6 +10,7 @@ import { FaSignOutAlt } from 'react-icons/fa';
 import { Tooltip } from '@ui/tooltip';
 import { HiCommandLine } from 'react-icons/hi2';
 import { SettingsButton } from '@components/settings/SettingsButton';
+import { EventStatsIconButton } from '@components/event-stats/EventStatsIconButton';
 
 export const ControlsMenu = () => {
     const { isAuth, logout } = useAppContext();
@@ -35,6 +36,7 @@ export const ControlsMenu = () => {
                 </Tooltip>
                 <RulesButton />
                 <LeaderboardButton />
+                <EventStatsIconButton />
                 <GlossaryButton />
                 <Tooltip content="Создатели">
                     <IconButton asChild>

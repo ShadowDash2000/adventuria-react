@@ -5,9 +5,9 @@ import { FaCrown } from 'react-icons/fa6';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
-import type { PlayerRecord } from '@shared/types/player';
-import type { ClientResponseError } from 'pocketbase';
-import { pbCollections } from '@shared/pbSchema';
+import { pbCollections, playerProgressSchema, playerSchema } from '@shared/pbSchema';
+import { dotExpand, joinExpand } from '@shared/pbExpand';
+import type { PlayerProgressRecord } from '@shared/types/player_progress';
 
 const CROWN_COLORS = ['yellow.400', 'gray.300', 'orange.400'];
 
@@ -16,26 +16,37 @@ const PLAYER_SIZES = { first: 28, other: 20 };
 export const EventLeaders = ({ ...props }: StackProps) => {
     const { pb } = useAppContext();
 
-    const players = useQuery({
+    const playersProgress = useQuery({
         queryFn: () =>
             pb
-                .collection(pbCollections.players)
-                .getFullList<PlayerRecord>({ sort: '-points', perPage: 3 }),
-        queryKey: [...queryKeys.players, 'event-leaders'],
+                .collection(pbCollections.playersProgress)
+                .getFullList<PlayerProgressRecord>({
+                    sort: `-${playerProgressSchema.points}`,
+                    perPage: 3,
+                    expand: playerProgressSchema.player,
+                    fields: joinExpand(
+                        playerProgressSchema.id,
+                        dotExpand('expand', playerProgressSchema.player, playerSchema.id),
+                        dotExpand('expand', playerProgressSchema.player, 'collectionName'),
+                        dotExpand('expand', playerProgressSchema.player, playerSchema.name),
+                        dotExpand('expand', playerProgressSchema.player, playerSchema.avatar),
+                        dotExpand('expand', playerProgressSchema.player, playerSchema.color),
+                    ),
+                }),
+        queryKey: [...queryKeys.playersProgress, 'event-leaders'],
         refetchOnWindowFocus: false,
     });
 
-    if (players.isPending) {
+    if (playersProgress.isPending) {
         return <Spinner />;
     }
 
-    if (players.isError) {
-        const e = players.error as ClientResponseError;
-        return <Text>Error: {e.message}</Text>;
+    if (playersProgress.isError) {
+        return <Text>Error: {playersProgress.error?.message}</Text>;
     }
 
-    const firstPlace = players.data[0];
-    const secondAndThird = players.data.slice(1, 3);
+    const firstPlace = playersProgress.data[0];
+    const secondAndThird = playersProgress.data.slice(1, 3);
 
     return (
         <VStack gap={6} align="center" {...props}>
@@ -52,22 +63,22 @@ export const EventLeaders = ({ ...props }: StackProps) => {
                             transform="translate(-50%, -60%)"
                         />
                         <PlayerAvatar
-                            player={firstPlace}
+                            player={firstPlace.expand!.player}
                             w={PLAYER_SIZES.first}
                             h={PLAYER_SIZES.first}
                         />
                     </Box>
-                    <Link to={`/profile/${firstPlace.name}`}>
+                    <Link to={`/profile/${firstPlace.expand!.player.name}`}>
                         <Text fontWeight={600} fontSize="lg">
-                            {firstPlace.name}
+                            {firstPlace.expand!.player.name}
                         </Text>
                     </Link>
                 </VStack>
             )}
 
             <HStack gap={8} align="start" justify="center">
-                {secondAndThird.map((player, index) => (
-                    <VStack key={player.id} gap={3}>
+                {secondAndThird.map((playerProgress, index) => (
+                    <VStack key={playerProgress.id} gap={3}>
                         <Box position="relative" pt={4}>
                             <Icon
                                 as={FaCrown}
@@ -79,14 +90,14 @@ export const EventLeaders = ({ ...props }: StackProps) => {
                                 transform="translate(-50%, -60%)"
                             />
                             <PlayerAvatar
-                                player={player}
+                                player={playerProgress.expand!.player}
                                 w={PLAYER_SIZES.other}
                                 h={PLAYER_SIZES.other}
                             />
                         </Box>
-                        <Link to={`/profile/${player.name}`}>
+                        <Link to={`/profile/${playerProgress.expand!.player.name}`}>
                             <Text fontWeight={600} fontSize="lg">
-                                {player.name}
+                                {playerProgress.expand!.player.name}
                             </Text>
                         </Link>
                     </VStack>

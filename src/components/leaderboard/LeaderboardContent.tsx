@@ -3,14 +3,19 @@ import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import { Spinner, Table, Text } from '@chakra-ui/react';
 import { LeaderboardItem } from './LeaderboardItem';
-import { pbCollections, playerProgressSchema, playerSchema } from '@shared/pbSchema';
+import {
+    pbCollections,
+    playerProgressSchema,
+    playerSchema,
+    playerStatsSchema,
+} from '@shared/pbSchema';
 import { eq } from '@shared/pbFilter';
-import type { ClientResponseError } from 'pocketbase';
-import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import { dotExpand, joinExpand } from '@shared/pbExpand';
+import type { PlayerProgressRecord } from '@shared/types/player_progress';
+import type { PlayerStatsRecord } from '@shared/types/player_stats';
 
 export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
-    const { pb, settings, isSettingsSuccess } = useAppContext();
+    const { pb, currentSeason, isCurrentSeasonSuccess } = useAppContext();
 
     const playersProgress = useQuery({
         queryFn: () =>
@@ -18,7 +23,7 @@ export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
                 .collection(pbCollections.playersProgress)
                 .getFullList<PlayerProgressRecord>({
                     sort: `-${playerProgressSchema.points}`,
-                    filter: eq(playerProgressSchema.season, settings!.current_season),
+                    filter: eq(playerProgressSchema.season, currentSeason!),
                     expand: playerProgressSchema.player,
                     fields: joinExpand(
                         '*',
@@ -30,18 +35,37 @@ export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
                     ),
                 }),
         queryKey: [...queryKeys.playersProgress, 'leaderboard'],
-        enabled: isSettingsSuccess,
+        enabled: isCurrentSeasonSuccess,
         refetchOnWindowFocus: false,
     });
 
-    if (playersProgress.isPending) {
+    const playersStats = useQuery({
+        queryFn: () =>
+            pb
+                .collection(pbCollections.playerStats)
+                .getFullList<PlayerStatsRecord>({
+                    filter: eq(playerStatsSchema.season, currentSeason!),
+                }),
+        queryKey: [...queryKeys.playerStats, 'leaderboard'],
+        enabled: isCurrentSeasonSuccess,
+        refetchOnWindowFocus: false,
+    });
+
+    if (playersProgress.isPending || playersStats.isPending) {
         return <Spinner />;
     }
 
     if (playersProgress.isError) {
-        const e = playersProgress.error as ClientResponseError;
-        return <Text>Error: {e.message}</Text>;
+        return <Text>Error: {playersProgress.error?.message}</Text>;
     }
+
+    if (playersStats.isError) {
+        return <Text>Error: {playersStats.error?.message}</Text>;
+    }
+
+    const playerStatsMap = new Map<string, PlayerStatsRecord>(
+        playersStats.data.map(playerStats => [playerStats.player, playerStats]),
+    );
 
     return (
         <Table.Root {...props}>
@@ -50,7 +74,7 @@ export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
                     <Table.ColumnHeader></Table.ColumnHeader>
                     <Table.ColumnHeader>Никнейм</Table.ColumnHeader>
                     <Table.ColumnHeader>Очков</Table.ColumnHeader>
-                    <Table.ColumnHeader>Завершено</Table.ColumnHeader>
+                    <Table.ColumnHeader>Завершено игр</Table.ColumnHeader>
                     <Table.ColumnHeader>Рероллов</Table.ColumnHeader>
                     <Table.ColumnHeader>Дропов</Table.ColumnHeader>
                     <Table.ColumnHeader>Пройдено клеток</Table.ColumnHeader>
@@ -62,6 +86,7 @@ export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
                     <LeaderboardItem
                         player={playerProgress.expand!.player}
                         playerProgress={playerProgress}
+                        playerStats={playerStatsMap.get(playerProgress.expand!.player.id)}
                         key={playerProgress.id}
                     />
                 ))}

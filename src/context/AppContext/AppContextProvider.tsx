@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react';
-import { ClientResponseError } from 'pocketbase';
 import type { PlayerRecord } from '@shared/types/player';
-import type { SettingsRecord } from '@shared/types/settings';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
+import type { AppProviderType, AppContextProviderProps } from './types';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
-import { AppProviderType, AppContextProviderProps } from './types';
 import { AppContext, pb } from './index';
 import { pbCollections, playerProgressSchema } from '@shared/pbSchema';
 import { and, eq } from '@shared/pbFilter';
@@ -34,7 +32,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
 
     const { data: availableActions = [] } = useQuery({
         queryFn: async () => {
-            const actions = await fetchAvailableActions(pb.authStore.token);
+            const actions = await getAvailableActions(pb.authStore.token);
             return actions.success ? actions.data : [];
         },
         enabled: isAuth,
@@ -43,14 +41,22 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     });
 
     const {
-        data: settings,
-        isPending: isSettingsPending,
-        isSuccess: isSettingsSuccess,
-        isError: isSettingsError,
-        error: settingsError,
+        data: currentSeason,
+        isPending: isCurrentSeasonPending,
+        isSuccess: isCurrentSeasonSuccess,
+        isError: isCurrentSeasonError,
+        error: currentSeasonError,
     } = useQuery({
-        queryFn: () => pb.collection(pbCollections.settings).getFirstListItem<SettingsRecord>(''),
-        queryKey: [...queryKeys.settings],
+        queryFn: async () => {
+            const res = await getCurrentSeason();
+
+            if (!res.success) {
+                throw new Error(res.message);
+            }
+
+            return res.data;
+        },
+        queryKey: [...queryKeys.currentSeason],
         refetchOnWindowFocus: false,
     });
 
@@ -67,10 +73,10 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
                 .getFirstListItem<PlayerProgressRecord>(
                     and(
                         eq(playerProgressSchema.player, player.id),
-                        eq(playerProgressSchema.season, settings!.current_season),
+                        eq(playerProgressSchema.season, currentSeason!),
                     ),
                 ),
-        enabled: isAuth && isSettingsSuccess,
+        enabled: isAuth && isCurrentSeasonSuccess,
         queryKey: queryKeys.playerProgressAuth,
         refetchOnWindowFocus: false,
     });
@@ -88,11 +94,11 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         logout,
         isAuth,
         availableActions,
-        settings,
-        isSettingsPending,
-        isSettingsSuccess,
-        isSettingsError,
-        settingsError,
+        currentSeason,
+        isCurrentSeasonPending: isCurrentSeasonPending,
+        isCurrentSeasonSuccess,
+        isCurrentSeasonError,
+        currentSeasonError,
         playerProgress,
         isPlayerProgressPending,
         isPlayerProgressSuccess,
@@ -103,23 +109,29 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     return <AppContext.Provider value={ctx}>{children}</AppContext.Provider>;
 };
 
-type AvailableActionsSuccess = { success: true; data: string[]; error?: never };
+type AvailableActionsSuccess = { success: true; data: string[]; message?: string; error?: never };
 
-type AvailableActionsError = { success: false; data: never; error: string };
+type AvailableActionsError = { success: false; data: never; message: string; error: string };
 
 type AvailableActionsResult = AvailableActionsSuccess | AvailableActionsError;
 
-const fetchAvailableActions = async (authToken: string): Promise<AvailableActionsResult> => {
+const getAvailableActions = async (authToken: string): Promise<AvailableActionsResult> => {
     const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/available-actions`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${authToken}` },
     });
 
-    if (!res.ok) {
-        throw await res.json().catch(() => {
-            return new ClientResponseError({ status: res.status });
-        });
-    }
-
     return (await res.json()) as AvailableActionsResult;
+};
+
+type CurrentSeasonSuccess = { success: true; data: string; message?: string; error?: never };
+
+type CurrentSeasonError = { success: false; data: never; message: string; error: string };
+
+type CurrentSeasonResult = CurrentSeasonSuccess | CurrentSeasonError;
+
+const getCurrentSeason = async (): Promise<CurrentSeasonResult> => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/current-season`, { method: 'GET' });
+
+    return (await res.json()) as CurrentSeasonResult;
 };

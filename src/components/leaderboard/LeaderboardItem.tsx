@@ -3,13 +3,15 @@ import { PlayerAvatar } from '@components/PlayerAvatar';
 import { Link } from 'react-router-dom';
 import type { PlayerRecord } from '@shared/types/player';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
+import type { PlayerStatsRecord } from '@shared/types/player_stats';
 
 interface LeaderboardItemProps {
     player: PlayerRecord;
     playerProgress: PlayerProgressRecord;
+    playerStats?: PlayerStatsRecord;
 }
 
-export const LeaderboardItem = ({ player, playerProgress }: LeaderboardItemProps) => {
+export const LeaderboardItem = ({ player, playerProgress, playerStats }: LeaderboardItemProps) => {
     return (
         <Table.Row bg="none">
             <Table.Cell>
@@ -23,10 +25,10 @@ export const LeaderboardItem = ({ player, playerProgress }: LeaderboardItemProps
                 </ChakraLink>
             </Table.Cell>
             <Table.Cell>{playerProgress.points}</Table.Cell>
-            <Table.Cell>{playerProgress.stats?.finished || 0}</Table.Cell>
-            <Table.Cell>{playerProgress.stats?.rerolls || 0}</Table.Cell>
-            <Table.Cell>{playerProgress.stats?.drops || 0}</Table.Cell>
-            <Table.Cell>{playerProgress.cells_passed}</Table.Cell>
+            <Table.Cell>{playerStats?.activities?.GamesCompleted || 0}</Table.Cell>
+            <Table.Cell>{playerStats?.rerolls || 0}</Table.Cell>
+            <Table.Cell>{playerStats?.drops || 0}</Table.Cell>
+            <Table.Cell>{playerStats?.cells_passed || 0}</Table.Cell>
             <Table.Cell>{playerProgress.drops_in_a_row}</Table.Cell>
         </Table.Row>
     );

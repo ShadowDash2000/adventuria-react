@@ -1,6 +1,7 @@
 export const pbCollections = {
     players: 'players',
     playersProgress: 'players_progress',
+    playerStats: 'player_stats',
     actions: 'actions',
     activities: 'activities',
     companies: 'companies',
@@ -56,6 +57,19 @@ export const playerProgressSchema = {
     itemWheelsCount: 'item_wheels_count',
     maxInventorySlots: 'max_inventory_slots',
     stats: 'stats',
+};
+
+export const playerStatsSchema = {
+    id: 'id',
+    player: 'player',
+    season: 'season',
+    drops: 'drops',
+    rerolls: 'rerolls',
+    wasInJail: 'was_in_jail',
+    itemsUsed: 'items_used',
+    diceRolls: 'dice_rolls',
+    maxDiceRoll: 'max_dice_roll',
+    wheelsRolled: 'wheels_rolled',
 };
 
 export const actionSchema = {

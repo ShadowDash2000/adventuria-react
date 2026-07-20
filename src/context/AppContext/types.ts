@@ -1,15 +1,14 @@
 import type { ReactNode } from 'react';
 import type PocketBase from 'pocketbase';
 import type { PlayerRecord } from '@shared/types/player';
-import type { SettingsRecord } from '@shared/types/settings';
-import { PlayerProgressRecord } from '@shared/types/player_progress';
+import type { PlayerProgressRecord } from '@shared/types/player_progress';
 
 type AppContextBase = {
     pb: PocketBase;
     availableActions: string[];
     login: () => void;
     logout: () => void;
-} & SettingsState;
+} & CurrentSeasonState;
 
 export type AppContextAuth = AppContextBase & {
     isAuth: true;
@@ -30,20 +29,20 @@ export type AppProviderType = AppContextAuth | AppContextGuest;
 
 export type AppContextProviderProps = { children: ReactNode };
 
-type SettingsState =
+type CurrentSeasonState =
     | {
-          isSettingsSuccess: true;
-          settings: SettingsRecord;
-          isSettingsPending: false;
-          isSettingsError: false;
-          settingsError: null;
+          isCurrentSeasonSuccess: true;
+          currentSeason: string;
+          isCurrentSeasonPending: false;
+          isCurrentSeasonError: false;
+          currentSeasonError: null;
       }
     | {
-          isSettingsSuccess: false;
-          settings: undefined;
-          isSettingsPending: boolean;
-          isSettingsError: boolean;
-          settingsError: Error | null;
+          isCurrentSeasonSuccess: false;
+          currentSeason: undefined;
+          isCurrentSeasonPending: boolean;
+          isCurrentSeasonError: boolean;
+          currentSeasonError: Error | null;
       };
 
 type PlayerProgressState =

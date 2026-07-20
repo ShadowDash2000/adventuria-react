@@ -1,29 +1,32 @@
 import { VStack } from '@chakra-ui/react';
 import { EventLeaders } from '@components/event-stats/EventLeaders';
 import { EventStatsButton } from '@components/event-stats/EventStatsButton';
-import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
-import type { SettingsRecord } from '@shared/types/settings';
-import { pbCollections } from '@shared/pbSchema';
 
 export const EventSummary = () => {
-    const { pb } = useAppContext();
+    const isEventEnded = useQuery({
+        queryFn: async () => {
+            const res = await getIsEventEnded();
 
-    const settings = useQuery({
-        queryFn: () => pb.collection(pbCollections.settings).getFirstListItem<SettingsRecord>(''),
-        queryKey: [...queryKeys.settings, 'event-summary'],
+            if (!res.success) {
+                throw new Error(res.message);
+            }
+
+            return res.data;
+        },
+        queryKey: [...queryKeys.isEventEnded, 'event-summary'],
     });
 
-    if (settings.isPending) {
+    if (isEventEnded.isPending) {
         return null;
     }
 
-    if (settings.isError) {
+    if (isEventEnded.isError) {
         return null;
     }
 
-    if (!settings.data.event_ended) {
+    if (!isEventEnded.data) {
         return null;
     }
 
@@ -33,4 +36,16 @@ export const EventSummary = () => {
             <EventStatsButton fontSize="xl" />
         </VStack>
     );
+};
+
+type IsEventEndedSuccess = { success: true; data: boolean; message?: string; error?: never };
+
+type IsEventEndedError = { success: false; data: never; message: string; error: string };
+
+type IsEventEndedResult = IsEventEndedSuccess | IsEventEndedError;
+
+const getIsEventEnded = async (): Promise<IsEventEndedResult> => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/event-ended`, { method: 'GET' });
+
+    return (await res.json()) as IsEventEndedResult;
 };

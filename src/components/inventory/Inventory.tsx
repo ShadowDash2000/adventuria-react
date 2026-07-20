@@ -16,7 +16,7 @@ interface InventoryProps {
 }
 
 export const Inventory = ({ player: invPlayer }: InventoryProps) => {
-    const { pb, isAuth, player, settings, isSettingsSuccess } = useAppContext();
+    const { pb, isAuth, player, currentSeason, isCurrentSeasonSuccess } = useAppContext();
 
     const inventory = useQuery({
         queryFn: () => {
@@ -41,7 +41,7 @@ export const Inventory = ({ player: invPlayer }: InventoryProps) => {
                 .getFirstListItem<PlayerProgressRecord>(invPlayer.id, {
                     filter: and(
                         eq(playerProgressSchema.player, invPlayer.id),
-                        eq(playerProgressSchema.season, settings!.current_season),
+                        eq(playerProgressSchema.season, currentSeason!),
                     ),
                     fields: joinExpand(
                         playerProgressSchema.balance,
@@ -50,7 +50,7 @@ export const Inventory = ({ player: invPlayer }: InventoryProps) => {
                 });
         },
         refetchOnWindowFocus: false,
-        enabled: isSettingsSuccess,
+        enabled: isCurrentSeasonSuccess,
         queryKey: [...queryKeys.playerProgress(invPlayer.id), 'inventory'],
     });
 
