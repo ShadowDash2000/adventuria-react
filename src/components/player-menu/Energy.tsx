@@ -1,7 +1,7 @@
 import { HStack, Icon, Spinner, Text } from '@chakra-ui/react';
 import { Tooltip } from '@ui/tooltip';
 import { useAppAuthContext } from '@context/AppContext';
-import { LuBatteryFull } from 'react-icons/lu';
+import { EnergyIcon } from '@shared/components/EnergyIcon';
 
 export const Energy = () => {
     const { playerProgress, isPlayerProgressSuccess } = useAppAuthContext();
@@ -13,7 +13,7 @@ export const Energy = () => {
                     {isPlayerProgressSuccess ? playerProgress.energy : <Spinner />}
                 </Text>
                 <Icon size="lg">
-                    <LuBatteryFull />
+                    <EnergyIcon />
                 </Icon>
             </HStack>
         </Tooltip>

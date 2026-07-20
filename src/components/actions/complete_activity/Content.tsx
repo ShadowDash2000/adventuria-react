@@ -1,6 +1,7 @@
 import {
     ButtonGroup,
     CloseButton,
+    DataList,
     Dialog,
     Flex,
     Heading,
@@ -18,7 +19,8 @@ import { invalidateAllActions, invalidatePlayerProgressAuth, queryKeys } from '@
 import { useQuery } from '@tanstack/react-query';
 import { ActionTextEditor } from '@components/profile/ActionTextEditor';
 import { ReviewRating } from '@shared/components/ReviewRating';
-import { LuBatteryFull } from 'react-icons/lu';
+import { Coin } from '@shared/components/Coin';
+import { EnergyIcon } from '@shared/components/EnergyIcon';
 
 export const Content = () => {
     const { pb, availableActions } = useAppContext();
@@ -64,6 +66,18 @@ export const Content = () => {
 
     return (
         <>
+            <DataList.Root orientation="horizontal">
+                <DataList.Item key="done-points">
+                    <DataList.ItemLabel>Очков за завершение</DataList.ItemLabel>
+                    <DataList.ItemValue>{activityView.data.data.done_points}</DataList.ItemValue>
+                </DataList.Item>
+                <DataList.Item key="done-coins">
+                    <DataList.ItemLabel>Монет за завершение</DataList.ItemLabel>
+                    <DataList.ItemValue display="flex" alignItems="center" gap={2}>
+                        {activityView.data.data.done_coins} <Coin w={6} />
+                    </DataList.ItemValue>
+                </DataList.Item>
+            </DataList.Root>
             <Flex direction="column" w="full" align="center" gap={4}>
                 <VStack w="full" h="20vw">
                     <ActionTextEditor
@@ -108,7 +122,7 @@ export const Content = () => {
                             setOpenConfirm(true);
                         }}
                     >
-                        Завершить ({activityView.data.data.done_energy_consume} <LuBatteryFull />)
+                        Завершить ({activityView.data.data.done_energy_consume} <EnergyIcon />)
                     </Button>
                 </ButtonGroup>
             </Flex>
@@ -186,7 +200,11 @@ const doneRequest = async (
     return (await res.json()) as DoneResult;
 };
 
-type CompleteActivityViewData = { done_energy_consume: number };
+type CompleteActivityViewData = {
+    done_points: number;
+    done_energy_consume: number;
+    done_coins: number;
+};
 
 type CompleteActivityViewSuccess = {
     success: true;
