@@ -25,7 +25,7 @@ export const LeaderboardItem = ({ player, playerProgress, playerStats }: Leaderb
                 </ChakraLink>
             </Table.Cell>
             <Table.Cell>{playerProgress.points}</Table.Cell>
-            <Table.Cell>{playerStats?.activities?.GamesCompleted || 0}</Table.Cell>
+            <Table.Cell>{playerStats?.activities?.games_completed || 0}</Table.Cell>
             <Table.Cell>{playerStats?.rerolls || 0}</Table.Cell>
             <Table.Cell>{playerStats?.drops || 0}</Table.Cell>
             <Table.Cell>{playerStats?.cells_passed || 0}</Table.Cell>

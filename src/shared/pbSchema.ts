@@ -11,9 +11,6 @@ export const pbCollections = {
     themes: 'themes',
     gameTypes: 'game_types',
     activityFilter: 'activity_filter',
-    howLongToBeat: 'howlongtobeat',
-    steamSpy: 'steam_spy',
-    cheapshark: 'cheapshark',
     activitiesPlatforms: 'activities_platforms',
     activitiesDevelopers: 'activities_developers',
     activitiesPublishers: 'activities_publishers',
@@ -108,14 +105,6 @@ export const activitySchema = {
     checksum: 'checksum',
 };
 
-export const howLongToBeatSchema = {
-    id: 'id',
-    idDb: 'id_db',
-    name: 'name',
-    year: 'year',
-    campaign: 'campaign',
-};
-
 export const inventorySchema = {
     id: 'id',
     activated: 'activated',
@@ -162,43 +151,6 @@ export const cellSchema = {
     isChangeGameNotAllowed: 'is_change_game_not_allowed',
     value: 'value',
 };
-
-export const settingsSchema = {
-    eventEnded: 'event_ended',
-    eventStartDate: 'event_start_date',
-    currentWeek: 'current_week',
-    blockAllActions: 'block_all_actions',
-    pointsForDrop: 'points_for_drop',
-    dropsToJail: 'drops_to_jail',
-    igdbGamesParsed: 'igdb_games_parsed',
-    disableIgdbParser: 'disable_igdb_parser',
-    disableSteamParser: 'disable_steam_parser',
-    disableCheapsharkParser: 'disable_cheapshark_parser',
-    disableHltbParser: 'disable_hltb_parser',
-    disableRefreshHltbTime: 'disable_refresh_hltb_time',
-    killParser: 'kill_parser',
-    igdbForceUpdateGames: 'igdb_force_update_games',
-};
-
-export const activitiesPlatformsSchema = { id: 'id', activity: 'activity', platform: 'platform' };
-
-export const activitiesDevelopersSchema = {
-    id: 'id',
-    activity: 'activity',
-    developer: 'developer',
-};
-
-export const activitiesPublishersSchema = {
-    id: 'id',
-    activity: 'activity',
-    publisher: 'publisher',
-};
-
-export const activitiesGenresSchema = { id: 'id', activity: 'activity', genre: 'genre' };
-
-export const activitiesTagsSchema = { id: 'id', activity: 'activity', tag: 'tag' };
-
-export const activitiesThemesSchema = { id: 'id', activity: 'activity', theme: 'theme' };
 
 export const genresSchema = { id: 'id', idDb: 'id_db', name: 'name', checksum: 'checksum' };
 

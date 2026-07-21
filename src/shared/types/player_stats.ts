@@ -8,10 +8,10 @@ export type PlayerStatsRecord = {
     player: RecordIdString;
     season: RecordIdString;
     activities?: {
-        GamesCompleted: number;
-        MoviesCompleted: number;
-        GymsCompleted: number;
-        KaraokeCompleted: number;
+        games_completed: number;
+        movies_completed: number;
+        gyms_completed: number;
+        karaoke_completed: number;
     };
     cells_passed: number;
     drops: number;
