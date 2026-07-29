@@ -12,6 +12,7 @@ import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore
 import { usePlayer } from '@components/board/players/usePlayer';
 import { audioPresetSchema, pbCollections } from '@shared/pbSchema';
 import type { RecordIdString } from '@shared/types/pocketbase';
+import { handleApiResponse } from '@shared/helpers/api';
 
 type Move = {
     type: string;
@@ -30,22 +31,15 @@ type RollDiceResultData = {
 };
 
 type RollDiceResult =
-    | { success: true; data: RollDiceResultData; error?: never }
-    | { success: false; error: string; data?: never };
+    | { success: true; data: RollDiceResultData; message?: string; error?: never }
+    | { success: false; message: string; error: string; data?: never };
 
 const diceRollRequest = async (authToken: string) => {
     const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/roll`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}` },
     });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        console.log(error || (await res.text()) || 'Failed to roll dice');
-        return null;
-    }
+
     return (await res.json()) as RollDiceResult;
 };
 
@@ -84,11 +78,13 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
         setIsPending(true);
 
         const res = await diceRollRequest(pb.authStore.token);
-        if (!res || !res.success) {
+
+        if (!handleApiResponse(res)) {
             setIsRolling(false);
             setIsPending(false);
             return;
         }
+
         setIsPending(false);
 
         const newDices: DiceFactoryItem[] = [];

@@ -26,6 +26,7 @@ export const pbCollections = {
     audioPresets: 'audio_presets',
     audio: 'audio',
     worlds: 'worlds',
+    cellEventsSchedule: 'cell_events_schedule',
 };
 
 export const playerSchema = {

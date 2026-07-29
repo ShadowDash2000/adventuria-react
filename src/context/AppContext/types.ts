@@ -5,7 +5,6 @@ import type { PlayerProgressRecord } from '@shared/types/player_progress';
 
 type AppContextBase = {
     pb: PocketBase;
-    availableActions: string[];
     login: () => void;
     logout: () => void;
 } & CurrentSeasonState;
@@ -13,21 +12,42 @@ type AppContextBase = {
 export type AppContextAuth = AppContextBase & {
     isAuth: true;
     player: PlayerRecord;
-} & PlayerProgressState;
+} & AvailableActionsState &
+    PlayerProgressState;
 
 export type AppContextGuest = AppContextBase & {
     isAuth: false;
     player: null;
-    playerProgress: null;
-    isPlayerProgressPending: false;
-    isPlayerProgressSuccess: false;
-    isPlayerProgressError: false;
-    playerProgressError: null;
-};
+} & AvailableActionsGuestState &
+    PlayerProgressGuestState;
 
 export type AppProviderType = AppContextAuth | AppContextGuest;
 
 export type AppContextProviderProps = { children: ReactNode };
+
+type AvailableActionsState =
+    | {
+          availableActions: string[];
+          isAvailableActionsPending: false;
+          isAvailableActionsSuccess: true;
+          isAvailableActionsError: false;
+          availableActionsError: null;
+      }
+    | {
+          availableActions: string[];
+          isAvailableActionsPending: boolean;
+          isAvailableActionsSuccess: false;
+          isAvailableActionsError: boolean;
+          availableActionsError: Error;
+      };
+
+type AvailableActionsGuestState = {
+    availableActions: string[];
+    isAvailableActionsPending: false;
+    isAvailableActionsSuccess: false;
+    isAvailableActionsError: false;
+    availableActionsError: null;
+};
 
 type CurrentSeasonState =
     | {
@@ -60,3 +80,11 @@ type PlayerProgressState =
           isPlayerProgressError: boolean;
           playerProgressError: Error | null;
       };
+
+type PlayerProgressGuestState = {
+    playerProgress: null;
+    isPlayerProgressPending: false;
+    isPlayerProgressSuccess: false;
+    isPlayerProgressError: false;
+    playerProgressError: null;
+};

@@ -9,7 +9,7 @@ import type { CellRecord } from '@shared/types/cell';
 import type { ItemRecord } from '@shared/types/item';
 import { useCellsStore } from '@components/board/useCellsStore';
 
-const EVENT_STATS_CONFIG: Record<keyof EventStatsData, { title: string; limit: number }> = {
+const EVENT_STATS_CONFIG: Record<keyof EventStatsEntries, { title: string; limit: number }> = {
     most_games_completed: { title: 'Больше всего пройдено игр', limit: 3 },
     most_drops: { title: 'Больше всего дропов', limit: 3 },
     most_rerolls: { title: 'Больше всего рероллов', limit: 3 },
@@ -25,8 +25,8 @@ const EVENT_STATS_CONFIG: Record<keyof EventStatsData, { title: string; limit: n
     most_used_items: { title: 'Самые используемые предметы', limit: 6 },
 };
 
-const CELL_STATS_KEYS: (keyof EventStatsData)[] = ['most_visited_cells', 'least_visited_cells'];
-const ITEM_STATS_KEYS: (keyof EventStatsData)[] = ['most_used_items'];
+const CELL_STATS_KEYS: (keyof EventStatsEntries)[] = ['most_visited_cells', 'least_visited_cells'];
+const ITEM_STATS_KEYS: (keyof EventStatsEntries)[] = ['most_used_items'];
 
 export const EventStatsContent = ({ ...props }: StackProps) => {
     const openCellInfo = useCellsStore(state => state.openCellInfo);
@@ -52,14 +52,14 @@ export const EventStatsContent = ({ ...props }: StackProps) => {
 
     return (
         <VStack align="stretch" gap={4} {...props}>
-            {(Object.keys(EVENT_STATS_CONFIG) as (keyof EventStatsData)[]).map(statKey => (
+            {(Object.keys(EVENT_STATS_CONFIG) as (keyof EventStatsEntries)[]).map(statKey => (
                 <VStack key={statKey} align="stretch" gap={4}>
                     <Heading as="h3" textAlign="center">
                         {EVENT_STATS_CONFIG[statKey].title}
                     </Heading>
 
                     <HStack justify="space-evenly" gap={4} wrap="wrap">
-                        {eventStats.data.data[statKey]
+                        {eventStats.data.data.stats[statKey]
                             .slice(0, EVENT_STATS_CONFIG[statKey].limit)
                             .map(({ count, record }) => {
                                 if (CELL_STATS_KEYS.includes(statKey)) {
@@ -118,7 +118,9 @@ export const EventStatsContent = ({ ...props }: StackProps) => {
     );
 };
 
-type EventStatsData = {
+type EventStatsData = { stats: EventStatsEntries };
+
+type EventStatsEntries = {
     most_games_completed: EventUserStatEntry[];
     most_drops: EventUserStatEntry[];
     most_rerolls: EventUserStatEntry[];

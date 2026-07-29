@@ -7,6 +7,7 @@ import { PlayerActionMenu } from '@components/PlayerActionMenu';
 import { BoardInnerContext, useBoardContext, useBoardDataContext } from '.';
 import { useBoardDimensions } from './useBoardDimensions';
 import { usePlayersProgressSubscription } from './usePlayersProgressSubscription';
+import { useCellsSubscription } from '@components/board/useCellsSubscription';
 
 export const BoardInner = () => {
     const { pb, isAuth, player } = useAppContext();
@@ -34,6 +35,8 @@ export const BoardInner = () => {
     const cols = board.cols;
     const cellWidth = cols ? Math.floor(boardDimensions.width / Math.max(cols, 1)) : 0;
     const cellHeight = rows ? Math.floor(boardDimensions.height / Math.max(rows, 1)) : 0;
+
+    useCellsSubscription({ pb, isAuth });
 
     return (
         <BoardInnerContext.Provider

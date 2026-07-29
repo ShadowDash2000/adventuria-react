@@ -7,6 +7,10 @@ export const pb = new PocketBase(import.meta.env.VITE_PB_URL);
 export const AppContext = createContext<AppProviderType>({
     pb,
     availableActions: [],
+    isAvailableActionsPending: false,
+    isAvailableActionsSuccess: false,
+    isAvailableActionsError: false,
+    availableActionsError: null,
     login: function (): void {
         throw new Error('Function not implemented.');
     },

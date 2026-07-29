@@ -1,6 +1,16 @@
 import { useAppContext } from '@context/AppContext';
 import HTMLReactParser from 'html-react-parser';
-import { Blockquote, Spinner, Text, Image, Dialog, Flex, HStack, VStack } from '@chakra-ui/react';
+import {
+    Blockquote,
+    Spinner,
+    Text,
+    Image,
+    Dialog,
+    Flex,
+    HStack,
+    VStack,
+    Heading,
+} from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import type { RecordIdString } from '@shared/types/pocketbase';
@@ -66,11 +76,30 @@ export const CellInfo = ({ cellId }: CellInfoProps) => {
                     </VStack>
                     <VStack flex={1} alignItems="flex-start">
                         <Image src={pb.files.getURL(cell, cell.icon)} width="100%" height="100%" />
-                        <Blockquote.Root variant="solid">
-                            <Blockquote.Content>
-                                {HTMLReactParser(cell.description)}
-                            </Blockquote.Content>
-                        </Blockquote.Root>
+                        {cell.cell_event && cell.cell_event.description && (
+                            <>
+                                <Heading as="h3" size="xl">
+                                    Событие на клетке
+                                </Heading>
+                                <Blockquote.Root variant="solid">
+                                    <Blockquote.Content>
+                                        {HTMLReactParser(cell.cell_event.description)}
+                                    </Blockquote.Content>
+                                </Blockquote.Root>
+                            </>
+                        )}
+                        {cell.description && (
+                            <>
+                                <Heading as="h3" size="xl">
+                                    Описание клетки
+                                </Heading>
+                                <Blockquote.Root variant="solid">
+                                    <Blockquote.Content>
+                                        {HTMLReactParser(cell.description)}
+                                    </Blockquote.Content>
+                                </Blockquote.Root>
+                            </>
+                        )}
                     </VStack>
                 </HStack>
             </Dialog.Body>

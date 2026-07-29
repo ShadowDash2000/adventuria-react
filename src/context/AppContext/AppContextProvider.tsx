@@ -7,6 +7,7 @@ import { queryKeys } from '@shared/queryClient';
 import { AppContext, pb } from './index';
 import { pbCollections, playerProgressSchema } from '@shared/pbSchema';
 import { and, eq } from '@shared/pbFilter';
+import { ApiError } from '@shared/types/api-error';
 
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     const [isAuth, setIsAuth] = useState<boolean>(pb.authStore.isValid);
@@ -30,14 +31,32 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         refetchOnWindowFocus: false,
     });
 
-    const { data: availableActions = [] } = useQuery({
+    const {
+        data: availableActions = [],
+        isPending: isAvailableActionsPending,
+        isSuccess: isAvailableActionsSuccess,
+        isError: isAvailableActionsError,
+        error: availableActionsError,
+    } = useQuery({
         queryFn: async () => {
-            const actions = await getAvailableActions(pb.authStore.token);
-            return actions.success ? actions.data : [];
+            const res = await getAvailableActions(pb.authStore.token);
+
+            if (!res.success) {
+                throw new ApiError(res.message, res.error);
+            }
+
+            return res.data;
         },
         enabled: isAuth,
         queryKey: [...queryKeys.availableActions, isAuth, pb.authStore.token],
         refetchOnWindowFocus: false,
+        retry: (failureCount, error) => {
+            if (failureCount >= 3) {
+                return false;
+            }
+
+            return !(error instanceof ApiError);
+        },
     });
 
     const {
@@ -94,6 +113,10 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         logout,
         isAuth,
         availableActions,
+        isAvailableActionsPending,
+        isAvailableActionsSuccess,
+        isAvailableActionsError,
+        availableActionsError,
         currentSeason,
         isCurrentSeasonPending: isCurrentSeasonPending,
         isCurrentSeasonSuccess,

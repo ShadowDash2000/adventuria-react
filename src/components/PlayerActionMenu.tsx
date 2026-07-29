@@ -1,14 +1,16 @@
-import { useMemo } from 'react';
 import { useAppContext } from '@context/AppContext';
 import { ActionFactory } from './actions/action-factory';
-import { Flex, For } from '@chakra-ui/react';
+import { Flex, For, Spinner, Text } from '@chakra-ui/react';
 import { MotionBox } from '@shared/components/MotionBox';
 
 export const PlayerActionMenu = () => {
-    const { availableActions } = useAppContext();
-    const actions = useMemo(() => {
-        return ActionFactory.getAvailableActions(availableActions);
-    }, [availableActions]);
+    const {
+        availableActions,
+        isAvailableActionsPending,
+        isAvailableActionsError,
+        availableActionsError,
+    } = useAppContext();
+    const actions = ActionFactory.getAvailableActions(availableActions);
 
     return (
         <Flex
@@ -21,13 +23,16 @@ export const PlayerActionMenu = () => {
             justify="center"
             align="center"
         >
-            <For each={actions}>
-                {(action, key) => (
-                    <MotionBox key={key} whileHover={{ scale: 1.1 }}>
-                        {action.buttonNode()}
-                    </MotionBox>
+            {(isAvailableActionsPending && <Spinner />) ||
+                (isAvailableActionsError && <Text>{availableActionsError.message}</Text>) || (
+                    <For each={actions}>
+                        {(action, key) => (
+                            <MotionBox key={key} whileHover={{ scale: 1.1 }}>
+                                {action.buttonNode()}
+                            </MotionBox>
+                        )}
+                    </For>
                 )}
-            </For>
         </Flex>
     );
 };
