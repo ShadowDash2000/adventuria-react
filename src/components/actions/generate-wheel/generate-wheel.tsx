@@ -7,19 +7,7 @@ export class GenerateWheel extends ActionDispenser {
         return <Button key={this.key()} />;
     }
 
-    color() {
-        return 'purple';
-    }
-
-    name() {
-        return '';
-    }
-
     key() {
         return 'generate_wheel';
-    }
-
-    statusNode() {
-        return null;
     }
 }

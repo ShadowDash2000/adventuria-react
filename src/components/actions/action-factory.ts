@@ -5,20 +5,17 @@ import { Unknown } from './unknown';
 import { RollWheel } from '@components/actions/roll-wheel/roll-wheel';
 import { Drop } from './drop/drop';
 import { Reroll } from './reroll/reroll';
-import { Move } from './move/move';
 import { Teleport } from './teleport/teleport';
 import { Buy } from '@components/actions/buy/buy';
 import { RollItemOnCell } from '@components/actions/roll-item-on-cell/roll-item-on-cell';
 import { GenerateWheel } from '@components/actions/generate-wheel/generate-wheel';
 import { NeedToRollWheel } from '@components/actions/need-to-roll-wheel/need_to_roll_wheel';
 import { Done } from '@components/actions/done/done';
-import { None } from '@components/actions/none/none';
 
 type ActionFactoryItem = { order: number; dispenser: ActionDispenser };
 
 export class ActionFactory {
     private static actions: Record<string, ActionFactoryItem> = {
-        none: { order: 0, dispenser: new None() },
         complete_activity: { order: 0, dispenser: new CompleteActivity() },
         done: { order: 0, dispenser: new Done() },
         drop: { order: 0, dispenser: new Drop() },
@@ -29,8 +26,6 @@ export class ActionFactory {
         roll_wheel: { order: 0, dispenser: new RollWheel() },
         buy: { order: 5, dispenser: new Buy() },
         roll_item_on_cell: { order: 0, dispenser: new RollItemOnCell() },
-        move: { order: 0, dispenser: new Move() },
-        teleport: { order: 0, dispenser: new Teleport() },
     };
 
     static get(actionType: string): ActionDispenser {

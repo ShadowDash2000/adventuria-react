@@ -1,22 +1,13 @@
 import { Status } from '@chakra-ui/react';
-import type { ReactNode } from 'react';
-import { ActionDispenser } from '../action-base';
+import { ActionStatusDispenser } from '@components/actions-statuses/action-status-base';
 
-export class None extends ActionDispenser {
-    buttonNode(): ReactNode {
-        return null;
-    }
-
+export class NeedToRollWheel extends ActionStatusDispenser {
     color() {
         return 'orange';
     }
 
     name() {
-        return 'Стартуем!';
-    }
-
-    key() {
-        return 'none';
+        return 'Готовится крутить колесо';
     }
 
     statusNode() {

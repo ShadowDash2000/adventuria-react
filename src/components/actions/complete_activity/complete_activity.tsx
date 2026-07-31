@@ -7,19 +7,7 @@ export class CompleteActivity extends ActionDispenser {
         return <Modal key={this.key()} />;
     }
 
-    color() {
-        return '';
-    }
-
-    name() {
-        return '';
-    }
-
     key() {
         return 'complete_activity';
-    }
-
-    statusNode() {
-        return null;
     }
 }

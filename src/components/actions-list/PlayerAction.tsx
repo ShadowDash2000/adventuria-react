@@ -4,7 +4,7 @@ import { type ActionRecord } from '@shared/types/action';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { useAppContext } from '@context/AppContext';
 import { formatDateLocalized } from '@shared/helpers/helper';
-import { ActionFactory } from '../actions/action-factory';
+import { ActionStatusFactory } from '@components/actions-statuses/action-status-factory';
 import { PlayerAvatar } from '../PlayerAvatar';
 import { InfoTip } from '@ui/toggle-tip';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
@@ -20,7 +20,7 @@ type ActionProps = { action: ActionRecord };
 export const PlayerAction = ({ action }: ActionProps) => {
     const { pb, player: authPlayer, isAuth } = useAppContext();
     const openCellInfo = useCellsStore(state => state.openCellInfo);
-    const actionController = ActionFactory.get(action.type);
+    const actionStatus = ActionStatusFactory.get(action.status);
 
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -113,7 +113,7 @@ export const PlayerAction = ({ action }: ActionProps) => {
                     </VStack>
                     <VStack w="full" align="start">
                         <VStack>
-                            {actionController.statusNode()}
+                            {actionStatus.statusNode()}
                             <DataList.Root orientation="horizontal">
                                 <DataList.Item key="cell">
                                     <DataList.ItemLabel>Клетка</DataList.ItemLabel>

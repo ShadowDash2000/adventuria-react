@@ -10,7 +10,7 @@ export type ActionRecord = {
     updated: IsoDateString;
     player: RecordIdString;
     cell: RecordIdString;
-    type: string;
+    status: string;
     activity: RecordIdString;
     review: RecordIdString;
     cells_passed: number;

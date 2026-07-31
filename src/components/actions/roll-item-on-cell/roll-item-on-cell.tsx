@@ -1,4 +1,3 @@
-import { Status } from '@chakra-ui/react';
 import { type ReactElement } from 'react';
 import { ActionDispenser } from '../action-base';
 import { ItemOnCellWheelButton } from './ItemOnCellWheelButton';
@@ -8,24 +7,7 @@ export class RollItemOnCell extends ActionDispenser {
         return <ItemOnCellWheelButton key={this.key()} />;
     }
 
-    color() {
-        return 'purple';
-    }
-
-    name() {
-        return 'Выролил предмет';
-    }
-
     key() {
         return 'roll_item_on_cell';
-    }
-
-    statusNode() {
-        return (
-            <Status.Root colorPalette={this.color()}>
-                <Status.Indicator />
-                {this.name()}
-            </Status.Root>
-        );
     }
 }

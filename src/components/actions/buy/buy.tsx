@@ -7,19 +7,7 @@ export class Buy extends ActionDispenser {
         return <Modal key={this.key()} />;
     }
 
-    color() {
-        return 'purple';
-    }
-
-    name() {
-        return 'Магаз';
-    }
-
     key() {
         return 'shop';
-    }
-
-    statusNode() {
-        return null;
     }
 }

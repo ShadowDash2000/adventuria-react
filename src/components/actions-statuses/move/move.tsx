@@ -1,22 +1,13 @@
 import { Status } from '@chakra-ui/react';
-import type { ReactNode } from 'react';
-import { ActionDispenser } from '../action-base';
+import { ActionStatusDispenser } from '@components/actions-statuses/action-status-base';
 
-export class Teleport extends ActionDispenser {
-    buttonNode(): ReactNode {
-        return null;
-    }
-
+export class Move extends ActionStatusDispenser {
     color() {
         return 'orange';
     }
 
     name() {
-        return 'Лестница/Яма';
-    }
-
-    key() {
-        return 'teleport';
+        return 'Переместился';
     }
 
     statusNode() {
