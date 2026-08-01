@@ -4,7 +4,7 @@ import {
     queryKeys,
     invalidateAvailableActions,
     invalidateRefreshShopView,
-    invalidateShopItems,
+    invalidateShopView,
     invalidatePlayerProgressAuth,
 } from '@shared/queryClient';
 import { ButtonProps, Spinner, Text } from '@chakra-ui/react';
@@ -41,7 +41,7 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
 
         await invalidatePlayerProgressAuth();
         await invalidateAvailableActions();
-        await invalidateShopItems();
+        await invalidateShopView();
         await invalidateRefreshShopView();
     };
 

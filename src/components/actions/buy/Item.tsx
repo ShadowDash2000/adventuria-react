@@ -6,7 +6,7 @@ import type { RecordIdString } from '@shared/types/pocketbase';
 import {
     invalidateAvailableActions,
     invalidateLatestAction,
-    invalidateShopItems,
+    invalidateShopView,
     invalidatePlayerProgressAuth,
 } from '@shared/queryClient';
 import PriceBadgeImage from '@public/price-badge.png';
@@ -39,7 +39,7 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
 
         await invalidateAvailableActions();
         await invalidateLatestAction();
-        await invalidateShopItems();
+        await invalidateShopView();
         await invalidatePlayerProgressAuth();
     };
 

@@ -1,16 +1,20 @@
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
-import { For, Grid, GridItem, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Box, For, Grid, GridItem, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { Item } from '@components/actions/buy/Item';
 import { RefreshShopButton } from './RefreshShopButton';
 import { MotionBox } from '@shared/components/MotionBox';
 import type { RecordIdString } from '@shared/types/pocketbase';
+import ShopImage from '@public/shop.gif';
+import CasinoImage from '@public/shop-casino.png';
+
+const bgImage: Record<string, string> = { buffet: ShopImage, casino: CasinoImage };
 
 export const Content = () => {
     const { pb } = useAppAuthContext();
 
-    const items = useQuery({
+    const shopView = useQuery({
         queryFn: async () => {
             const res = await getBuyView(pb.authStore.token);
 
@@ -20,33 +24,44 @@ export const Content = () => {
 
             return res;
         },
-        queryKey: [...queryKeys.shopItems],
+        queryKey: [...queryKeys.shopView],
         refetchOnWindowFocus: false,
     });
 
-    if (items.isPending) {
+    if (shopView.isPending) {
         return <Spinner />;
     }
 
-    if (items.isError) {
-        return <Text color="red.500">{items.error.message}</Text>;
+    if (shopView.isError) {
+        return <Text color="red.500">{shopView.error.message}</Text>;
     }
 
+    const shopImage = bgImage[shopView.data.data.shop_type] || ShopImage;
+
     return (
-        <VStack position="absolute" w="full" pr="20%" pt="8%" gapY={24}>
-            <Grid templateColumns="repeat(3, 1fr)" w="full" gapX={4} userSelect="none">
-                <For each={items.data.data.items}>
-                    {(item, index) => (
-                        <GridItem key={`${item.id}_${index}`}>
-                            <Item item={item} imageHeight="11vw" />
-                        </GridItem>
-                    )}
-                </For>
-            </Grid>
-            <MotionBox whileHover={{ scale: 1.1 }}>
-                <RefreshShopButton />
-            </MotionBox>
-        </VStack>
+        <Box position="relative" w="70vw">
+            <Image
+                src={shopImage}
+                position="absolute"
+                draggable={false}
+                w="full"
+                userSelect="none"
+            />
+            <VStack position="absolute" w="full" pr="20%" pt="8%" gapY={24}>
+                <Grid templateColumns="repeat(3, 1fr)" w="full" gapX={4} userSelect="none">
+                    <For each={shopView.data.data.items}>
+                        {(item, index) => (
+                            <GridItem key={`${item.id}_${index}`}>
+                                <Item item={item} imageHeight="11vw" />
+                            </GridItem>
+                        )}
+                    </For>
+                </Grid>
+                <MotionBox whileHover={{ scale: 1.1 }}>
+                    <RefreshShopButton />
+                </MotionBox>
+            </VStack>
+        </Box>
     );
 };
 
@@ -58,7 +73,7 @@ export type ItemView = {
     price: number;
 };
 
-type GetBuyViewData = { items: ItemView[] };
+type GetBuyViewData = { shop_type: string; items: ItemView[] };
 
 type GetBuyViewSuccess = { success: true; data: GetBuyViewData; message?: string; error?: never };
 
