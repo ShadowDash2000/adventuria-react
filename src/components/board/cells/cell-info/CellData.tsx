@@ -23,22 +23,6 @@ export const CellData = ({ cell }: CellDataProps) => {
     );
     const activities = hasActivityFilter ? (cell.expand!.filter!.expand!.activities ?? []) : [];
 
-    const averageCampaignTime = hasActivityFilter
-        ? (() => {
-              let totalHours = 0;
-              let activitiesCount = 0;
-
-              activities.forEach(activity => {
-                  if (activity.hltb_campaign_time > 0) {
-                      totalHours += activity.hltb_campaign_time;
-                      activitiesCount += 1;
-                  }
-              });
-
-              return activitiesCount > 0 ? totalHours / activitiesCount : 0;
-          })()
-        : 0;
-
     return (
         <>
             <DataList.Root orientation="horizontal">
@@ -130,11 +114,11 @@ export const CellData = ({ cell }: CellDataProps) => {
                                 </DataList.ItemValue>
                             </DataList.Item>
                         )}
-                        {averageCampaignTime > 0 && (
+                        {cell.average_campaign_time > 0 && (
                             <DataList.Item>
                                 <DataList.ItemLabel>Среднее время</DataList.ItemLabel>
                                 <DataList.ItemValue>
-                                    {averageCampaignTime.toFixed(1)} ч.
+                                    {cell.average_campaign_time.toFixed(1)} ч.
                                 </DataList.ItemValue>
                             </DataList.Item>
                         )}

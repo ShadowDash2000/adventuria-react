@@ -21,6 +21,7 @@ export type CellRecord = {
     coins: number;
     description: string;
     color: string;
+    average_campaign_time: number;
     cant_drop: boolean;
     cant_reroll: boolean;
     is_safe_drop: boolean;
