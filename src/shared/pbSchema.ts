@@ -74,7 +74,7 @@ export const actionSchema = {
     id: 'id',
     player: 'player',
     cell: 'cell',
-    type: 'type',
+    status: 'status',
     activity: 'activity',
     review: 'review',
     cellsPassed: 'cells_passed',

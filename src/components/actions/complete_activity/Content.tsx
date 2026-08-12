@@ -29,7 +29,7 @@ export const Content = () => {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [titleConfirm, setTitleConfirm] = useState('');
     const [loading, setLoading] = useState(false);
-    const [score, setScore] = useState<number>(3);
+    const [score, setScore] = useState<number>(0);
 
     const handleDone = async (actionType: string) => {
         const res = await doneRequest(pb.authStore.token, actionType, content ?? '', score);

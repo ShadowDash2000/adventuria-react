@@ -33,11 +33,11 @@ interface ActionsListProps extends FlexProps {
 
 export const ActionsList = ({ playerName, perPage = 10, ...rest }: ActionsListProps) => {
     const { pb } = useAppContext();
-    const [actionType, setActionType] = useState<string | null>('all');
+    const [actionStatus, setActionStatus] = useState<string | null>('all');
     const [cellType, setCellType] = useState<string | null>('all');
 
     const filter = [
-        { field: actionSchema.type, value: actionType === 'all' ? null : actionType },
+        { field: actionSchema.status, value: actionStatus === 'all' ? null : actionStatus },
         { field: dotExpand(actionSchema.player, playerSchema.name), value: playerName },
         {
             field: dotExpand(actionSchema.cell, cellSchema.type),
@@ -64,7 +64,7 @@ export const ActionsList = ({ playerName, perPage = 10, ...rest }: ActionsListPr
             if (lastPage.page === lastPage.totalPages) return null;
             return lastPageParam + 1;
         },
-        queryKey: [...queryKeys.actions, actionType, playerName, cellType],
+        queryKey: [...queryKeys.actions, actionStatus, playerName, cellType],
         initialPageParam: 1,
         refetchOnWindowFocus: false,
         placeholderData: keepPreviousData,
@@ -126,8 +126,8 @@ export const ActionsList = ({ playerName, perPage = 10, ...rest }: ActionsListPr
                     Всего: {actions.data.pages ? actions.data.pages[0].totalItems : 0}
                 </Text>
                 <SegmentGroup.Root
-                    defaultValue={actionType}
-                    onValueChange={e => setActionType(e.value)}
+                    defaultValue={actionStatus}
+                    onValueChange={e => setActionStatus(e.value)}
                 >
                     <SegmentGroup.Indicator />
                     <SegmentGroup.Items
@@ -136,7 +136,7 @@ export const ActionsList = ({ playerName, perPage = 10, ...rest }: ActionsListPr
                             { label: 'Завершено', value: 'done' },
                             { label: 'Дроп', value: 'drop' },
                             { label: 'Реролл', value: 'reroll' },
-                            { label: 'Колесо', value: 'rollWheel' },
+                            { label: 'Колесо', value: 'roll_wheel' },
                         ]}
                     />
                 </SegmentGroup.Root>

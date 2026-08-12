@@ -143,7 +143,7 @@ export const PlayerAction = ({ action }: ActionProps) => {
                                         </InfoTip>
                                     </DataList.ItemValue>
                                 </DataList.Item>
-                                {action.expand?.review && (
+                                {action.expand?.review && score > 0 && (
                                     <DataList.Item key="score">
                                         <DataList.ItemLabel>Оценка</DataList.ItemLabel>
                                         <DataList.ItemValue>{score}/10</DataList.ItemValue>
