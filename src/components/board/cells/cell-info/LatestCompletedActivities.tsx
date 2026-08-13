@@ -42,11 +42,12 @@ export const LatestCompletedActivities = ({ cellId }: LatestCompletedActivitiesP
                 Последние события
             </Heading>
             <Carousel.Root
+                w="full"
                 slideCount={completedActivities.data.data.length}
                 autoplay={{ delay: 10000 }}
                 allowMouseDrag
                 loop
-                slidesPerPage={2}
+                slidesPerPage={completedActivities.data.data.length === 1 ? 1 : 2}
             >
                 <Carousel.ItemGroup>
                     {completedActivities.data.data.map((activity, index) => (
@@ -56,6 +57,7 @@ export const LatestCompletedActivities = ({ cellId }: LatestCompletedActivitiesP
                                     activity={activity}
                                     width="full"
                                     minH="150px"
+                                    maxH="300px"
                                     aspectRatio="2/3"
                                     objectFit="cover"
                                     filter="brightness(0.5)"
