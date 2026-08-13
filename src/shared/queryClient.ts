@@ -35,6 +35,7 @@ export const queryKeys = {
     cell: (cellId: RecordIdString) => ['cells', 'cell', cellId],
     inventory: (playerId: RecordIdString) => ['inventory', playerId],
     item: (itemId: RecordIdString) => ['items', itemId],
+    latestCompletedActivities: (cellId: RecordIdString) => ['latest-completed-activities', cellId],
 } as const;
 
 export const invalidatePlayerAuth = async () => {

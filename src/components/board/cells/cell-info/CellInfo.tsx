@@ -19,6 +19,7 @@ import type { CellRecord } from '@shared/types/cell';
 import { CellData } from '@components/board/cells/cell-info/CellData';
 import { activityFilterSchema, cellSchema, pbCollections } from '@shared/pbSchema';
 import { dotExpand, joinExpand } from '@shared/pbExpand';
+import { LatestCompletedActivities } from '@components/board/cells/cell-info/LatestCompletedActivities';
 
 interface CellInfoProps {
     cellId: RecordIdString;
@@ -100,6 +101,7 @@ export const CellInfo = ({ cellId }: CellInfoProps) => {
                                 </Blockquote.Root>
                             </>
                         )}
+                        <LatestCompletedActivities cellId={cellId} />
                     </VStack>
                 </HStack>
             </Dialog.Body>

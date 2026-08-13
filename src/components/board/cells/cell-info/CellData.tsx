@@ -1,8 +1,9 @@
 import type { CellRecord } from '@shared/types/cell';
 import { Coin } from '@shared/components/Coin';
-import { DataList, Grid, GridItem, Image, Text } from '@chakra-ui/react';
+import { DataList, Grid, GridItem, Text } from '@chakra-ui/react';
 import { Tooltip } from '@ui/tooltip';
 import { useAppContext } from '@context/AppContext';
+import { Cover } from '@components/activities/Cover';
 
 interface CellDataProps {
     cell: CellRecord;
@@ -136,11 +137,8 @@ export const CellData = ({ cell }: CellDataProps) => {
                                     disabled={activity.hltb_campaign_time <= 0}
                                     openDelay={100}
                                 >
-                                    <Image
-                                        src={
-                                            activity.cover ||
-                                            pb.files.getURL(activity, activity.cover_alt)
-                                        }
+                                    <Cover
+                                        activity={activity}
                                         width="100%"
                                         aspectRatio="2/3"
                                         objectFit="cover"

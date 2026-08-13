@@ -14,6 +14,7 @@ import { useCellsStore } from '@components/board/useCellsStore';
 import { LinkButtons } from '@components/actions/roll-wheel/activities-wheel/LinkButtons';
 import { UsedItems } from './UsedItems';
 import { handleApiResponse } from '@shared/helpers/api';
+import { Cover } from '@components/activities/Cover';
 
 type ActionProps = { action: ActionRecord };
 
@@ -95,14 +96,11 @@ export const PlayerAction = ({ action }: ActionProps) => {
                                     size="sm"
                                     gap={0}
                                 />
-                                <Image
+                                <Cover
+                                    activity={activity}
                                     w={220}
                                     aspectRatio="2/3"
                                     objectFit="contain"
-                                    src={
-                                        activity.cover ||
-                                        pb.files.getURL(activity, activity.cover_alt)
-                                    }
                                 />
                                 <Text>{activity.name}</Text>
                                 {activity.hltb_campaign_time > 0 && (

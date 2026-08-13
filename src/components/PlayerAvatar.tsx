@@ -1,14 +1,22 @@
-import { ComponentProps, type RefObject } from 'react';
-import type { PlayerRecord } from '@shared/types/player';
+import type { ComponentProps, RefObject } from 'react';
+import type { RecordIdString } from '@shared/types/pocketbase';
 import { useAppContext } from '@context/AppContext';
 import { Circle, Float } from '@chakra-ui/react';
 import { MotionAvatar } from '@shared/components/MotionAvatar';
 
 interface AvatarProps extends ComponentProps<typeof MotionAvatar> {
     ref?: RefObject<HTMLDivElement | null>;
-    player: PlayerRecord;
+    player: Player;
     showStreamLive?: boolean;
 }
+
+type Player = {
+    collectionName: string;
+    id: RecordIdString;
+    avatar: string;
+    color: string;
+    is_stream_live?: boolean;
+};
 
 export const PlayerAvatar = ({ player, ref, showStreamLive = false, ...props }: AvatarProps) => {
     const { pb } = useAppContext();
