@@ -31,6 +31,7 @@ export const queryKeys = {
     itemsWheel: ['items-wheel'],
     refreshShopView: ['refresh-shop-view'],
     currentSeason: ['current-season'],
+    seasons: ['seasons'],
     isEventEnded: ['is-event-ended'],
     cell: (cellId: RecordIdString) => ['cells', 'cell', cellId],
     inventory: (playerId: RecordIdString) => ['inventory', playerId],

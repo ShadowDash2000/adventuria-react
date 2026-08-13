@@ -1,5 +1,5 @@
 import { Box, CloseButton, Dialog, IconButton, Portal } from '@chakra-ui/react';
-import { EventStatsContent } from './EventStatsContent';
+import { EventStatsContent } from '@components/event-stats/EventStatsContent';
 import { FaChartBar } from 'react-icons/fa';
 import { Tooltip } from '@ui/tooltip';
 
@@ -22,7 +22,7 @@ export const EventStatsIconButton = () => {
                         </Dialog.Header>
                         <Dialog.Body display="flex" overflow="hidden">
                             <Box overflowY="scroll" w="full">
-                                <EventStatsContent w="full" mb={4} />
+                                <EventStatsContent />
                             </Box>
                         </Dialog.Body>
                         <Dialog.CloseTrigger asChild>

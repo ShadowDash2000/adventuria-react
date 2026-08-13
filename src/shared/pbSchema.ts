@@ -27,6 +27,7 @@ export const pbCollections = {
     audio: 'audio',
     worlds: 'worlds',
     cellEventsSchedule: 'cell_events_schedule',
+    seasons: 'seasons',
 };
 
 export const playerSchema = {
@@ -189,4 +190,12 @@ export const worldSchema = {
     isDefaultWorld: 'is_default_world',
     transitionToWorld: 'transition_to_world',
     effects: 'effects',
+};
+
+export const seasonsSchema = {
+    id: 'id',
+    name: 'name',
+    slug: 'slug',
+    seasonDateStart: 'season_date_start',
+    seasonDateEnd: 'season_date_end',
 };

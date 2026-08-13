@@ -1,5 +1,5 @@
 import { Box, CloseButton, Dialog, Link, type LinkProps, Portal } from '@chakra-ui/react';
-import { EventStatsContent } from './EventStatsContent';
+import { EventStatsContent } from '@components/event-stats/EventStatsContent';
 
 export const EventStatsButton = ({ ...props }: LinkProps) => {
     return (
@@ -16,7 +16,7 @@ export const EventStatsButton = ({ ...props }: LinkProps) => {
                         </Dialog.Header>
                         <Dialog.Body display="flex" overflow="hidden">
                             <Box overflowY="scroll" w="full">
-                                <EventStatsContent w="full" mb={4} />
+                                <EventStatsContent />
                             </Box>
                         </Dialog.Body>
                         <Dialog.CloseTrigger asChild>
