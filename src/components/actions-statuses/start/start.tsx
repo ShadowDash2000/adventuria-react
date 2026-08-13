@@ -1,7 +1,7 @@
 import { Status } from '@chakra-ui/react';
 import { ActionStatusDispenser } from '@components/actions-statuses/action-status-base';
 
-export class None extends ActionStatusDispenser {
+export class Start extends ActionStatusDispenser {
     color() {
         return 'orange';
     }

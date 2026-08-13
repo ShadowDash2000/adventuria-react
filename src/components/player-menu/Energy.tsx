@@ -4,7 +4,11 @@ import { useAppAuthContext } from '@context/AppContext';
 import { EnergyIcon } from '@shared/components/EnergyIcon';
 
 export const Energy = () => {
-    const { playerProgress, isPlayerProgressSuccess } = useAppAuthContext();
+    const { playerProgress, isPlayerProgressSuccess, isPlayerProgressError } = useAppAuthContext();
+
+    if (isPlayerProgressError) {
+        return null;
+    }
 
     return (
         <Tooltip content="Очки энергии">

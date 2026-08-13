@@ -35,6 +35,14 @@ export const usePlayersProgressSubscription = ({
         void pb
             .collection(pbCollections.playersProgress)
             .subscribe<PlayerProgressRecord>('*', event => {
+                if (event.action === 'create') {
+                    const next = new Map(playersProgressRef.current);
+                    next.set(event.record.player, event.record);
+                    playersProgressRef.current = next;
+                    setPlayersProgress(next);
+                    return;
+                }
+
                 if (event.action !== 'update') return;
 
                 const previous = playersProgressRef.current.get(event.record.player);

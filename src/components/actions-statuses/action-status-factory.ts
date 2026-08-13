@@ -1,6 +1,6 @@
 import type { ActionStatusDispenser } from '@components/actions-statuses/action-status-base';
 import { Unknown } from '@components/actions-statuses/unknown';
-import { None } from '@components/actions-statuses/none/none';
+import { Start } from '@components/actions-statuses/start/start';
 import { Move } from '@components/actions-statuses/move/move';
 import { Done } from '@components/actions-statuses/done/done';
 import { Drop } from '@components/actions-statuses/drop/drop';
@@ -13,7 +13,7 @@ import { Teleport } from '@components/actions-statuses/teleport/teleport';
 
 export class ActionStatusFactory {
     private static actions: Record<string, ActionStatusDispenser> = {
-        none: new None(),
+        start: new Start(),
         move: new Move(),
         done: new Done(),
         drop: new Drop(),

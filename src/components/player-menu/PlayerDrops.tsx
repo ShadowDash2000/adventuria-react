@@ -4,7 +4,11 @@ import { useAppAuthContext } from '@context/AppContext';
 import { GiSkullCrack } from 'react-icons/gi';
 
 export const PlayerDrops = () => {
-    const { playerProgress, isPlayerProgressSuccess } = useAppAuthContext();
+    const { playerProgress, isPlayerProgressSuccess, isPlayerProgressError } = useAppAuthContext();
+
+    if (isPlayerProgressError) {
+        return null;
+    }
 
     return (
         <Tooltip content="Счётчик дропов">

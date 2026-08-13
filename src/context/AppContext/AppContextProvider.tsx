@@ -8,6 +8,7 @@ import { AppContext, pb } from './index';
 import { pbCollections, playerProgressSchema } from '@shared/pbSchema';
 import { and, eq } from '@shared/pbFilter';
 import { ApiError } from '@shared/types/api-error';
+import { ClientResponseError } from 'pocketbase';
 
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     const [isAuth, setIsAuth] = useState<boolean>(pb.authStore.isValid);
@@ -98,6 +99,18 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         enabled: isAuth && isCurrentSeasonSuccess,
         queryKey: queryKeys.playerProgressAuth,
         refetchOnWindowFocus: false,
+        retry: (failureCount, error) => {
+            if (failureCount >= 3) {
+                return false;
+            }
+
+            if (error instanceof ClientResponseError) {
+                const e = error as ClientResponseError;
+                return e.status !== 404;
+            }
+
+            return true;
+        },
     });
 
     useEffect(() => {

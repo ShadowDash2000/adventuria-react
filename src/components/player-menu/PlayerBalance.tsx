@@ -4,7 +4,11 @@ import { Tooltip } from '@ui/tooltip';
 import { useAppAuthContext } from '@context/AppContext';
 
 export const PlayerBalance = () => {
-    const { playerProgress, isPlayerProgressSuccess } = useAppAuthContext();
+    const { playerProgress, isPlayerProgressSuccess, isPlayerProgressError } = useAppAuthContext();
+
+    if (isPlayerProgressError) {
+        return null;
+    }
 
     return (
         <Tooltip content="Баланс">

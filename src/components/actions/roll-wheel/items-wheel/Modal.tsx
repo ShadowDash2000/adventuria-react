@@ -8,12 +8,24 @@ import { useRollWheelStore } from '../useRollWheelStore';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 
 export const Modal = () => {
-    const { playerProgress, isPlayerProgressSuccess, availableActions } = useAppAuthContext();
+    const {
+        playerProgress,
+        isPlayerProgressSuccess,
+        isPlayerProgressPending,
+        isPlayerProgressError,
+        availableActions,
+    } = useAppAuthContext();
     const [open, setOpen] = useState(false);
     const isSpinning = useRollWheelStore(state => state.isSpinning);
     const isRolling = useRollDiceStore(state => state.isRolling);
 
-    if (!isPlayerProgressSuccess) return <Spinner />;
+    if (isPlayerProgressPending) {
+        return <Spinner />;
+    }
+
+    if (!isPlayerProgressSuccess || isPlayerProgressError) {
+        return null;
+    }
 
     return (
         <Dialog.Root

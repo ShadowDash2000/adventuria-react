@@ -1,3 +1,4 @@
+import { Start } from '@components/actions/start/Start';
 import { CompleteActivity } from '@components/actions/complete_activity/complete_activity';
 import { ActionDispenser } from './action-base';
 import { RollDice } from './roll-dice/roll-dice';
@@ -5,7 +6,6 @@ import { Unknown } from './unknown';
 import { RollWheel } from '@components/actions/roll-wheel/roll-wheel';
 import { Drop } from './drop/drop';
 import { Reroll } from './reroll/reroll';
-import { Teleport } from './teleport/teleport';
 import { Buy } from '@components/actions/buy/buy';
 import { RollItemOnCell } from '@components/actions/roll-item-on-cell/roll-item-on-cell';
 import { GenerateWheel } from '@components/actions/generate-wheel/generate-wheel';
@@ -16,6 +16,7 @@ type ActionFactoryItem = { order: number; dispenser: ActionDispenser };
 
 export class ActionFactory {
     private static actions: Record<string, ActionFactoryItem> = {
+        start: { order: 0, dispenser: new Start() },
         complete_activity: { order: 0, dispenser: new CompleteActivity() },
         done: { order: 0, dispenser: new Done() },
         drop: { order: 0, dispenser: new Drop() },
