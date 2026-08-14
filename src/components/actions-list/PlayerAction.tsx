@@ -25,13 +25,12 @@ export const PlayerAction = ({ action }: ActionProps) => {
 
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [comment, setComment] = useState<string>(action.expand?.review?.comment ?? '');
     const [score, setScore] = useState<number>(action.expand?.review?.score ?? 0);
     const [draft, setDraft] = useState<string>(action.expand?.review?.comment ?? '');
     const activity = action.expand?.activity;
-
-    const canEdit = isAuth && authPlayer.id && action.player === authPlayer.id;
+    const canEdit =
+        isAuth && authPlayer.id && action.player === authPlayer.id && action.expand?.review;
 
     useEffect(() => {
         setComment(action.expand?.review?.comment ?? '');
@@ -50,12 +49,10 @@ export const PlayerAction = ({ action }: ActionProps) => {
 
     const handleSave = async () => {
         setSaving(true);
-        setError(null);
 
         const res = await updateActionRequest(pb.authStore.token, action.id, draft, score);
 
         if (!handleApiResponse(res)) {
-            setError(res.message);
             setSaving(false);
             return;
         }
@@ -153,18 +150,15 @@ export const PlayerAction = ({ action }: ActionProps) => {
                             </HStack>
                         </VStack>
                         <Card.Description as="div" w="full">
-                            <PlayerActionReview
-                                isEditing={isEditing}
-                                comment={comment}
-                                score={score}
-                                setScore={setScore}
-                                draft={draft}
-                                setDraft={setDraft}
-                            />
-                            {!!error && (
-                                <Text color="red.500" mt="2" fontSize="xs">
-                                    {error}
-                                </Text>
+                            {action.expand?.review && (
+                                <PlayerActionReview
+                                    isEditing={isEditing}
+                                    comment={comment}
+                                    score={score}
+                                    setScore={setScore}
+                                    draft={draft}
+                                    setDraft={setDraft}
+                                />
                             )}
                         </Card.Description>
                     </VStack>
