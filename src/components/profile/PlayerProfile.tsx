@@ -1,6 +1,5 @@
 import type { PlayerRecord } from '@shared/types/player';
 import { PlayerAvatar } from '../PlayerAvatar';
-import { useCollectionOneFilter } from '@context/CollectionOneFilterContext';
 import {
     Box,
     ButtonGroup,
@@ -18,8 +17,11 @@ import { Flex } from '@theme/flex';
 import { Button } from '@theme/button';
 import { resolveRelativeImageUrls } from '@shared/helpers/helper';
 
-export const PlayerProfile = () => {
-    const { data: player } = useCollectionOneFilter<PlayerRecord>();
+interface PlayerProfileProps {
+    player: PlayerRecord;
+}
+
+export const PlayerProfile = ({ player }: PlayerProfileProps) => {
     const lgBreakpoint = useToken('breakpoints', 'lg');
 
     const stats = player.stats
