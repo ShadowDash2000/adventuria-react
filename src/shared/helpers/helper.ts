@@ -12,3 +12,17 @@ export const formatDateLocalized = (isoString: IsoDateString) => {
         .format(new Date(isoString))
         .replace(',', ' ');
 };
+
+export function resolveRelativeImageUrls(html: string, baseUrl: string): string {
+    const document = new DOMParser().parseFromString(html, 'text/html');
+
+    document.querySelectorAll<HTMLImageElement>('img[src]').forEach(image => {
+        const src = image.getAttribute('src');
+
+        if (src?.startsWith('/_/../api/files')) {
+            image.src = new URL(src, baseUrl).toString();
+        }
+    });
+
+    return document.body.innerHTML;
+}

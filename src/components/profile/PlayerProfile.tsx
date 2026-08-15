@@ -16,6 +16,7 @@ import {
 import { LuTwitch, LuYoutube } from 'react-icons/lu';
 import { Flex } from '@theme/flex';
 import { Button } from '@theme/button';
+import { resolveRelativeImageUrls } from '@shared/helpers/helper';
 
 export const PlayerProfile = () => {
     const { data: player } = useCollectionOneFilter<PlayerRecord>();
@@ -94,7 +95,12 @@ export const PlayerProfile = () => {
             <Box
                 w="full"
                 textAlign="center"
-                dangerouslySetInnerHTML={{ __html: player.description }}
+                dangerouslySetInnerHTML={{
+                    __html: resolveRelativeImageUrls(
+                        player.description,
+                        import.meta.env.VITE_PB_URL || '',
+                    ),
+                }}
                 css={{ [`@media (max-width: ${lgBreakpoint})`]: { '& img': { display: 'none' } } }}
             />
         </Flex>
