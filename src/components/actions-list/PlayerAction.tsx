@@ -214,7 +214,7 @@ const updateActionRequest = async (
     formData.append('comment', comment);
     formData.append('score', score.toString());
 
-    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/update-action`, {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/update-review`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}` },
         body: formData,
