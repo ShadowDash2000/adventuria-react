@@ -17,7 +17,7 @@ export const UsedItems = ({ action }: UsedItemsProps) => {
     const items = useQuery({
         queryFn: () => pb.collection(pbCollections.items).getFullList<ItemRecord>(),
         enabled: !!action.used_items && !!action.used_items.length,
-        queryKey: [...queryKeys.items, 'used-items'],
+        queryKey: [...queryKeys.items, 'used-items', action.used_items],
         refetchOnWindowFocus: false,
     });
 

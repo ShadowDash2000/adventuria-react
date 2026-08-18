@@ -50,7 +50,7 @@ export const PlayersFloatingList = () => {
                         dotExpand('expand', playerProgressSchema.player, playerSchema.isStreamLive),
                     ),
                 }),
-        queryKey: [...queryKeys.playersProgress, 'floating-list'],
+        queryKey: [...queryKeys.playersProgress, 'floating-list', currentSeason],
         enabled: isCurrentSeasonSuccess,
     });
 

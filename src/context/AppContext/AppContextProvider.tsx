@@ -97,7 +97,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
                     ),
                 ),
         enabled: isAuth && isCurrentSeasonSuccess,
-        queryKey: queryKeys.playerProgressAuth,
+        queryKey: [...queryKeys.playerProgressAuth, player.id, currentSeason],
         refetchOnWindowFocus: false,
         retry: (failureCount, error) => {
             if (failureCount >= 3) {
