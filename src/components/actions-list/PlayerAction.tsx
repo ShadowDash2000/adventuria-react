@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { type ActionRecord } from '@shared/types/action';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { useAppContext } from '@context/AppContext';
-import { formatDateLocalized } from '@shared/helpers/helper';
+import { formatDateLocalized, resolveRelativeImageUrlsFromHtml } from '@shared/helpers/helper';
 import { ActionStatusFactory } from '@components/actions-statuses/action-status-factory';
 import { PlayerAvatar } from '../PlayerAvatar';
 import { InfoTip } from '@ui/toggle-tip';
@@ -25,16 +25,22 @@ export const PlayerAction = ({ action }: ActionProps) => {
 
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [comment, setComment] = useState<string>(action.expand?.review?.comment ?? '');
+    const [comment, setComment] = useState<string>('');
     const [score, setScore] = useState<number>(action.expand?.review?.score ?? 0);
-    const [draft, setDraft] = useState<string>(action.expand?.review?.comment ?? '');
+    const [draft, setDraft] = useState<string>('');
     const activity = action.expand?.activity;
     const canEdit =
         isAuth && authPlayer.id && action.player === authPlayer.id && action.expand?.review;
 
     useEffect(() => {
-        setComment(action.expand?.review?.comment ?? '');
-        setDraft(action.expand?.review?.comment ?? '');
+        const comment = action.expand?.review?.comment
+            ? resolveRelativeImageUrlsFromHtml(
+                  action.expand.review.comment,
+                  import.meta.env.VITE_PB_URL || '',
+              )
+            : '';
+        setComment(comment);
+        setDraft(comment);
     }, [action.expand?.review?.comment]);
 
     useEffect(() => {

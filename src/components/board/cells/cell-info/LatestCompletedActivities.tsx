@@ -1,4 +1,4 @@
-import type { RecordIdString } from '@shared/types/pocketbase';
+import type { IsoDateString, RecordIdString } from '@shared/types/pocketbase';
 import type { ClientResponseError } from 'pocketbase';
 import type { JSX } from 'react';
 import { Carousel, For, Heading, HStack, IconButton, Text, VStack } from '@chakra-ui/react';
@@ -9,6 +9,7 @@ import { Cover } from '@components/activities/Cover';
 import { PlayerAvatar } from '@components/PlayerAvatar';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import { ToggleTip } from '@ui/toggle-tip';
+import { formatDateLocalized } from '@shared/helpers/helper';
 
 const MAX_PLAYERS = 6;
 
@@ -102,7 +103,7 @@ type CompletedActivity = {
     players: PlayerStatus[];
 };
 
-type PlayerStatus = { player: Player; status: string };
+type PlayerStatus = { player: Player; status: string; date: IsoDateString };
 
 type Player = {
     collectionName: string;
@@ -154,10 +155,15 @@ const PlayersListButton = ({ players }: PlayersListButtonProps) => {
                     >
                         <For each={players}>
                             {(playerStatus, index) => (
-                                <VStack key={`${playerStatus.player.id}_${index}`}>
-                                    <PlayerAvatar player={playerStatus.player} />
-                                    <PlayerStatus status={playerStatus.status} />
-                                </VStack>
+                                <HStack key={`${playerStatus.player.id}_${index}`}>
+                                    <VStack>
+                                        <PlayerAvatar player={playerStatus.player} />
+                                        <PlayerStatus status={playerStatus.status} />
+                                    </VStack>
+                                    <Text color="white">
+                                        {formatDateLocalized(playerStatus.date)}
+                                    </Text>
+                                </HStack>
                             )}
                         </For>
                     </VStack>
@@ -185,14 +191,19 @@ const PlayersList = ({ players }: PlayersListProps) => {
             padding={2}
             flexWrap="wrap"
             justifyContent="center"
-            pointerEvents="none"
         >
             <For each={players}>
                 {(playerStatus, index) => (
-                    <VStack key={`${playerStatus.player.id}_${index}`}>
-                        <PlayerAvatar player={playerStatus.player} />
-                        <PlayerStatus status={playerStatus.status} />
-                    </VStack>
+                    <Tooltip
+                        key={`${playerStatus.player.id}_${index}`}
+                        content={formatActionDate(playerStatus.date)}
+                        openDelay={100}
+                    >
+                        <VStack userSelect="none">
+                            <PlayerAvatar player={playerStatus.player} />
+                            <PlayerStatus status={playerStatus.status} />
+                        </VStack>
+                    </Tooltip>
                 )}
             </For>
         </HStack>
@@ -213,3 +224,7 @@ const PlayerStatus = ({ status }: PlayerStatusProps) => {
 
     return <>{text || <Text>{status}</Text>}</>;
 };
+
+function formatActionDate(date: IsoDateString) {
+    return formatDateLocalized(date, { hour: undefined, minute: undefined });
+}

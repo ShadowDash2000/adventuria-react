@@ -15,7 +15,7 @@ import {
 import { LuTwitch, LuYoutube } from 'react-icons/lu';
 import { Flex } from '@theme/flex';
 import { Button } from '@theme/button';
-import { resolveRelativeImageUrls } from '@shared/helpers/helper';
+import { resolveRelativeImageUrlsFromHtml } from '@shared/helpers/helper';
 
 interface PlayerProfileProps {
     player: PlayerRecord;
@@ -98,7 +98,7 @@ export const PlayerProfile = ({ player }: PlayerProfileProps) => {
                 w="full"
                 textAlign="center"
                 dangerouslySetInnerHTML={{
-                    __html: resolveRelativeImageUrls(
+                    __html: resolveRelativeImageUrlsFromHtml(
                         player.description,
                         import.meta.env.VITE_PB_URL || '',
                     ),
