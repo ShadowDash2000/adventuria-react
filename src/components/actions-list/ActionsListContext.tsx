@@ -1,12 +1,13 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import { Flex, type FlexProps } from '@chakra-ui/react';
-import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
-import type { ListResult } from 'pocketbase';
+import { createContext, useContext, type ReactNode, useState } from 'react';
+import { Flex, type FlexProps, Spinner, Text } from '@chakra-ui/react';
+import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useAppContext } from '@context/AppContext';
-import type { ActionRecord } from '@shared/types/action';
 import { queryKeys } from '@shared/queryClient';
-import { actionSchema, pbCollections } from '@shared/pbSchema';
+import { actionSchema, pbCollections, seasonsSchema } from '@shared/pbSchema';
 import { joinExpand } from '@shared/pbExpand';
+import type { ClientResponseError, ListResult } from 'pocketbase';
+import type { ActionRecord } from '@shared/types/action';
+import type { SeasonRecord } from '@shared/types/season';
 
 interface ActionsListProviderProps extends FlexProps {
     children: ReactNode;
@@ -15,8 +16,8 @@ interface ActionsListProviderProps extends FlexProps {
 }
 
 interface ActionsListContextValue {
-    filter: string;
-    setFilter: (filter: string) => void;
+    setQueryFilter: (queryFilter: string) => void;
+    seasonsList: SeasonRecord[];
     pages: ListResult<ActionRecord>[];
     error: Error | null;
     isPending: boolean;
@@ -43,10 +44,11 @@ export const ActionsListProvider = ({
     ...rest
 }: ActionsListProviderProps) => {
     const { pb } = useAppContext();
-    const [actionFilter, setActionFilter] = useState('');
+    const [queryFilter, setQueryFilter] = useState('');
+    const [filtersReady, setFiltersReady] = useState(false);
 
-    const playerFilter = playerId ? `${actionSchema.player} = "${playerId}"` : '';
-    const filter = [playerFilter, actionFilter].filter(Boolean).join(' && ');
+    const playerFilter = playerId ? `(${actionSchema.player} = "${playerId}")` : '';
+    const filter = [playerFilter, queryFilter].filter(Boolean).join(' && ');
 
     const actions = useInfiniteQuery({
         queryFn: ({ pageParam }) =>
@@ -66,6 +68,7 @@ export const ActionsListProvider = ({
             if (lastPage.page === lastPage.totalPages) return null;
             return lastPageParam + 1;
         },
+        enabled: filtersReady,
         queryKey: [...queryKeys.actions, filter, perPage],
         initialPageParam: 1,
         placeholderData: keepPreviousData,
@@ -73,11 +76,40 @@ export const ActionsListProvider = ({
         refetchOnWindowFocus: false,
     });
 
+    const seasons = useQuery({
+        queryFn: () =>
+            pb
+                .collection(pbCollections.seasons)
+                .getFullList<SeasonRecord>({ sort: `-${seasonsSchema.seasonDateStart}` }),
+        queryKey: [...queryKeys.seasons, 'actions-list'],
+        refetchOnWindowFocus: false,
+    });
+
+    if (seasons.isPending) {
+        return (
+            <Flex h={48} justify="center" {...rest}>
+                <Spinner />
+            </Flex>
+        );
+    }
+
+    if (seasons.isError) {
+        const e = seasons.error as ClientResponseError;
+        return (
+            <Flex h={48} justify="center" {...rest}>
+                <Text>{e.message}</Text>
+            </Flex>
+        );
+    }
+
     return (
         <ActionsListContext.Provider
             value={{
-                filter,
-                setFilter: setActionFilter,
+                setQueryFilter: filter => {
+                    setQueryFilter(filter);
+                    setFiltersReady(true);
+                },
+                seasonsList: seasons.data,
                 pages: actions.data?.pages ?? [],
                 error: actions.error,
                 isPending: actions.isPending,
