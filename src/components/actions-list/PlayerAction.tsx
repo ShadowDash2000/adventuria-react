@@ -1,4 +1,4 @@
-import { Card, HStack, Text, Image, VStack, DataList, Stack, IconButton } from '@chakra-ui/react';
+import { Card, HStack, Text, VStack, DataList, Stack, IconButton } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { type ActionRecord } from '@shared/types/action';
 import type { RecordIdString } from '@shared/types/pocketbase';
@@ -151,9 +151,11 @@ export const PlayerAction = ({ action }: ActionProps) => {
                                     </DataList.Item>
                                 )}
                             </DataList.Root>
-                            <HStack>
-                                <UsedItems action={action} />
-                            </HStack>
+                            {action.state?.used_items && (
+                                <HStack>
+                                    <UsedItems ids={action.state.used_items.map(val => val.id)} />
+                                </HStack>
+                            )}
                         </VStack>
                         <Card.Description as="div" w="full">
                             {action.expand?.review && (

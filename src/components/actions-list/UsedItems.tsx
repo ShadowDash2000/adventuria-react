@@ -1,4 +1,3 @@
-import type { ActionRecord } from '@shared/types/action';
 import type { ItemRecord } from '@shared/types/item';
 import { For, Spinner, Text } from '@chakra-ui/react';
 import { useAppContext } from '@context/AppContext';
@@ -8,25 +7,23 @@ import { ItemIcon } from '@components/items/ItemIcon';
 import { pbCollections } from '@shared/pbSchema';
 
 interface UsedItemsProps {
-    action: ActionRecord;
+    ids: string[];
 }
 
-export const UsedItems = ({ action }: UsedItemsProps) => {
+export const UsedItems = ({ ids }: UsedItemsProps) => {
     const { pb } = useAppContext();
 
     const items = useQuery({
         queryFn: () => pb.collection(pbCollections.items).getFullList<ItemRecord>(),
-        enabled: !!action.used_items && !!action.used_items.length,
-        queryKey: [...queryKeys.items, 'used-items', action.used_items],
+        queryKey: [...queryKeys.items, 'used-items'],
         refetchOnWindowFocus: false,
     });
 
-    if (!items.isEnabled) return null;
     if (items.isPending) return <Spinner />;
     if (items.isError) return <Text>Не удалось получить список использованных предметов.</Text>;
 
     const itemsMap = new Map(items.data.map(item => [item.id, item]));
-    const itemsList = action.used_items.map(id => itemsMap.get(id)!);
+    const itemsList = ids.map(id => itemsMap.get(id)!);
 
     return (
         <For each={itemsList}>

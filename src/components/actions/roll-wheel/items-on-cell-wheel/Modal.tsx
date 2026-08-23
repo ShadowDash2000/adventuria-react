@@ -1,12 +1,12 @@
-import { LuFerrisWheel } from 'react-icons/lu';
-import { CloseButton, Dialog, Portal } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { ItemsWheelContent } from './ItemOnCellWheelContent';
-import { useRollWheelStore } from '@components/actions/roll-wheel/useRollWheelStore';
+import { CloseButton, Dialog, Portal } from '@chakra-ui/react';
 import { Button } from '@theme/button';
+import { LuFerrisWheel } from 'react-icons/lu';
+import { Content } from './Content';
+import { useRollWheelStore } from '@components/actions/roll-wheel/useRollWheelStore';
 import { invalidateAllActions } from '@shared/queryClient';
 
-export const ItemOnCellWheelButton = () => {
+export const Modal = () => {
     const [open, setOpen] = useState(false);
     const [wasSpinned, setWasSpinned] = useState(false);
     const isSpinning = useRollWheelStore(state => state.isSpinning);
@@ -45,7 +45,7 @@ export const ItemOnCellWheelButton = () => {
                 <Dialog.Positioner>
                     <Dialog.Content bg="none" boxShadow="none" mt={0}>
                         <Dialog.Body display="flex" justifyContent="space-around" p={0}>
-                            <ItemsWheelContent />
+                            <Content />
                         </Dialog.Body>
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />

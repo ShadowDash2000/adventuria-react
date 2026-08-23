@@ -2,7 +2,6 @@ import type { CellRecord } from '@shared/types/cell';
 import { Coin } from '@shared/components/Coin';
 import { DataList, Grid, GridItem, Text } from '@chakra-ui/react';
 import { Tooltip } from '@ui/tooltip';
-import { useAppContext } from '@context/AppContext';
 import { Cover } from '@components/activities/Cover';
 
 interface CellDataProps {
@@ -17,8 +16,6 @@ const activityListTitle: Record<string, string> = {
 };
 
 export const CellData = ({ cell }: CellDataProps) => {
-    const { pb } = useAppContext();
-
     const hasActivityFilter = !!(
         cell.expand?.filter?.expand?.activities && cell.expand.filter.expand.activities.length > 0
     );

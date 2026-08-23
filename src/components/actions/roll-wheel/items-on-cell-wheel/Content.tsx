@@ -1,8 +1,7 @@
 import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import type { ItemRecord } from '@shared/types/item';
-import { invalidatePlayerProgressAuth } from '@shared/queryClient';
+import { invalidatePlayerProgressAuth, queryKeys } from '@shared/queryClient';
 import { ItemInfo } from '@components/actions/roll-wheel/items-wheel/ItemInfo';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -14,48 +13,35 @@ import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
-import type { ActionRecord } from '@shared/types/action';
-import { actionSchema, activitySchema, pbCollections } from '@shared/pbSchema';
+import type { RecordIdString } from '@shared/types/pocketbase';
 
-export const ItemsWheelContent = () => {
-    const { pb, player } = useAppAuthContext();
+export const Content = () => {
+    const { pb } = useAppAuthContext();
     const wheelRef = useRef<WheelOFortuneHandle>(null);
     const { volume, setVolume } = useAudioPlayer(AudioKey.music);
     const [wasSpinned, setWasSpinned] = useState(false);
 
-    const action = useQuery({
-        queryFn: () =>
-            pb
-                .collection(pbCollections.actions)
-                .getFirstListItem<ActionRecord>(`${actionSchema.player} = "${player.id}"`, {
-                    sort: '-created',
-                    expand: actionSchema.cell,
-                }),
+    const wheelView = useQuery({
+        queryFn: async () => {
+            const res = await getWheelView(pb.authStore.token);
+
+            if (!res.success) {
+                throw new Error(res.message);
+            }
+
+            return res;
+        },
+        queryKey: [...queryKeys.activityWheel],
         refetchOnWindowFocus: false,
-        queryKey: ['action'],
     });
 
-    const audioPresetFilter = action.data?.expand?.cell?.audio_preset
-        ? { audioPresetId: action.data.expand.cell.audio_preset }
+    const audioPresetFilter = wheelView.data?.data?.audio_preset_id
+        ? { audioPresetId: wheelView.data.data.audio_preset_id }
         : { audioPresetSlug: 'roll-items' };
-
-    const items = useQuery({
-        queryFn: () =>
-            pb
-                .collection(pbCollections.items)
-                .getFullList<ItemRecord>({
-                    filter: action
-                        .data!.items_list.map(id => `${activitySchema.id}="${id}"`)
-                        .join('||'),
-                }),
-        refetchOnWindowFocus: false,
-        enabled: action.isSuccess,
-        queryKey: [action],
-    });
 
     const { spinning, handleSpin, currentItemIndex, setCurrentItemIndex, audioPreset } = useWheel({
         wheelRef,
-        enabled: action.isSuccess,
+        enabled: wheelView.isSuccess,
         spinRequest: () => rollItemOnCellRequest(pb.authStore.token),
         onSpinComplete: async () => {
             await invalidatePlayerProgressAuth();
@@ -69,12 +55,13 @@ export const ItemsWheelContent = () => {
         }
     }, [spinning]);
 
-    if (items.isPending || audioPreset.isPending) return <Spinner />;
-    if (items.isError) return <Text>Error: {items.error?.message}</Text>;
-    if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
+    if (wheelView.isPending || audioPreset.isPending) return <Spinner />;
+    if (wheelView.isError) return <Text color="red.500">{wheelView.error.message}</Text>;
+    if (audioPreset.isError)
+        return <Text color="red.500">Error: {audioPreset.error?.message}</Text>;
 
-    const wheelItems = items.data
-        ? items.data.map(item => ({
+    const wheelItems = wheelView.data
+        ? wheelView.data.data.items.map(item => ({
               key: item.id,
               image: pb.files.getURL(item, item.icon),
               title: item.name,
@@ -92,7 +79,7 @@ export const ItemsWheelContent = () => {
                 pt={2}
                 px={4}
             >
-                <ItemInfo item={items.data[currentItemIndex]} />
+                <ItemInfo item={wheelView.data.data.items[currentItemIndex]} />
             </Flex>
             <VStack gap={3} justify="center">
                 <WheelOFortune ref={wheelRef} items={wheelItems} />
@@ -150,14 +137,37 @@ const rollItemOnCellRequest = async (authToken: string) => {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}` },
     });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to roll item`);
-    }
 
     return (await res.json()) as SpinResult;
+};
+
+type ItemView = {
+    id: RecordIdString;
+    collectionName: string;
+    name: string;
+    icon: string;
+    description: string;
+    type: string;
+};
+
+type GetWheelViewData = { items: ItemView[]; audio_preset_id?: string };
+
+type GetWheelViewSuccess = {
+    success: true;
+    data: GetWheelViewData;
+    message?: string;
+    error?: never;
+};
+
+type GetWheelViewError = { success: false; data: never; message: string; error: string };
+
+type GetWheelViewResult = GetWheelViewSuccess | GetWheelViewError;
+
+const getWheelView = async (authToken: string) => {
+    const res = await fetch(
+        `${import.meta.env.VITE_PB_URL}/api/action-view?action=roll_item_on_cell`,
+        { method: 'GET', headers: { Authorization: `Bearer ${authToken}` } },
+    );
+
+    return (await res.json()) as GetWheelViewResult;
 };

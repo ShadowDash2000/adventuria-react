@@ -1,10 +1,18 @@
 import { Box, Flex, Heading, Image } from '@chakra-ui/react';
 import { useAppContext } from '@context/AppContext';
-import type { ItemView } from '@components/actions/roll-wheel/items-wheel/view';
+import type { RecordIdString } from '@shared/types/pocketbase';
 
 interface WheelItemInfoProps {
-    item: ItemView;
+    item: Item;
 }
+
+type Item = {
+    id: RecordIdString;
+    collectionName: string;
+    name: string;
+    icon: string;
+    description: string;
+};
 
 export const ItemInfo = ({ item }: WheelItemInfoProps) => {
     const { pb } = useAppContext();

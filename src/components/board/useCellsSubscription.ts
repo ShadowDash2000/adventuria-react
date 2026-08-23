@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import type PocketBase from 'pocketbase';
 import type { CellEventRecord } from '@shared/types/cell_event';
 import { pbCollections } from '@shared/pbSchema';
-import { invalidateCells } from '@shared/queryClient';
+import { invalidateAvailableActions, invalidateCells } from '@shared/queryClient';
 
 type CellsSubscriptionProps = { pb: PocketBase; isAuth: boolean };
 
@@ -19,6 +19,7 @@ export const useCellsSubscription = ({ pb, isAuth }: CellsSubscriptionProps) => 
                 if (event.action !== 'update') return;
 
                 await invalidateCells();
+                await invalidateAvailableActions();
             })
             .then(callback => {
                 if (disposed) {

@@ -14,9 +14,7 @@ export type ActionRecord = {
     activity: RecordIdString;
     review: RecordIdString;
     cells_passed: number;
-    items_list: string[];
-    used_items: string[];
-    custom_activity_filter: unknown;
+    state?: ActionState;
     expand?: ActionRecordExpand;
 } & RecordModel;
 
@@ -26,3 +24,7 @@ export type ActionRecordExpand = {
     activity?: ActivityRecord;
     review?: ReviewRecord;
 };
+
+type ActionState = { used_items?: UsedItemState[] };
+
+type UsedItemState = { id: string };

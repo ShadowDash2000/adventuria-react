@@ -1,4 +1,3 @@
-import type { ItemRecord } from '@shared/types/item';
 import { Image, Text, ImageProps, Float, Flex } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { Tooltip } from '@ui/tooltip';

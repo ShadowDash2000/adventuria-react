@@ -6,7 +6,7 @@ import { CELL_MAX_PLAYERS, CELL_MAX_PLAYERS_LINE } from '../Board';
 import { usePlayer } from '@components/board/players/usePlayer';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
-import { invalidatePlayerProgress, invalidatePlayers } from '@shared/queryClient';
+import { invalidatePlayerProgress } from '@shared/queryClient';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
 
 type PlayerPosition = { x: number; y: number; offsetX: number; offsetY: number };

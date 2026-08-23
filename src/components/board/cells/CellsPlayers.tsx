@@ -23,12 +23,12 @@ export const CellsPlayers = () => {
     );
 };
 
-interface CellTooltipProps {
+interface CellPlayersProps {
     cellIndex: number;
     players: PlayerRecord[];
 }
 
-const CellPlayers = ({ cellIndex, players }: CellTooltipProps) => {
+const CellPlayers = ({ cellIndex, players }: CellPlayersProps) => {
     const { cellWidth, cellHeight, positionByCellIndex } = useBoardInnerContext();
     const position = positionByCellIndex.get(cellIndex);
     if (!position) return null;
