@@ -118,6 +118,7 @@ export const inventorySchema = {
 
 export const itemSchema = {
     id: 'id',
+    disabled: 'disabled',
     name: 'name',
     icon: 'icon',
     effects: 'effects',

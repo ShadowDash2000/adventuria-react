@@ -5,6 +5,7 @@ import { EffectRecord } from '@shared/types/effect';
 export type ItemRecord = {
     created: IsoDateString;
     updated: IsoDateString;
+    disabled: boolean;
     name: string;
     icon: string;
     effects: RecordIdString[];

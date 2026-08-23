@@ -15,7 +15,9 @@ export const GlossaryContent = ({ ...props }: GridProps) => {
         queryFn: () =>
             pb
                 .collection(pbCollections.items)
-                .getFullList<ItemRecord>({ filter: `${itemSchema.type} != "dev"` }),
+                .getFullList<ItemRecord>({
+                    filter: `${itemSchema.type} != "dev" && ${itemSchema.disabled} = false`,
+                }),
         queryKey: [...queryKeys.items, 'glossary'],
         refetchOnWindowFocus: false,
     });
