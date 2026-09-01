@@ -1,11 +1,12 @@
 import { LuFerrisWheel } from 'react-icons/lu';
 import { CloseButton, Dialog, IconButton, Portal, Spinner } from '@chakra-ui/react';
 import { Tooltip } from '@ui/tooltip';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppAuthContext } from '@context/AppContext';
 import { Content } from './Content';
 import { useRollWheelStore } from '../useRollWheelStore';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
+import { invalidateAllActions } from '@shared/queryClient';
 
 export const Modal = () => {
     const {
@@ -16,8 +17,15 @@ export const Modal = () => {
         availableActions,
     } = useAppAuthContext();
     const [open, setOpen] = useState(false);
+    const [wasSpinned, setWasSpinned] = useState(false);
     const isSpinning = useRollWheelStore(state => state.isSpinning);
     const isRolling = useRollDiceStore(state => state.isRolling);
+
+    useEffect(() => {
+        if (isSpinning) {
+            setWasSpinned(true);
+        }
+    }, [isSpinning]);
 
     if (isPlayerProgressPending) {
         return <Spinner />;
@@ -33,8 +41,14 @@ export const Modal = () => {
             lazyMount
             unmountOnExit
             open={open}
-            onOpenChange={e => {
-                if (!isSpinning) setOpen(e.open);
+            onOpenChange={async e => {
+                if (!isSpinning) {
+                    setOpen(e.open);
+                    if (!e.open && wasSpinned) {
+                        await invalidateAllActions();
+                        setWasSpinned(false);
+                    }
+                }
             }}
             size="full"
         >
