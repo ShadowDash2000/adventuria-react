@@ -28,6 +28,7 @@ export const pbCollections = {
     worlds: 'worlds',
     cellEventsSchedule: 'cell_events_schedule',
     seasons: 'seasons',
+    playerEvents: 'player_events',
 };
 
 export const playerSchema = {
@@ -199,4 +200,13 @@ export const seasonsSchema = {
     slug: 'slug',
     seasonDateStart: 'season_date_start',
     seasonDateEnd: 'season_date_end',
+};
+
+export const playerEventsSchema = {
+    id: 'id',
+    player: 'player',
+    season: 'season',
+    type: 'type',
+    action: 'action',
+    payload: 'payload',
 };

@@ -4,6 +4,7 @@ import type { ActivityRecord } from '@shared/types/activity';
 import type { PlayerRecord } from '@shared/types/player';
 import type { CellRecord } from '@shared/types/cell';
 import type { ReviewRecord } from '@shared/types/review';
+import type { PlayerEventRecord } from '@shared/types/player_event';
 
 export type ActionRecord = {
     created: IsoDateString;
@@ -14,6 +15,7 @@ export type ActionRecord = {
     activity: RecordIdString;
     review: RecordIdString;
     cells_passed: number;
+    player_events: PlayerEventRecord[];
     state?: ActionState;
     expand?: ActionRecordExpand;
 } & RecordModel;

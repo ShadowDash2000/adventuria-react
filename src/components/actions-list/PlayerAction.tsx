@@ -1,4 +1,13 @@
-import { Card, HStack, Text, VStack, DataList, Stack, IconButton } from '@chakra-ui/react';
+import {
+    Card,
+    HStack,
+    Text,
+    VStack,
+    DataList,
+    Stack,
+    IconButton,
+    Separator,
+} from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { type ActionRecord } from '@shared/types/action';
 import type { RecordIdString } from '@shared/types/pocketbase';
@@ -15,6 +24,7 @@ import { LinkButtons } from '@components/actions/roll-wheel/activities-wheel/Lin
 import { UsedItems } from './UsedItems';
 import { handleApiResponse } from '@shared/helpers/api';
 import { Cover } from '@components/activities/Cover';
+import { Events } from '@components/actions-list/Events';
 
 type ActionProps = { action: ActionRecord };
 
@@ -111,6 +121,10 @@ export const PlayerAction = ({ action }: ActionProps) => {
                                 )}
                             </>
                         )}
+                        {activity && action.player_events.length > 0 && (
+                            <Separator w="full" borderColor="border.inverted" />
+                        )}
+                        <Events playerEvents={action.player_events} />
                     </VStack>
                     <VStack w="full" align="start">
                         <VStack>
