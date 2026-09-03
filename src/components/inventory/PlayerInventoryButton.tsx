@@ -5,14 +5,14 @@ import { Drawer, Float, HStack, IconButton, Kbd, Portal } from '@chakra-ui/react
 import { GiSwapBag } from 'react-icons/gi';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
 import { useRollWheelStore } from '@components/actions/roll-wheel/useRollWheelStore';
-import type { PlayerRecord } from '@shared/types/player';
+import type { RecordIdString } from '@shared/types/pocketbase';
 
 interface PlayerInventoryButtonProps {
-    player: PlayerRecord;
+    playerId: RecordIdString;
     kbd?: boolean;
 }
 
-export const PlayerInventoryButton = ({ player, kbd = false }: PlayerInventoryButtonProps) => {
+export const PlayerInventoryButton = ({ playerId, kbd = false }: PlayerInventoryButtonProps) => {
     const [open, setOpen] = useState<boolean>(false);
     const { isBlocked } = useKbdSettings(KbdKey.inventory);
     const isSpinning = useRollWheelStore(state => state.isSpinning);
@@ -61,7 +61,7 @@ export const PlayerInventoryButton = ({ player, kbd = false }: PlayerInventoryBu
                 <Drawer.Backdrop />
                 <Drawer.Positioner>
                     <Drawer.Content>
-                        <Inventory player={player} />
+                        <Inventory playerId={playerId} />
                     </Drawer.Content>
                 </Drawer.Positioner>
             </Portal>

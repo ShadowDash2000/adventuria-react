@@ -2,8 +2,8 @@ import { Button } from '@theme/button';
 import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
 import {
     invalidateAllActions,
+    invalidateGameState,
     invalidatePlayerProgress,
-    invalidatePlayerProgressAuth,
 } from '@shared/queryClient';
 import { useAppAuthContext } from '@context/AppContext';
 import {
@@ -29,7 +29,7 @@ export const UseItemButton = ({
     itemEffects,
     onItemUse,
 }: UseItemButtonProps) => {
-    const { pb, player } = useAppAuthContext();
+    const { pb, playerId } = useAppAuthContext();
     const incrementKbdBlock = useKbdSettingsStore(state => state.incrementAll);
     const decrementKbdBlock = useKbdSettingsStore(state => state.decrementAll);
     const [loading, setLoading] = useState(false);
@@ -47,8 +47,8 @@ export const UseItemButton = ({
 
         decrementKbdBlock();
         await invalidateAllActions();
-        await invalidatePlayerProgressAuth();
-        await invalidatePlayerProgress(player.id);
+        await invalidateGameState();
+        await invalidatePlayerProgress(playerId);
         onItemUse?.();
     };
 
@@ -60,8 +60,8 @@ export const UseItemButton = ({
         }
 
         await invalidateAllActions();
-        await invalidatePlayerProgressAuth();
-        await invalidatePlayerProgress(player.id);
+        await invalidateGameState();
+        await invalidatePlayerProgress(playerId);
         onItemUse?.();
     };
 

@@ -6,7 +6,7 @@ import { useAppContext } from '@context/AppContext';
 import { handleApiResponse } from '@shared/helpers/api';
 import {
     invalidateAllActions,
-    invalidatePlayerProgressAuth,
+    invalidateGameState,
     invalidatePlayersProgress,
 } from '@shared/queryClient';
 
@@ -32,7 +32,7 @@ const StartButton = () => {
         }
 
         await invalidateAllActions();
-        await invalidatePlayerProgressAuth();
+        await invalidateGameState();
         await invalidatePlayersProgress();
     };
 

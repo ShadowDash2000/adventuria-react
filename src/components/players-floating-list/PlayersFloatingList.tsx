@@ -29,7 +29,7 @@ import { eq } from '@shared/pbFilter';
 import { dotExpand, joinExpand } from '@shared/pbExpand';
 
 export const PlayersFloatingList = () => {
-    const { pb, currentSeason, isCurrentSeasonSuccess } = useAppContext();
+    const { pb, gameState, isGameStateSuccess } = useAppContext();
     const open = usePlayerFloatingListStore(state => state.open);
     const setOpen = usePlayerFloatingListStore(state => state.setOpen);
 
@@ -38,7 +38,7 @@ export const PlayersFloatingList = () => {
             pb
                 .collection(pbCollections.playersProgress)
                 .getFullList<PlayerProgressRecord>({
-                    filter: eq(playerProgressSchema.season, currentSeason!),
+                    filter: eq(playerProgressSchema.season, gameState!.season),
                     expand: playerProgressSchema.player,
                     fields: joinExpand(
                         playerProgressSchema.id,
@@ -50,8 +50,8 @@ export const PlayersFloatingList = () => {
                         dotExpand('expand', playerProgressSchema.player, playerSchema.isStreamLive),
                     ),
                 }),
-        queryKey: [...queryKeys.playersProgress, 'floating-list', currentSeason],
-        enabled: isCurrentSeasonSuccess,
+        queryKey: [...queryKeys.playersProgress, 'floating-list', gameState?.season],
+        enabled: isGameStateSuccess,
     });
 
     if (playersProgress.isPending) return <Spinner />;
@@ -104,7 +104,7 @@ export const PlayersFloatingList = () => {
                                             </ChakraLink>
                                             <ButtonGroup size="xs">
                                                 <PlayerInventoryButton
-                                                    player={playerProgress.expand!.player}
+                                                    playerId={playerProgress.expand!.player.id}
                                                 />
                                                 <Tooltip content="Показать игрока">
                                                     <IconButton

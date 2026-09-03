@@ -4,9 +4,9 @@ import { useAppAuthContext } from '@context/AppContext';
 import { GiSkullCrack } from 'react-icons/gi';
 
 export const PlayerDrops = () => {
-    const { playerProgress, isPlayerProgressSuccess, isPlayerProgressError } = useAppAuthContext();
+    const { gameState, isGameStateSuccess, isGameStateError } = useAppAuthContext();
 
-    if (isPlayerProgressError) {
+    if (isGameStateError) {
         return null;
     }
 
@@ -14,7 +14,7 @@ export const PlayerDrops = () => {
         <Tooltip content="Счётчик дропов">
             <HStack justifyContent="center" w="full">
                 <Text userSelect="none">
-                    {isPlayerProgressSuccess ? playerProgress.drops_in_a_row : <Spinner />}
+                    {isGameStateSuccess ? gameState.drops_in_a_row : <Spinner />}
                 </Text>
                 <Icon size="lg">
                     <GiSkullCrack />

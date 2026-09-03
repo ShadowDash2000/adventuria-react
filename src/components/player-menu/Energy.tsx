@@ -4,18 +4,16 @@ import { useAppAuthContext } from '@context/AppContext';
 import { EnergyIcon } from '@shared/components/EnergyIcon';
 
 export const Energy = () => {
-    const { playerProgress, isPlayerProgressSuccess, isPlayerProgressError } = useAppAuthContext();
+    const { gameState, isGameStateSuccess, isGameStateError } = useAppAuthContext();
 
-    if (isPlayerProgressError) {
+    if (isGameStateError) {
         return null;
     }
 
     return (
         <Tooltip content="Очки энергии">
             <HStack justifyContent="center" w="full">
-                <Text userSelect="none">
-                    {isPlayerProgressSuccess ? playerProgress.energy : <Spinner />}
-                </Text>
+                <Text userSelect="none">{isGameStateSuccess ? gameState.energy : <Spinner />}</Text>
                 <Icon size="lg">
                     <EnergyIcon />
                 </Icon>

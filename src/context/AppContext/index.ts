@@ -18,17 +18,12 @@ export const AppContext = createContext<AppProviderType>({
         throw new Error('Function not implemented.');
     },
     isAuth: false,
-    player: null,
-    currentSeason: undefined,
-    isCurrentSeasonPending: false,
-    isCurrentSeasonSuccess: false,
-    isCurrentSeasonError: false,
-    currentSeasonError: null,
-    playerProgress: null,
-    isPlayerProgressPending: false,
-    isPlayerProgressSuccess: false,
-    isPlayerProgressError: false,
-    playerProgressError: null,
+    playerId: null,
+    gameState: undefined,
+    isGameStateSuccess: false,
+    isGameStatePending: false,
+    isGameStateError: false,
+    gameStateError: null,
 });
 
 export const useAppContext: () => AppProviderType = () => useContext(AppContext);

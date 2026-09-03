@@ -5,7 +5,6 @@ import { PlayerProfile } from '../profile/PlayerProfile';
 import { ActionsList } from '@components/actions-list/ActionsList';
 import { ActionsFilter } from '@components/actions-list/ActionsFilter';
 import { ActionsListProvider } from '@components/actions-list/ActionsListContext';
-import { CellInfoModal } from '@components/board/cells/cell-info/CellInfoModal';
 import { pbCollections, playerSchema } from '@shared/pbSchema';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
@@ -43,7 +42,6 @@ const Profile = () => {
     return (
         <Flex w={{ base: '1280px', xlDown: 'vw' }} direction="column" gap="{spacing.5}">
             <PlayerProfile player={player.data} />
-            <CellInfoModal />
             <ActionsListProvider playerId={player.data.id}>
                 <ActionsFilter />
                 <ActionsList />

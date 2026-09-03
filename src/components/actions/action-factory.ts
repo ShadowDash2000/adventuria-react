@@ -11,6 +11,7 @@ import { RollItemOnCell } from '@components/actions/roll-wheel/roll-item-on-cell
 import { GenerateWheel } from '@components/actions/generate-wheel/generate-wheel';
 import { NeedToRollWheel } from '@components/actions/need-to-roll-wheel/need_to_roll_wheel';
 import { Done } from '@components/actions/done/done';
+import { CoinsForItem } from '@components/actions/coins-for-item/coins-for-item';
 
 type ActionFactoryItem = { order: number; dispenser: ActionDispenser };
 
@@ -27,6 +28,7 @@ export class ActionFactory {
         roll_wheel: { order: 0, dispenser: new RollWheel() },
         buy: { order: 5, dispenser: new Buy() },
         roll_item_on_cell: { order: 0, dispenser: new RollItemOnCell() },
+        coins_for_item: { order: 10, dispenser: new CoinsForItem() },
     };
 
     static get(actionType: string): ActionDispenser {

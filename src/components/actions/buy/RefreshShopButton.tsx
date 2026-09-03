@@ -5,7 +5,7 @@ import {
     invalidateAvailableActions,
     invalidateRefreshShopView,
     invalidateShopView,
-    invalidatePlayerProgressAuth,
+    invalidateGameState,
 } from '@shared/queryClient';
 import { ButtonProps, Spinner, Text } from '@chakra-ui/react';
 import { Button } from '@theme/button';
@@ -15,13 +15,8 @@ import { useState } from 'react';
 import { handleApiResponse } from '@shared/helpers/api';
 
 export const RefreshShopButton = ({ ...props }: ButtonProps) => {
-    const {
-        pb,
-        availableActions,
-        playerProgress,
-        isPlayerProgressPending,
-        isPlayerProgressSuccess,
-    } = useAppAuthContext();
+    const { pb, availableActions, gameState, isGameStateSuccess, isGameStatePending } =
+        useAppAuthContext();
     const [loading, setLoading] = useState(false);
 
     const isRefreshShopAvailable = availableActions.includes('refresh_shop');
@@ -39,7 +34,7 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
             return;
         }
 
-        await invalidatePlayerProgressAuth();
+        await invalidateGameState();
         await invalidateAvailableActions();
         await invalidateShopView();
         await invalidateRefreshShopView();
@@ -61,10 +56,9 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
     return (
         <Button
             {...props}
-            loading={loading || isPlayerProgressPending}
+            loading={loading || isGameStatePending}
             disabled={
-                isPlayerProgressSuccess &&
-                playerProgress.balance < refreshShopView.data.data.refresh_price
+                isGameStateSuccess && gameState.balance < refreshShopView.data.data.refresh_price
             }
             onClick={async () => {
                 try {

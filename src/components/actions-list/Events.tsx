@@ -1,6 +1,4 @@
-import type { RecordIdString } from '@shared/types/pocketbase';
 import type { PlayerEventRecord } from '@shared/types/player_event';
-import type { ReactNode } from 'react';
 import { PlayerEventsFactory } from '@components/player-events/factory';
 import { Box, For, Heading, VStack, Text } from '@chakra-ui/react';
 import { formatDateLocalized } from '@shared/helpers/helper';

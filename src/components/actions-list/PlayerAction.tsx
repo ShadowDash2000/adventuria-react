@@ -29,7 +29,7 @@ import { Events } from '@components/actions-list/Events';
 type ActionProps = { action: ActionRecord };
 
 export const PlayerAction = ({ action }: ActionProps) => {
-    const { pb, player: authPlayer, isAuth } = useAppContext();
+    const { pb, isAuth, playerId } = useAppContext();
     const openCellInfo = useCellsStore(state => state.openCellInfo);
     const actionStatus = ActionStatusFactory.get(action.status);
 
@@ -39,8 +39,7 @@ export const PlayerAction = ({ action }: ActionProps) => {
     const [score, setScore] = useState<number>(action.expand?.review?.score ?? 0);
     const [draft, setDraft] = useState<string>('');
     const activity = action.expand?.activity;
-    const canEdit =
-        isAuth && authPlayer.id && action.player === authPlayer.id && action.expand?.review;
+    const canEdit = isAuth && action.player === playerId && action.expand?.review;
 
     useEffect(() => {
         const comment = action.expand?.review?.comment

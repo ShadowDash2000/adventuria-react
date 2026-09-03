@@ -15,7 +15,7 @@ import { Content as TipTapContent } from '@tiptap/react';
 import { useAppContext } from '@context/AppContext';
 import { useState } from 'react';
 import { handleApiResponse } from '@shared/helpers/api';
-import { invalidateAllActions, invalidatePlayerProgressAuth, queryKeys } from '@shared/queryClient';
+import { invalidateAllActions, invalidateGameState, queryKeys } from '@shared/queryClient';
 import { useQuery } from '@tanstack/react-query';
 import { ActionTextEditor } from '@components/profile/ActionTextEditor';
 import { ReviewRating } from '@shared/components/ReviewRating';
@@ -39,7 +39,7 @@ export const Content = () => {
         }
 
         await invalidateAllActions();
-        await invalidatePlayerProgressAuth();
+        await invalidateGameState();
     };
 
     const activityView = useQuery({

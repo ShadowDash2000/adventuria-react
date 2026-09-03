@@ -19,8 +19,7 @@ import { joinExpand } from '@shared/pbExpand';
 import { eq } from '@shared/pbFilter';
 
 export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
-    const { pb, currentSeason, isCurrentSeasonSuccess, isCurrentSeasonError, currentSeasonError } =
-        useAppContext();
+    const { pb, gameState, isGameStateSuccess, isGameStateError, gameStateError } = useAppContext();
 
     const players = useQuery({
         queryFn: () =>
@@ -46,7 +45,7 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
             pb
                 .collection(pbCollections.playersProgress)
                 .getFullList<PlayerProgressRecord>({
-                    filter: eq(playerProgressSchema.season, currentSeason!),
+                    filter: eq(playerProgressSchema.season, gameState!.season),
                     fields: joinExpand(
                         playerProgressSchema.id,
                         playerProgressSchema.player,
@@ -57,8 +56,8 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
                     ),
                 }),
         refetchOnWindowFocus: false,
-        enabled: isCurrentSeasonSuccess,
-        queryKey: queryKeys.playersProgress,
+        enabled: isGameStateSuccess,
+        queryKey: [...queryKeys.playersProgress, gameState?.season],
     });
 
     const cells = useQuery({
@@ -86,7 +85,7 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
         queryKey: queryKeys.worlds,
     });
 
-    if (isCurrentSeasonError) return <Text>Error: {currentSeasonError?.message}</Text>;
+    if (isGameStateError) return <Text>Error: {gameStateError?.message}</Text>;
     if (players.isPending || playersProgress.isPending || cells.isPending || worlds.isPending)
         return <Spinner />;
     if (players.isError) return <Text>Error: {players.error?.message}</Text>;

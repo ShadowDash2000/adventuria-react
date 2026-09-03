@@ -27,7 +27,16 @@ export const UsedItems = ({ ids }: UsedItemsProps) => {
 
     return (
         <For each={itemsList}>
-            {(item, index) => <ItemIcon item={item} key={index} w={14} h={14} />}
+            {(item, index) => (
+                <ItemIcon
+                    itemId={item.id}
+                    description={item.description}
+                    src={pb.files.getURL(item, item.icon)}
+                    key={index}
+                    w={14}
+                    h={14}
+                />
+            )}
         </For>
     );
 };

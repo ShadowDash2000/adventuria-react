@@ -1,29 +1,35 @@
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
-import type { PlayerRecord } from '@shared/types/player';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
+import type { RecordIdString } from '@shared/types/pocketbase';
 import { CloseButton, Drawer, For, Grid, HStack, Spinner, Text } from '@chakra-ui/react';
 import { InventoryItem } from './InventoryItem';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import { Coin } from '@shared/components/Coin';
-import { inventorySchema, itemSchema, pbCollections, playerProgressSchema } from '@shared/pbSchema';
+import {
+    inventorySchema,
+    itemSchema,
+    pbCollections,
+    playerProgressSchema,
+    playerSchema,
+} from '@shared/pbSchema';
 import { dotExpand, joinExpand } from '@shared/pbExpand';
 import { and, eq } from '@shared/pbFilter';
 
 interface InventoryProps {
-    player: PlayerRecord;
+    playerId: RecordIdString;
 }
 
-export const Inventory = ({ player: invPlayer }: InventoryProps) => {
-    const { pb, isAuth, player, currentSeason, isCurrentSeasonSuccess } = useAppContext();
+export const Inventory = ({ playerId: invPlayerId }: InventoryProps) => {
+    const { pb, isAuth, playerId, gameState, isGameStateSuccess } = useAppContext();
 
     const inventory = useQuery({
         queryFn: () => {
             return pb
                 .collection(pbCollections.inventory)
                 .getFullList<InventoryItemRecord>({
-                    filter: `${inventorySchema.player} = "${invPlayer.id}"`,
+                    filter: `${inventorySchema.player} = "${invPlayerId}"`,
                     expand: joinExpand(
                         inventorySchema.item,
                         dotExpand(inventorySchema.item, itemSchema.effects),
@@ -31,27 +37,29 @@ export const Inventory = ({ player: invPlayer }: InventoryProps) => {
                 });
         },
         refetchOnWindowFocus: false,
-        queryKey: queryKeys.inventory(invPlayer.id),
+        queryKey: queryKeys.inventory(invPlayerId),
     });
 
     const playerProgress = useQuery({
         queryFn: () => {
             return pb
                 .collection(pbCollections.playersProgress)
-                .getFirstListItem<PlayerProgressRecord>(invPlayer.id, {
+                .getFirstListItem<PlayerProgressRecord>(invPlayerId, {
                     filter: and(
-                        eq(playerProgressSchema.player, invPlayer.id),
-                        eq(playerProgressSchema.season, currentSeason!),
+                        eq(playerProgressSchema.player, invPlayerId),
+                        eq(playerProgressSchema.season, gameState!.season),
                     ),
                     fields: joinExpand(
                         playerProgressSchema.balance,
                         playerProgressSchema.maxInventorySlots,
+                        dotExpand('expand', playerProgressSchema.player, playerSchema.name),
                     ),
+                    expand: playerProgressSchema.player,
                 });
         },
         refetchOnWindowFocus: false,
-        enabled: isCurrentSeasonSuccess,
-        queryKey: [...queryKeys.playerProgress(invPlayer.id), 'inventory'],
+        enabled: isGameStateSuccess,
+        queryKey: [...queryKeys.playerProgress(invPlayerId), 'inventory', gameState?.season],
     });
 
     if (inventory.isPending) return <Spinner />;
@@ -64,7 +72,7 @@ export const Inventory = ({ player: invPlayer }: InventoryProps) => {
     return (
         <>
             <Drawer.Header fontSize="xl" justifyContent="space-between">
-                {invPlayer.name}
+                {playerProgress.isSuccess ? playerProgress.data.expand?.player.name : ''}
             </Drawer.Header>
             <Drawer.Body>
                 <Grid templateColumns="repeat(2, 1fr)">
@@ -73,7 +81,7 @@ export const Inventory = ({ player: invPlayer }: InventoryProps) => {
                             <InventoryItem
                                 invItem={inv}
                                 key={index}
-                                showControlButtons={isAuth && player.id === invPlayer.id}
+                                showControlButtons={isAuth && playerId === invPlayerId}
                             />
                         )}
                     </For>

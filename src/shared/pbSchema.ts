@@ -33,6 +33,8 @@ export const pbCollections = {
 
 export const playerSchema = {
     id: 'id',
+    disabled: 'disabled',
+    debug: 'debug',
     name: 'name',
     avatar: 'avatar',
     color: 'color',

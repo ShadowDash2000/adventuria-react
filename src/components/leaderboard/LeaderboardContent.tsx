@@ -15,7 +15,7 @@ import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import type { PlayerStatsRecord } from '@shared/types/player_stats';
 
 export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
-    const { pb, currentSeason, isCurrentSeasonSuccess } = useAppContext();
+    const { pb, gameState, isGameStateSuccess } = useAppContext();
 
     const playersProgress = useQuery({
         queryFn: () =>
@@ -23,7 +23,7 @@ export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
                 .collection(pbCollections.playersProgress)
                 .getFullList<PlayerProgressRecord>({
                     sort: `-${playerProgressSchema.points}`,
-                    filter: eq(playerProgressSchema.season, currentSeason!),
+                    filter: eq(playerProgressSchema.season, gameState!.season),
                     expand: playerProgressSchema.player,
                     fields: joinExpand(
                         '*',
@@ -34,8 +34,8 @@ export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
                         dotExpand('expand', playerProgressSchema.player, 'collectionName'),
                     ),
                 }),
-        queryKey: [...queryKeys.playersProgress, 'leaderboard'],
-        enabled: isCurrentSeasonSuccess,
+        queryKey: [...queryKeys.playersProgress, 'leaderboard', gameState?.season],
+        enabled: isGameStateSuccess,
         refetchOnWindowFocus: false,
     });
 
@@ -44,10 +44,10 @@ export const LeaderboardContent = ({ ...props }: Table.RootProps) => {
             pb
                 .collection(pbCollections.playerStats)
                 .getFullList<PlayerStatsRecord>({
-                    filter: eq(playerStatsSchema.season, currentSeason!),
+                    filter: eq(playerStatsSchema.season, gameState!.season),
                 }),
-        queryKey: [...queryKeys.playerStats, 'leaderboard'],
-        enabled: isCurrentSeasonSuccess,
+        queryKey: [...queryKeys.playerStats, 'leaderboard', gameState?.season],
+        enabled: isGameStateSuccess,
         refetchOnWindowFocus: false,
     });
 

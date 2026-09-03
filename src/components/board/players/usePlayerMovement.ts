@@ -29,9 +29,9 @@ export const usePlayerMovement = ({
     playerProgress,
     playerRef,
 }: PlayerMovementProps): PlayerMovementReturn => {
-    const { player: playerAuth } = useAppContext();
+    const { playerId } = useAppContext();
     const { cellWidth, cellHeight, cellsOrdered, worldsById } = useBoardInnerContext();
-    const isCurrentPlayer = playerAuth ? playerProgress.player === playerAuth.id : false;
+    const isCurrentPlayer = playerId ? playerProgress.player === playerId : false;
     const [moving, setMoving] = useState<boolean>(false);
     const { incrementBlocked, decrementBlocked } = useKbdSettings(KbdKey.inventory);
 

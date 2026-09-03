@@ -1,14 +1,10 @@
-import type { PlayerRecord } from '@shared/types/player';
-import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import type { AppProviderType, AppContextProviderProps } from './types';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@shared/queryClient';
 import { AppContext, pb } from './index';
-import { pbCollections, playerProgressSchema } from '@shared/pbSchema';
-import { and, eq } from '@shared/pbFilter';
 import { ApiError } from '@shared/types/api-error';
-import { ClientResponseError } from 'pocketbase';
+import { RecordIdString } from '@shared/types/pocketbase';
 
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     const [isAuth, setIsAuth] = useState<boolean>(pb.authStore.isValid);
@@ -20,15 +16,23 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         setIsAuth(false);
     };
 
-    const { data: player = pb.authStore.record as PlayerRecord } = useQuery({
-        queryFn: () => {
-            setIsAuth(pb.authStore.isValid);
-            return pb
-                .collection(pbCollections.players)
-                .getOne<PlayerRecord>(pb.authStore.record!.id);
+    const {
+        data: gameState,
+        isPending: isGameStatePending,
+        isSuccess: isGameStateSuccess,
+        isError: isGameStateError,
+        error: gameStateError,
+    } = useQuery({
+        queryFn: async () => {
+            const res = await getGameState(pb.authStore.token);
+
+            if (!res.success) {
+                throw new ApiError(res.message, res.error);
+            }
+
+            return res.data;
         },
-        enabled: isAuth,
-        queryKey: [...queryKeys.playerAuth, isAuth, pb.authStore.record?.id],
+        queryKey: [...queryKeys.gameState, isAuth, pb.authStore.record?.id],
         refetchOnWindowFocus: false,
     });
 
@@ -60,59 +64,6 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         },
     });
 
-    const {
-        data: currentSeason,
-        isPending: isCurrentSeasonPending,
-        isSuccess: isCurrentSeasonSuccess,
-        isError: isCurrentSeasonError,
-        error: currentSeasonError,
-    } = useQuery({
-        queryFn: async () => {
-            const res = await getCurrentSeason();
-
-            if (!res.success) {
-                throw new Error(res.message);
-            }
-
-            return res.data;
-        },
-        queryKey: [...queryKeys.currentSeason],
-        refetchOnWindowFocus: false,
-    });
-
-    const {
-        data: playerProgress,
-        isPending: isPlayerProgressPending,
-        isSuccess: isPlayerProgressSuccess,
-        isError: isPlayerProgressError,
-        error: playerProgressError,
-    } = useQuery({
-        queryFn: () =>
-            pb
-                .collection(pbCollections.playersProgress)
-                .getFirstListItem<PlayerProgressRecord>(
-                    and(
-                        eq(playerProgressSchema.player, player.id),
-                        eq(playerProgressSchema.season, currentSeason!),
-                    ),
-                ),
-        enabled: isAuth && isCurrentSeasonSuccess,
-        queryKey: [...queryKeys.playerProgressAuth, player.id, currentSeason],
-        refetchOnWindowFocus: false,
-        retry: (failureCount, error) => {
-            if (failureCount >= 3) {
-                return false;
-            }
-
-            if (error instanceof ClientResponseError) {
-                const e = error as ClientResponseError;
-                return e.status !== 404;
-            }
-
-            return true;
-        },
-    });
-
     useEffect(() => {
         if (!isAuth) {
             pb.authStore.clear();
@@ -121,25 +72,20 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
 
     const ctx = {
         pb,
-        player: isAuth ? player : null,
+        playerId: pb.authStore.record?.id,
         login,
         logout,
         isAuth,
+        gameState,
+        isGameStatePending,
+        isGameStateSuccess,
+        isGameStateError,
+        gameStateError,
         availableActions,
         isAvailableActionsPending,
         isAvailableActionsSuccess,
         isAvailableActionsError,
         availableActionsError,
-        currentSeason,
-        isCurrentSeasonPending: isCurrentSeasonPending,
-        isCurrentSeasonSuccess,
-        isCurrentSeasonError,
-        currentSeasonError,
-        playerProgress,
-        isPlayerProgressPending,
-        isPlayerProgressSuccess,
-        isPlayerProgressError,
-        playerProgressError,
     } as AppProviderType;
 
     return <AppContext.Provider value={ctx}>{children}</AppContext.Provider>;
@@ -160,14 +106,29 @@ const getAvailableActions = async (authToken: string): Promise<AvailableActionsR
     return (await res.json()) as AvailableActionsResult;
 };
 
-type CurrentSeasonSuccess = { success: true; data: string; message?: string; error?: never };
+type GameState = {
+    id?: RecordIdString;
+    disabled?: boolean;
+    debug?: boolean;
+    season: RecordIdString;
+    current_world?: RecordIdString;
+    balance?: number;
+    energy?: number;
+    drops_in_a_row?: number;
+    item_wheels_count?: number;
+};
 
-type CurrentSeasonError = { success: false; data: never; message: string; error: string };
+type GameStateSuccess = { success: true; data: GameState; message?: string; error?: never };
 
-type CurrentSeasonResult = CurrentSeasonSuccess | CurrentSeasonError;
+type GameStateError = { success: false; data: never; message: string; error: string };
 
-const getCurrentSeason = async (): Promise<CurrentSeasonResult> => {
-    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/current-season`, { method: 'GET' });
+type GameStateResult = GameStateSuccess | GameStateError;
 
-    return (await res.json()) as CurrentSeasonResult;
+const getGameState = async (authToken?: string): Promise<GameStateResult> => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/game-state`, {
+        method: 'GET',
+        headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
+    });
+
+    return (await res.json()) as GameStateResult;
 };

@@ -1,11 +1,7 @@
 import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import {
-    invalidatePlayerProgress,
-    invalidatePlayerProgressAuth,
-    queryKeys,
-} from '@shared/queryClient';
+import { invalidateGameState, invalidatePlayerProgress, queryKeys } from '@shared/queryClient';
 import { ItemInfo } from './ItemInfo';
 import { useRef, useState } from 'react';
 import { WheelOFortune, type WheelOFortuneHandle } from '../WheelOFortune';
@@ -19,12 +15,12 @@ import type { ItemView } from '@components/actions/roll-wheel/items-wheel/view';
 export const Content = () => {
     const {
         pb,
-        player,
-        playerProgress,
-        isPlayerProgressSuccess,
-        isPlayerProgressPending,
-        isPlayerProgressError,
-        playerProgressError,
+        playerId,
+        gameState,
+        isGameStateSuccess,
+        isGameStatePending,
+        isGameStateError,
+        gameStateError,
     } = useAppAuthContext();
     const [loading, setLoading] = useState(false);
     const wheelRef = useRef<WheelOFortuneHandle>(null);
@@ -41,13 +37,13 @@ export const Content = () => {
         spinRequest: () => rollWheelRequest(pb.authStore.token),
         audioPresetSlug: 'roll-items',
         onSpinComplete: async () => {
-            await invalidatePlayerProgressAuth();
-            await invalidatePlayerProgress(player.id);
+            await invalidateGameState();
+            await invalidatePlayerProgress(playerId);
         },
     });
 
-    if (isPlayerProgressPending || wheelView.isPending || audioPreset.isPending) return <Spinner />;
-    if (isPlayerProgressError) return <Text>Error: {playerProgressError?.message}</Text>;
+    if (isGameStatePending || wheelView.isPending || audioPreset.isPending) return <Spinner />;
+    if (isGameStateError) return <Text>Error: {gameStateError?.message}</Text>;
     if (wheelView.isError) return <Text>Error: {wheelView.error?.message}</Text>;
     if (audioPreset.isError) return <Text>Error: {audioPreset.error?.message}</Text>;
 
@@ -78,9 +74,7 @@ export const Content = () => {
                     <Button
                         loading={loading}
                         disabled={
-                            spinning ||
-                            !isPlayerProgressSuccess ||
-                            playerProgress.item_wheels_count === 0
+                            spinning || !isGameStateSuccess || gameState.item_wheels_count === 0
                         }
                         onClick={async () => {
                             try {
@@ -93,7 +87,7 @@ export const Content = () => {
                             }
                         }}
                     >
-                        {`Крутить (x${playerProgress?.item_wheels_count})`}
+                        {`Крутить (x${gameState?.item_wheels_count})`}
                     </Button>
                     <SliderDebounced
                         w="full"

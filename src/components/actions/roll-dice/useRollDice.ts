@@ -6,7 +6,7 @@ import { type RefObject, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { BoardHelper, type CellPosition } from '@components/board/BoardHelper';
-import { invalidateAllActions, invalidatePlayerProgressAuth } from '@shared/queryClient';
+import { invalidateAllActions, invalidateGameState } from '@shared/queryClient';
 import { performFadeOut } from '@components/actions/roll-dice/dices/roll';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { usePlayer } from '@components/board/players/usePlayer';
@@ -47,10 +47,10 @@ const FADEOUT_DURATION = 3;
 const DEFAULT_ANIMATION_DURATION = 10;
 
 export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
-    const { pb, player } = useAppAuthContext();
+    const { pb, playerId } = useAppAuthContext();
     const { worldsById } = useBoardInnerContext();
     const { play } = useAudioPlayer(AudioKey.music);
-    const { addPaths, setMoveTime } = usePlayer(player.id);
+    const { addPaths, setMoveTime } = usePlayer(playerId);
 
     const [isPending, setIsPending] = useState(false);
     const isRolling = useRollDiceStore(state => state.isRolling);
@@ -135,7 +135,7 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
                 setPendingRolls(null);
                 setIsRolling(false);
                 await invalidateAllActions();
-                await invalidatePlayerProgressAuth();
+                await invalidateGameState();
                 if (diceSceneRef.current) {
                     diceSceneRef.current.style.opacity = '1';
                 }

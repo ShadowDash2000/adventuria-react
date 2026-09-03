@@ -9,7 +9,7 @@ import { PlayerDrops } from '@components/player-menu/PlayerDrops';
 import { Energy } from '@components/player-menu/Energy';
 
 export const PlayerMenuAuth = () => {
-    const { player } = useAppAuthContext();
+    const { playerId } = useAppAuthContext();
 
     return (
         <>
@@ -27,7 +27,7 @@ export const PlayerMenuAuth = () => {
                 <Energy />
                 <PlayerBalance />
                 <VStack justify="center" align="start">
-                    <PlayerInventoryButton player={player} kbd={true} />
+                    <PlayerInventoryButton playerId={playerId} kbd={true} />
                     <RollItemsWheel />
                     <RadioButton />
                     <VolumeButton />

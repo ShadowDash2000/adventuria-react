@@ -10,11 +10,11 @@ import { invalidateAllActions } from '@shared/queryClient';
 
 export const Modal = () => {
     const {
-        playerProgress,
-        isPlayerProgressSuccess,
-        isPlayerProgressPending,
-        isPlayerProgressError,
         availableActions,
+        gameState,
+        isGameStateSuccess,
+        isGameStatePending,
+        isGameStateError,
     } = useAppAuthContext();
     const [open, setOpen] = useState(false);
     const [wasSpinned, setWasSpinned] = useState(false);
@@ -27,11 +27,11 @@ export const Modal = () => {
         }
     }, [isSpinning]);
 
-    if (isPlayerProgressPending) {
+    if (isGameStatePending) {
         return <Spinner />;
     }
 
-    if (!isPlayerProgressSuccess || isPlayerProgressError) {
+    if (!isGameStateSuccess || isGameStateError) {
         return null;
     }
 
@@ -59,7 +59,7 @@ export const Modal = () => {
                         flexDir="column"
                         gap={0}
                         disabled={
-                            playerProgress.item_wheels_count === 0 ||
+                            gameState.item_wheels_count === 0 ||
                             !availableActions.includes('roll_item') ||
                             isSpinning ||
                             isRolling
@@ -67,7 +67,7 @@ export const Modal = () => {
                         colorPalette="{colors.purple}"
                         _hover={{ bg: '{colors.purple.hover}' }}
                     >
-                        <LuFerrisWheel />x{playerProgress.item_wheels_count}
+                        <LuFerrisWheel />x{gameState.item_wheels_count}
                     </IconButton>
                 </Dialog.Trigger>
             </Tooltip>

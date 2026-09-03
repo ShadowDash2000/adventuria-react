@@ -10,6 +10,7 @@ import { queryClient } from '@shared/queryClient';
 import { ThemeProvider } from 'next-themes';
 import theme, { colorModeConfig } from './theme/theme';
 import UmamiAnalytics from '@danielgtmn/umami-react';
+import { CellInfoModal } from '@components/board/cells/cell-info/CellInfoModal';
 
 createRoot(document.getElementById('root')!).render(
     <>
@@ -23,6 +24,7 @@ createRoot(document.getElementById('root')!).render(
             <ThemeProvider attribute="class" disableTransitionOnChange {...colorModeConfig} />
             <QueryClientProvider client={queryClient}>
                 <AppContextProvider>
+                    <CellInfoModal />
                     <RouterProvider router={router} />
                 </AppContextProvider>
                 <ReactQueryDevtools initialIsOpen={false} buttonPosition="top-left" />

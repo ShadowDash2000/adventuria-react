@@ -4,6 +4,7 @@ import type { InventoryItemRecord } from '@shared/types/inventory-item';
 import { UseItemButton } from './UseItemButton';
 import { DropItemButton } from './DropItemButton';
 import { ItemIcon } from '@components/items/ItemIcon';
+import { useAppContext } from '@context/AppContext';
 
 interface InventoryItemProps {
     invItem: InventoryItemRecord;
@@ -11,6 +12,7 @@ interface InventoryItemProps {
 }
 
 export const InventoryItem = ({ invItem, showControlButtons = false }: InventoryItemProps) => {
+    const { pb } = useAppContext();
     const [isActive, setIsActive] = useState<boolean>(invItem.is_active);
     const item = invItem.expand!.item;
 
@@ -21,7 +23,11 @@ export const InventoryItem = ({ invItem, showControlButtons = false }: Inventory
     return (
         <Card.Root>
             <Card.Body alignItems="center" gap={2}>
-                <ItemIcon item={item} />
+                <ItemIcon
+                    itemId={item.id}
+                    description={item.description}
+                    src={pb.files.getURL(item, item.icon)}
+                />
                 <Card.Title mt="2">{item.name}</Card.Title>
             </Card.Body>
             <Card.Footer flexDirection="column">

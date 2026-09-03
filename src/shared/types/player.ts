@@ -4,6 +4,8 @@ import type { IsoDateString } from '@shared/types/pocketbase';
 export type PlayerRecord = {
     created: IsoDateString;
     updated: IsoDateString;
+    disabled: boolean;
+    debug: boolean;
     name: string;
     avatar: string;
     color: string;

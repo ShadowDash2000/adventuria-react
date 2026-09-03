@@ -4,9 +4,8 @@ import { Tooltip } from '@ui/tooltip';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import {
     invalidateAvailableActions,
-    invalidateLatestAction,
     invalidateShopView,
-    invalidatePlayerProgressAuth,
+    invalidateGameState,
 } from '@shared/queryClient';
 import PriceBadgeImage from '@public/price-badge.png';
 import { Coin } from '@shared/components/Coin';
@@ -37,9 +36,8 @@ export const Item = ({ item, imageWidth, imageHeight }: ItemProps) => {
         }
 
         await invalidateAvailableActions();
-        await invalidateLatestAction();
         await invalidateShopView();
-        await invalidatePlayerProgressAuth();
+        await invalidateGameState();
     };
 
     const imageProps: ImageProps = {

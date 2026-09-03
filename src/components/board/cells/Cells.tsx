@@ -3,10 +3,12 @@ import { Cell } from './Cell';
 import { useBoardInnerContext } from '@components/board';
 import { useCellsStore } from '@components/board/useCellsStore';
 import { useSettingsStore } from '@components/settings/useSettingsStore';
+import { useCellContextMenuStore } from '@components/debug/cell-context-menu/useCellContextMenuStore';
 
 export const Cells = () => {
     const { cellsOrderedRev } = useBoardInnerContext();
     const openCellInfo = useCellsStore(state => state.openCellInfo);
+    const openCellContextMenu = useCellContextMenuStore(state => state.openMenu);
     const displayCellsNumber = useSettingsStore(state => state.displayCellsNumber);
 
     const rowStarts = cellsOrderedRev.reduce<number[]>((acc, _line, index) => {
@@ -33,6 +35,10 @@ export const Cells = () => {
                                         height="128px"
                                         zIndex={10}
                                         onClick={() => openCellInfo(cell.id)}
+                                        onContextMenu={e => {
+                                            e.preventDefault();
+                                            openCellContextMenu(cell.id, e.currentTarget);
+                                        }}
                                     />
                                     {displayCellsNumber && (
                                         <Text

@@ -2,24 +2,21 @@ import type { ReactNode } from 'react';
 import type PocketBase from 'pocketbase';
 import type { PlayerRecord } from '@shared/types/player';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
+import { RecordIdString } from '@shared/types/pocketbase';
 
-type AppContextBase = {
-    pb: PocketBase;
-    login: () => void;
-    logout: () => void;
-} & CurrentSeasonState;
+type AppContextBase = { pb: PocketBase; login: () => void; logout: () => void };
 
 export type AppContextAuth = AppContextBase & {
     isAuth: true;
-    player: PlayerRecord;
+    playerId: RecordIdString;
 } & AvailableActionsState &
-    PlayerProgressState;
+    GameState;
 
 export type AppContextGuest = AppContextBase & {
     isAuth: false;
-    player: null;
+    playerId: null;
 } & AvailableActionsGuestState &
-    PlayerProgressGuestState;
+    GameGuestState;
 
 export type AppProviderType = AppContextAuth | AppContextGuest;
 
@@ -49,42 +46,48 @@ type AvailableActionsGuestState = {
     availableActionsError: null;
 };
 
-type CurrentSeasonState =
-    | {
-          isCurrentSeasonSuccess: true;
-          currentSeason: string;
-          isCurrentSeasonPending: false;
-          isCurrentSeasonError: false;
-          currentSeasonError: null;
-      }
-    | {
-          isCurrentSeasonSuccess: false;
-          currentSeason: undefined;
-          isCurrentSeasonPending: boolean;
-          isCurrentSeasonError: boolean;
-          currentSeasonError: Error | null;
-      };
-
-type PlayerProgressState =
-    | {
-          isPlayerProgressSuccess: true;
-          playerProgress: PlayerProgressRecord;
-          isPlayerProgressPending: false;
-          isPlayerProgressError: false;
-          playerProgressError: null;
-      }
-    | {
-          isPlayerProgressSuccess: false;
-          playerProgress: undefined;
-          isPlayerProgressPending: boolean;
-          isPlayerProgressError: boolean;
-          playerProgressError: Error | null;
-      };
-
-type PlayerProgressGuestState = {
-    playerProgress: null;
-    isPlayerProgressPending: false;
-    isPlayerProgressSuccess: false;
-    isPlayerProgressError: false;
-    playerProgressError: null;
+type GameAuth = {
+    id: RecordIdString;
+    disabled: boolean;
+    debug: boolean;
+    season: RecordIdString;
+    current_world: RecordIdString;
+    balance: number;
+    energy: number;
+    drops_in_a_row: number;
+    item_wheels_count: number;
 };
+
+type GameGuest = { season: RecordIdString };
+
+type GameState =
+    | {
+          gameState: GameAuth;
+          isGameStateSuccess: true;
+          isGameStatePending: false;
+          isGameStateError: false;
+          gameStateError: null;
+      }
+    | {
+          gameState: undefined;
+          isGameStateSuccess: false;
+          isGameStatePending: boolean;
+          isGameStateError: boolean;
+          gameStateError: Error | null;
+      };
+
+type GameGuestState =
+    | {
+          gameState: GameGuest;
+          isGameStateSuccess: true;
+          isGameStatePending: false;
+          isGameStateError: false;
+          gameStateError: null;
+      }
+    | {
+          gameState: undefined;
+          isGameStateSuccess: false;
+          isGameStatePending: boolean;
+          isGameStateError: boolean;
+          gameStateError: Error | null;
+      };

@@ -4,9 +4,9 @@ import { Tooltip } from '@ui/tooltip';
 import { useAppAuthContext } from '@context/AppContext';
 
 export const PlayerBalance = () => {
-    const { playerProgress, isPlayerProgressSuccess, isPlayerProgressError } = useAppAuthContext();
+    const { gameState, isGameStateSuccess, isGameStateError } = useAppAuthContext();
 
-    if (isPlayerProgressError) {
+    if (isGameStateError) {
         return null;
     }
 
@@ -14,7 +14,7 @@ export const PlayerBalance = () => {
         <Tooltip content="Баланс">
             <HStack justifyContent="center" w="full">
                 <Text userSelect="none">
-                    {isPlayerProgressSuccess ? playerProgress.balance : <Spinner />}
+                    {isGameStateSuccess ? gameState.balance : <Spinner />}
                 </Text>
                 <Coin w={6} />
             </HStack>

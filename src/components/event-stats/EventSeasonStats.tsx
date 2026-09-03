@@ -8,6 +8,7 @@ import type { PlayerRecord } from '@shared/types/player';
 import type { CellRecord } from '@shared/types/cell';
 import type { ItemRecord } from '@shared/types/item';
 import { useCellsStore } from '@components/board/useCellsStore';
+import { useAppContext } from '@context/AppContext';
 
 const EVENT_STATS_CONFIG: Record<keyof EventStatsEntries, { title: string; limit: number }> = {
     most_games_completed: { title: 'Больше всего пройдено игр', limit: 3 },
@@ -33,6 +34,7 @@ interface EventSeasonStatsProps extends StackProps {
 }
 
 export const EventSeasonStats = ({ seasonId, ...props }: EventSeasonStatsProps) => {
+    const { pb } = useAppContext();
     const openCellInfo = useCellsStore(state => state.openCellInfo);
 
     const eventStats = useQuery({
@@ -92,7 +94,13 @@ export const EventSeasonStats = ({ seasonId, ...props }: EventSeasonStatsProps) 
                                 if (ITEM_STATS_KEYS.includes(statKey)) {
                                     return (
                                         <HStack key={record.id} gap={2}>
-                                            <ItemIcon item={record as ItemRecord} w={32} h={32} />
+                                            <ItemIcon
+                                                itemId={record.id}
+                                                description={record.description}
+                                                src={pb.files.getURL(record, record.icon)}
+                                                w={32}
+                                                h={32}
+                                            />
                                             <VStack align="start" gap={0}>
                                                 <Text lineHeight={1}>{record.name}</Text>
                                                 <Text lineHeight={1} fontSize="sm" color="gray.400">
