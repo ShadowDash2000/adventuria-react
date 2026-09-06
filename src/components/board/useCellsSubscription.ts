@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
 import type PocketBase from 'pocketbase';
-import type { CellEventRecord } from '@shared/types/cell_event';
-import { pbCollections } from '@shared/pbSchema';
 import { invalidateAvailableActions, invalidateCells } from '@shared/queryClient';
 
 type CellsSubscriptionProps = { pb: PocketBase; isAuth: boolean };
@@ -11,13 +9,22 @@ export const useCellsSubscription = ({ pb, isAuth }: CellsSubscriptionProps) => 
         if (!isAuth) return;
 
         let disposed = false;
-        let unsubscribe: (() => void) | undefined;
+        let unsubscribeFuncs: (() => void)[] = [];
 
-        void pb
-            .collection(pbCollections.cellEventsSchedule)
-            .subscribe<CellEventRecord>('*', async event => {
-                if (event.action !== 'update') return;
+        pb.realtime
+            .subscribe('cell_events_scheduler_start', async () => {
+                await invalidateAvailableActions();
+            })
+            .then(callback => {
+                if (disposed) {
+                    void callback();
+                } else {
+                    unsubscribeFuncs.push(callback);
+                }
+            });
 
+        pb.realtime
+            .subscribe('cell_events_scheduler_end', async () => {
                 await invalidateCells();
                 await invalidateAvailableActions();
             })
@@ -25,13 +32,13 @@ export const useCellsSubscription = ({ pb, isAuth }: CellsSubscriptionProps) => 
                 if (disposed) {
                     void callback();
                 } else {
-                    unsubscribe = callback;
+                    unsubscribeFuncs.push(callback);
                 }
             });
 
         return () => {
             disposed = true;
-            void unsubscribe?.();
+            unsubscribeFuncs.forEach(unsubscribe => void unsubscribe());
         };
     }, [pb, isAuth]);
 };
