@@ -10,7 +10,7 @@ import { usePlayersProgressSubscription } from './usePlayersProgressSubscription
 import { useCellsSubscription } from '@components/board/useCellsSubscription';
 
 export const BoardInner = () => {
-    const { pb, isAuth, player } = useAppContext();
+    const { pb, isAuth, playerId } = useAppContext();
     const { boardInnerRef } = useBoardContext();
     const {
         players: playersRaw,
@@ -22,7 +22,7 @@ export const BoardInner = () => {
     const { playersProgress, worldsByIdRef } = usePlayersProgressSubscription({
         pb,
         isAuth,
-        playerId: player?.id,
+        playerId: playerId,
         initialProgress: playersProgressRaw,
     });
     const board = BoardHelper.buildBoard(cells, worlds, players, playersProgress);

@@ -10,7 +10,7 @@ import type { PlayerProgressRecord } from '@shared/types/player_progress';
 type PlayersProgressSubscriptionProps = {
     pb: PocketBase;
     isAuth: boolean;
-    playerId?: RecordIdString;
+    playerId: RecordIdString | null;
     initialProgress: PlayerProgressRecord[];
 };
 
