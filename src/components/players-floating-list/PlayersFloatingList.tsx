@@ -15,7 +15,7 @@ import {
 import { LuChevronUp } from 'react-icons/lu';
 import { PlayerAvatar } from '@components/PlayerAvatar';
 import { PlayerInventoryButton } from '@components/inventory/PlayerInventoryButton';
-import { Link } from 'react-router-dom';
+import { PlayerProfileLink } from '@components/profile/Link';
 import { TfiTarget } from 'react-icons/tfi';
 import { Tooltip } from '@ui/tooltip';
 import { Flex } from '@theme/flex';
@@ -81,8 +81,8 @@ export const PlayersFloatingList = () => {
                                     <Box key={playerProgress.id} w="full">
                                         <HStack minH={14} justify="space-between" align="center">
                                             <ChakraLink asChild minW={0}>
-                                                <Link
-                                                    to={`/profile/${playerProgress.expand!.player.name}`}
+                                                <PlayerProfileLink
+                                                    playerName={playerProgress.expand!.player.name}
                                                 >
                                                     <HStack gap={4} minW={0}>
                                                         <Box pos="relative">
@@ -100,7 +100,7 @@ export const PlayersFloatingList = () => {
                                                             {playerProgress.expand!.player.name}
                                                         </Text>
                                                     </HStack>
-                                                </Link>
+                                                </PlayerProfileLink>
                                             </ChakraLink>
                                             <ButtonGroup size="xs">
                                                 <PlayerInventoryButton

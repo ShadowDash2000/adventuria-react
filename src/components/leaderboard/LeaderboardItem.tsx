@@ -1,6 +1,6 @@
 import { Box, Table, Link as ChakraLink } from '@chakra-ui/react';
 import { PlayerAvatar } from '@components/PlayerAvatar';
-import { Link } from 'react-router-dom';
+import { PlayerProfileLink } from '@components/profile/Link';
 import type { PlayerRecord } from '@shared/types/player';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import type { PlayerStatsRecord } from '@shared/types/player_stats';
@@ -21,7 +21,7 @@ export const LeaderboardItem = ({ player, playerProgress, playerStats }: Leaderb
             </Table.Cell>
             <Table.Cell>
                 <ChakraLink asChild>
-                    <Link to={`/profile/${player.name}`}>{player.name}</Link>
+                    <PlayerProfileLink playerName={player.name}>{player.name}</PlayerProfileLink>
                 </ChakraLink>
             </Table.Cell>
             <Table.Cell>{playerProgress.points}</Table.Cell>

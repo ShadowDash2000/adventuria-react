@@ -1,5 +1,5 @@
 import { Box, HStack, Icon, Spinner, type StackProps, Text, VStack } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { PlayerProfileLink } from '@components/profile/Link';
 import { PlayerAvatar } from '@components/PlayerAvatar';
 import { FaCrown } from 'react-icons/fa6';
 import { useAppContext } from '@context/AppContext';
@@ -68,11 +68,11 @@ export const EventLeaders = ({ ...props }: StackProps) => {
                             h={PLAYER_SIZES.first}
                         />
                     </Box>
-                    <Link to={`/profile/${firstPlace.expand!.player.name}`}>
+                    <PlayerProfileLink playerName={firstPlace.expand!.player.name}>
                         <Text fontWeight={600} fontSize="lg">
                             {firstPlace.expand!.player.name}
                         </Text>
-                    </Link>
+                    </PlayerProfileLink>
                 </VStack>
             )}
 
@@ -95,11 +95,11 @@ export const EventLeaders = ({ ...props }: StackProps) => {
                                 h={PLAYER_SIZES.other}
                             />
                         </Box>
-                        <Link to={`/profile/${playerProgress.expand!.player.name}`}>
+                        <PlayerProfileLink playerName={playerProgress.expand!.player.name}>
                             <Text fontWeight={600} fontSize="lg">
                                 {playerProgress.expand!.player.name}
                             </Text>
-                        </Link>
+                        </PlayerProfileLink>
                     </VStack>
                 ))}
             </HStack>
