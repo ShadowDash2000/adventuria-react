@@ -3,6 +3,7 @@ import { VStack, Text, HStack } from '@chakra-ui/react';
 import { Coin } from '@shared/components/Coin';
 import { ItemIcon } from '@components/items/ItemIcon';
 import { useAppContext } from '@context/AppContext';
+import { ItemContextMenu } from '@components/debug/item-context-menu/Menu';
 
 interface GlossaryItemProps {
     item: ItemRecord;
@@ -13,11 +14,13 @@ export const GlossaryItem = ({ item }: GlossaryItemProps) => {
 
     return (
         <VStack>
-            <ItemIcon
-                itemId={item.id}
-                description={item.description}
-                src={pb.files.getURL(item, item.icon)}
-            />
+            <ItemContextMenu itemId={item.id}>
+                <ItemIcon
+                    itemId={item.id}
+                    description={item.description}
+                    src={pb.files.getURL(item, item.icon)}
+                />
+            </ItemContextMenu>
             <HStack>
                 <Text>{item.name}</Text>
                 <Text color={ItemTypeInfo[item.type].color}>({ItemTypeInfo[item.type].label})</Text>
