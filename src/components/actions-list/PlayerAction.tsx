@@ -99,7 +99,7 @@ export const PlayerAction = ({ action }: ActionProps) => {
                     align={{ base: 'flex-start', mdDown: 'center' }}
                     direction={{ base: 'row', mdDown: 'column' }}
                 >
-                    <VStack minW="15%" flexShrink={0}>
+                    <VStack minW="15%" maxW={{ base: '20%', mdDown: 'full' }} flexShrink={0}>
                         {activity && (
                             <>
                                 <LinkButtons
