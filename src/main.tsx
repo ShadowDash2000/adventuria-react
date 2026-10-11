@@ -2,13 +2,13 @@ import './main.css';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router/router';
-import { ChakraProvider } from '@chakra-ui/react';
+import { AppearanceProvider } from './theme/AppearanceProvider';
 import { AppContextProvider } from '@context/AppContext';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { queryClient } from '@shared/queryClient';
 import { ThemeProvider } from 'next-themes';
-import theme, { colorModeConfig } from './theme/theme';
+import { colorModeConfig } from './theme/theme';
 import UmamiAnalytics from '@danielgtmn/umami-react';
 import { CellInfoModal } from '@components/board/cells/cell-info/CellInfoModal';
 
@@ -20,7 +20,7 @@ createRoot(document.getElementById('root')!).render(
             debug={import.meta.env.VITE_UMAMI_DEBUG === 'true'}
             lazyLoad
         />
-        <ChakraProvider value={theme}>
+        <AppearanceProvider>
             <ThemeProvider attribute="class" disableTransitionOnChange {...colorModeConfig} />
             <QueryClientProvider client={queryClient}>
                 <AppContextProvider>
@@ -29,6 +29,6 @@ createRoot(document.getElementById('root')!).render(
                 </AppContextProvider>
                 <ReactQueryDevtools initialIsOpen={false} buttonPosition="top-left" />
             </QueryClientProvider>
-        </ChakraProvider>
+        </AppearanceProvider>
     </>,
 );

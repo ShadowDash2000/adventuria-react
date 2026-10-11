@@ -5,9 +5,9 @@ import {
     type FlexProps as ChakraFlexProps,
     Flex as ChakraFlex,
 } from '@chakra-ui/react';
-import { flexRecipe } from './flex.recipe';
+import type { flexRecipe } from '../../adventuria-3/recipes/flex.recipe';
 
-const { withContext } = createRecipeContext({ recipe: flexRecipe });
+const { withContext } = createRecipeContext({ key: 'adventuria-flex' });
 
 export type FlexProps = HTMLChakraProps<'div', RecipeVariantProps<typeof flexRecipe>> &
     ChakraFlexProps;

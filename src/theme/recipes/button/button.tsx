@@ -6,12 +6,11 @@ import {
     Button as ChakraButton,
     mergeProps,
 } from '@chakra-ui/react';
-import { buttonRecipe } from './button.recipe';
+import type { buttonRecipe } from '../../adventuria-3/recipes/button.recipe';
 import { forwardRef } from 'react';
 
 const { PropsProvider, usePropsContext, useRecipeResult } = createRecipeContext({
     key: 'adventuria-button',
-    recipe: buttonRecipe,
 });
 
 type ButtonProps = HTMLChakraProps<'button', RecipeVariantProps<typeof buttonRecipe>> &
