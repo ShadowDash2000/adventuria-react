@@ -14,7 +14,20 @@ export class ItemReceived extends PlayerEventDispenser {
     }
 }
 
-type Payload = { item_id: RecordIdString; item_name: string; item_type: ItemType };
+const sources = {
+    item_wheel: { label: 'Колесо предметов' },
+    shop: { label: 'Магазин' },
+    another_item: { label: 'Предмет' },
+    dealer: { label: 'Дилер' },
+    debug: { label: 'Debug' },
+};
+
+type Payload = {
+    item_id: RecordIdString;
+    item_name: string;
+    item_type: ItemType;
+    source?: keyof typeof sources;
+};
 
 const ItemReceivedItem = ({ payload }: { payload: Payload }) => {
     const openItemDetails = useItemsStore(state => state.openItemDetails);
@@ -31,6 +44,7 @@ const ItemReceivedItem = ({ payload }: { payload: Payload }) => {
             >
                 {payload.item_name}
             </Button>
+            {payload.source && ` (${sources[payload.source].label})`}
         </Text>
     );
 };
