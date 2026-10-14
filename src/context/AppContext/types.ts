@@ -51,6 +51,7 @@ type GameAuth = {
     disabled: boolean;
     debug: boolean;
     season: RecordIdString;
+    player_progress_id: RecordIdString;
     current_world: RecordIdString;
     balance: number;
     energy: number;
