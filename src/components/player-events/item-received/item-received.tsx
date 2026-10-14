@@ -14,7 +14,7 @@ export class ItemReceived extends PlayerEventDispenser {
     }
 }
 
-const sources = {
+export const sources = {
     item_wheel: { label: 'Колесо предметов' },
     shop: { label: 'Магазин' },
     another_item: { label: 'Предмет' },
