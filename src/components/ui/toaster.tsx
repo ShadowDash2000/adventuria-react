@@ -5,7 +5,9 @@ import {
     Stack,
     Toast,
     createToaster,
+    Icon,
 } from '@chakra-ui/react';
+import { LuX } from 'react-icons/lu';
 
 export const toaster = createToaster({ placement: 'bottom-end', pauseOnPageIdle: true });
 
@@ -28,6 +30,13 @@ export const Toaster = () => {
                         </Stack>
                         {toast.action && (
                             <Toast.ActionTrigger>{toast.action.label}</Toast.ActionTrigger>
+                        )}
+                        {toast.closable && (
+                            <Toast.CloseTrigger asChild>
+                                <Icon size="lg">
+                                    <LuX />
+                                </Icon>
+                            </Toast.CloseTrigger>
                         )}
                     </Toast.Root>
                 )}

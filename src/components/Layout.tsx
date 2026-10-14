@@ -3,9 +3,11 @@ import { Header } from './Header';
 import { Box, Flex } from '@chakra-ui/react';
 import { Toaster } from '@ui/toaster';
 import { useWheelIncrease } from '@components/notifications/wheel-increase';
+import { useEnergyIncrease } from '@components/notifications/energy-increase';
 import { type Theme, useSettingsStore } from '@components/settings/useSettingsStore';
 import { type ReactNode } from 'react';
 import { ItemDetailsDialog } from '@components/items/ItemDetailsDialog';
+import { useBalanceIncrease } from '@components/notifications/balance-increase';
 
 const themes: Record<Theme, ReactNode | null> = {
     disabled: null,
@@ -40,6 +42,8 @@ const themes: Record<Theme, ReactNode | null> = {
 
 const Layout = () => {
     useWheelIncrease();
+    useEnergyIncrease();
+    useBalanceIncrease();
     const theme = useSettingsStore(state => state.theme);
 
     return (
