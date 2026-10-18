@@ -12,7 +12,7 @@ const wordMap = new Map<string, string>([
 ]);
 const plural = new Intl.PluralRules('ru-RU');
 
-type EnergyChangeData = { energy: number };
+type EnergyChangeData = { amount: number };
 
 export const useEnergyIncrease = () => {
     const { pb, isAuth, gameState, isGameStateSuccess } = useAppContext();
@@ -27,12 +27,12 @@ export const useEnergyIncrease = () => {
             .subscribe(
                 `energy_change#${gameState.player_progress_id}`,
                 async (data: EnergyChangeData) => {
-                    if (data.energy <= 0) return;
+                    if (data.amount <= 0) return;
 
                     toaster.create({
                         type: 'info',
                         title: 'Начислены очки энергии',
-                        description: `Начислено ${data.energy} ${wordMap.get(plural.select(data.energy))} энергии.`,
+                        description: `Начислено ${data.amount} ${wordMap.get(plural.select(data.amount))} энергии.`,
                         closable: true,
                     });
 

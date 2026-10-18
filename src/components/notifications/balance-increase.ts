@@ -12,7 +12,7 @@ const wordMap = new Map<string, string>([
 ]);
 const plural = new Intl.PluralRules('ru-RU');
 
-type BalanceChangeData = { balance: number };
+type BalanceChangeData = { amount: number };
 
 export const useBalanceIncrease = () => {
     const { pb, isAuth, gameState, isGameStateSuccess } = useAppContext();
@@ -27,12 +27,12 @@ export const useBalanceIncrease = () => {
             .subscribe(
                 `balance_change#${gameState.player_progress_id}`,
                 async (data: BalanceChangeData) => {
-                    if (data.balance <= 0) return;
+                    if (data.amount <= 0) return;
 
                     toaster.create({
                         type: 'info',
                         title: 'Начислены монеты',
-                        description: `Начислено ${data.balance} ${wordMap.get(plural.select(data.balance))}.`,
+                        description: `Начислено ${data.amount} ${wordMap.get(plural.select(data.amount))}.`,
                         closable: true,
                     });
 

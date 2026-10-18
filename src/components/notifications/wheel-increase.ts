@@ -1,6 +1,7 @@
 import { useAppContext } from '@context/AppContext';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { toaster } from '@ui/toaster';
+import { invalidateGameState } from '@shared/queryClient';
 
 const wordMap = new Map<string, string>([
     ['one', 'колесо'],
@@ -11,33 +12,49 @@ const wordMap = new Map<string, string>([
 ]);
 const plural = new Intl.PluralRules('ru-RU');
 
+type ItemWheelsChangeData = { amount: number };
+
 export const useWheelIncrease = () => {
-    const { isAuth, gameState, isGameStateSuccess } = useAppContext();
-    const [wheelCount, setWheelCount] = useState<number | null>(null);
+    const { pb, isAuth, gameState, isGameStateSuccess } = useAppContext();
 
     useEffect(() => {
         if (!isAuth || !isGameStateSuccess) return;
 
-        if (wheelCount === null) {
-            setWheelCount(gameState.item_wheels_count);
-            return;
-        }
+        let disposed = false;
+        let unsubscribe: (() => void) | undefined;
 
-        if (wheelCount < gameState.item_wheels_count) {
-            const wheelsAdded = gameState.item_wheels_count - wheelCount;
+        pb.realtime
+            .subscribe(
+                `item_wheels_change#${gameState.player_progress_id}`,
+                async (data: ItemWheelsChangeData) => {
+                    if (data.amount <= 0) return;
 
-            toaster.create({
-                type: 'info',
-                title: 'Время крутить казик!',
-                description: `Начислено ${wheelsAdded} ${wordMap.get(plural.select(wheelsAdded))}.`,
+                    toaster.create({
+                        type: 'info',
+                        title: 'Время крутить казик!',
+                        description: `Начислено ${data.amount} ${wordMap.get(plural.select(data.amount))}.`,
+                        closable: true,
+                    });
+
+                    await invalidateGameState();
+                },
+            )
+            .then(callback => {
+                if (disposed) {
+                    void callback();
+                } else {
+                    unsubscribe = callback;
+                }
             });
-            setWheelCount(gameState.item_wheels_count);
-        } else if (wheelCount > gameState.item_wheels_count) {
-            setWheelCount(gameState.item_wheels_count);
-        }
+
+        return () => {
+            disposed = true;
+            unsubscribe?.();
+        };
     }, [
+        pb,
         isAuth,
         isGameStateSuccess,
-        isAuth && isGameStateSuccess ? gameState.item_wheels_count : 0,
+        isAuth && isGameStateSuccess ? gameState.player_progress_id : null,
     ]);
 };
