@@ -29,7 +29,7 @@ export const Events = ({ playerEvents }: EventsProps) => {
             <Box w="full" maxH={24} overflowY="auto">
                 <For each={nodes}>
                     {event => (
-                        <VStack gap={0} key={event.id}>
+                        <VStack gap={0} key={event.id} textAlign="center">
                             <Text>{formatDateLocalized(event.created)}</Text>
                             {event.node}
                         </VStack>
