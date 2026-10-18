@@ -31,6 +31,8 @@ type Payload = {
 
 const ItemReceivedItem = ({ payload }: { payload: Payload }) => {
     const openItemDetails = useItemsStore(state => state.openItemDetails);
+    const sourceLabel =
+        payload.source && sources[payload.source] ? sources[payload.source].label : '';
 
     return (
         <Text>
@@ -44,7 +46,7 @@ const ItemReceivedItem = ({ payload }: { payload: Payload }) => {
             >
                 {payload.item_name}
             </Button>
-            {payload.source && ` (${sources[payload.source].label})`}
+            {sourceLabel && ` (${sourceLabel})`}
         </Text>
     );
 };
