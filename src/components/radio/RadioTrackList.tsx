@@ -41,7 +41,7 @@ export const RadioTrackList = ({ audioId, audio, onTrackChange }: RadioTrackList
                 onTrackChange?.(e.value[0]);
             }}
         >
-            <Listbox.Content maxH="{sizes.32}">
+            <Listbox.Content maxH={32}>
                 {collection.items.map(audio => (
                     <Listbox.Item
                         item={audio}
