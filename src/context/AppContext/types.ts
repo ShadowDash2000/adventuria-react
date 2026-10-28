@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
 import type PocketBase from 'pocketbase';
-import type { PlayerRecord } from '@shared/types/player';
-import type { PlayerProgressRecord } from '@shared/types/player_progress';
-import { RecordIdString } from '@shared/types/pocketbase';
+import type { IsoDateString, RecordIdString } from '@shared/types/pocketbase';
 
 type AppContextBase = { pb: PocketBase; login: () => void; logout: () => void };
 
@@ -51,6 +49,7 @@ type GameAuth = {
     disabled: boolean;
     debug: boolean;
     season: RecordIdString;
+    next_day_at: IsoDateString;
     player_progress_id: RecordIdString;
     current_world: RecordIdString;
     balance: number;
@@ -59,7 +58,7 @@ type GameAuth = {
     item_wheels_count: number;
 };
 
-type GameGuest = { season: RecordIdString };
+type GameGuest = { season: RecordIdString; next_day_at: IsoDateString };
 
 type GameState =
     | {
