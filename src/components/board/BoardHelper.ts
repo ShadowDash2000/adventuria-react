@@ -29,7 +29,6 @@ export type WorldBoard = {
 
 export type BoardModel = {
     worldsById: Map<string, WorldBoard>;
-    lines: CellBoard[][];
     rows: number;
     cols: number;
     playersByCellIndex: Map<number, PlayerRecord[]>;
@@ -54,7 +53,7 @@ export class BoardHelper {
     ): BoardModel {
         const worldsById = this.buildWorlds(cells, worlds);
         const playersByCellIndex = this.placePlayers(players, playersProgress, worldsById);
-        const { lines, positionByCellIndex } = this.buildLayouts(
+        const { rows, positionByCellIndex } = this.buildLayouts(
             cells,
             worldsById,
             playersByCellIndex,
@@ -63,8 +62,7 @@ export class BoardHelper {
 
         return {
             worldsById,
-            lines,
-            rows: lines.length,
+            rows: rows,
             cols: Math.max(0, ...Array.from(worldsById.values(), world => world.cols)),
             playersByCellIndex,
             positionByCellIndex,
@@ -138,14 +136,14 @@ export class BoardHelper {
         worldsById: Map<string, WorldBoard>,
         playersByCellIndex: Map<number, PlayerRecord[]>,
         lineSize: number,
-    ): { lines: CellBoard[][]; positionByCellIndex: Map<number, CellPosition> } {
-        const lines: CellBoard[][] = [];
+    ): { rows: number; positionByCellIndex: Map<number, CellPosition> } {
+        let rows = 0;
         const positionByCellIndex = new Map<number, CellPosition>();
 
         for (const world of worldsById.values()) {
             const worldLines: LineBoard[] = [];
             const cols = Math.min(lineSize, world.cellIndexes.length);
-            world.rowOffset = lines.length;
+            world.rowOffset = rows;
 
             for (let start = 0; start < world.cellIndexes.length; start += cols) {
                 const localRow = worldLines.length;
@@ -174,10 +172,11 @@ export class BoardHelper {
             world.rows = worldLines.length;
             world.cols = cols;
             world.cellsCount = world.cellIndexes.length;
-            lines.push(...worldLines.map(line => line.cells));
+
+            rows += world.rows;
         }
 
-        return { lines, positionByCellIndex };
+        return { rows, positionByCellIndex };
     }
 
     static getCoords(world: WorldBoard, cellIndex: number): CellPosition {

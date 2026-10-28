@@ -10,7 +10,6 @@ export type BoardContextType = {
 };
 
 export type BoardInnerContextType = {
-    cellsOrdered: CellBoard[][];
     worldsById: Map<string, WorldBoard>;
     positionByCellIndex: Map<number, CellPosition>;
     playersByCellIndex: Map<number, PlayerRecord[]>;

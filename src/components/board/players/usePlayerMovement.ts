@@ -1,12 +1,11 @@
 import { type RefObject, useEffect, useRef, useState } from 'react';
 import { useBoardInnerContext } from '@components/board';
 import { useAppContext } from '@context/AppContext';
-import { BoardHelper } from '../BoardHelper';
+import { BoardHelper, type CellPosition } from '../BoardHelper';
 import { CELL_MAX_PLAYERS, CELL_MAX_PLAYERS_LINE } from '../Board';
 import { usePlayer } from '@components/board/players/usePlayer';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
-import { invalidatePlayerProgress } from '@shared/queryClient';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
 
 type PlayerPosition = { x: number; y: number; offsetX: number; offsetY: number };
@@ -30,7 +29,7 @@ export const usePlayerMovement = ({
     playerRef,
 }: PlayerMovementProps): PlayerMovementReturn => {
     const { playerId } = useAppContext();
-    const { cellWidth, cellHeight, cellsOrdered, worldsById } = useBoardInnerContext();
+    const { cellWidth, cellHeight, worldsById } = useBoardInnerContext();
     const isCurrentPlayer = playerId ? playerProgress.player === playerId : false;
     const [moving, setMoving] = useState<boolean>(false);
     const { incrementBlocked, decrementBlocked } = useKbdSettings(KbdKey.inventory);
@@ -41,11 +40,13 @@ export const usePlayerMovement = ({
     const startedMovementRef = useRef(false);
     const nextStepAtRef = useRef<number | null>(null);
 
-    const calculateState = (
-        row: number,
-        col: number,
-    ): { position: PlayerPosition; visible: boolean } => {
-        const cell = cellsOrdered[row][col];
+    const calculateState = ({
+        worldId,
+        row,
+        col,
+    }: CellPosition): { position: PlayerPosition; visible: boolean } => {
+        const world = worldsById.get(worldId);
+        const cell = world?.lines[row - world.rowOffset].cells[col];
         let playerCol = 0;
         let playerRow = 0;
         let isVisible = true;
@@ -74,14 +75,14 @@ export const usePlayerMovement = ({
             return { position: { x: 0, y: 0, offsetX: 0, offsetY: 0 }, visible: false };
         }
         const pos = BoardHelper.getCoords(world, playerProgress.cells_passed);
-        return calculateState(pos.row, pos.col);
+        return calculateState(pos);
     });
 
     const [position, setPosition] = useState<PlayerPosition>(initialState.position);
     const [visible, setVisible] = useState<boolean>(initialState.visible);
 
-    const move = (row: number, col: number) => {
-        const newState = calculateState(row, col);
+    const move = (pos: CellPosition) => {
+        const newState = calculateState(pos);
         setPosition(newState.position);
         setVisible(newState.visible);
     };
@@ -109,9 +110,9 @@ export const usePlayerMovement = ({
                 return;
             }
 
-            move(pos.row, pos.col);
+            move(pos);
         }
-    }, [moving, paths, cellWidth, cellHeight, cellsOrdered]);
+    }, [moving, paths, cellWidth, cellHeight, worldsById]);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -159,8 +160,6 @@ export const usePlayerMovement = ({
             setMoving(false);
             clearMoveTime();
             isMovingRef.current = false;
-
-            void invalidatePlayerProgress(playerProgress.player);
         };
 
         if (isCurrentPlayer) {
@@ -188,7 +187,7 @@ export const usePlayerMovement = ({
             if (next) {
                 startedMovementRef.current = true;
                 nextStepAtRef.current = Date.now() + moveTime * 1000;
-                move(next.row, next.col);
+                move(next);
                 scheduleNextStep(moveTime * 1000);
             } else {
                 finishMovement();

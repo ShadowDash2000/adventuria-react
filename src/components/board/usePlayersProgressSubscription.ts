@@ -6,11 +6,13 @@ import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore
 import { pbCollections } from '@shared/pbSchema';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
+import { invalidatePlayerProgress } from '@shared/queryClient';
 
 type PlayersProgressSubscriptionProps = {
     pb: PocketBase;
     isAuth: boolean;
     playerId: RecordIdString | null;
+    seasonId: RecordIdString;
     initialProgress: PlayerProgressRecord[];
 };
 
@@ -18,6 +20,7 @@ export const usePlayersProgressSubscription = ({
     pb,
     isAuth,
     playerId,
+    seasonId,
     initialProgress,
 }: PlayersProgressSubscriptionProps) => {
     const [playersProgress, setPlayersProgress] = useState(
@@ -25,6 +28,13 @@ export const usePlayersProgressSubscription = ({
     );
     const playersProgressRef = useRef(playersProgress);
     const worldsByIdRef = useRef<Map<string, WorldBoard>>(new Map());
+
+    useEffect(() => {
+        const next = new Map(initialProgress.map(progress => [progress.player, progress]));
+
+        playersProgressRef.current = next;
+        setPlayersProgress(next);
+    }, [initialProgress]);
 
     useEffect(() => {
         if (!isAuth) return;
@@ -35,6 +45,8 @@ export const usePlayersProgressSubscription = ({
         void pb
             .collection(pbCollections.playersProgress)
             .subscribe<PlayerProgressRecord>('*', event => {
+                if (event.record.season !== seasonId) return;
+
                 if (event.action === 'create') {
                     const next = new Map(playersProgressRef.current);
                     next.set(event.record.player, event.record);
@@ -82,6 +94,8 @@ export const usePlayersProgressSubscription = ({
                 next.set(event.record.player, event.record);
                 playersProgressRef.current = next;
                 setPlayersProgress(next);
+
+                void invalidatePlayerProgress(event.record.player);
             })
             .then(callback => {
                 if (disposed) {
@@ -95,7 +109,7 @@ export const usePlayersProgressSubscription = ({
             disposed = true;
             void unsubscribe?.();
         };
-    }, [pb, isAuth, playerId]);
+    }, [pb, isAuth, playerId, seasonId]);
 
     return { playersProgress, worldsByIdRef };
 };
