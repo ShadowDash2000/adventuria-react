@@ -156,6 +156,8 @@ export const cellSchema = {
     isCustomFilterNotAllowed: 'is_custom_filter_not_allowed',
     isChangeGameNotAllowed: 'is_change_game_not_allowed',
     value: 'value',
+
+    cellEvent: 'cell_event',
 };
 
 export const genresSchema = { id: 'id', idDb: 'id_db', name: 'name', checksum: 'checksum' };

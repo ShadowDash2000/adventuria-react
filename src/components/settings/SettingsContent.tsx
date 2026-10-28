@@ -33,6 +33,8 @@ export const SettingsContent = ({ ...props }: StackProps) => {
         setTheme,
         displayCellsNumber,
         setDisplayCellsNumber,
+        displayCellsDirection,
+        setDisplayCellsDirection,
     } = useSettingsStore();
 
     return (
@@ -105,6 +107,14 @@ export const SettingsContent = ({ ...props }: StackProps) => {
             >
                 <Checkbox.HiddenInput />
                 <Checkbox.Label>Отображение нумерации клеток</Checkbox.Label>
+                <Checkbox.Control />
+            </Checkbox.Root>
+            <Checkbox.Root
+                defaultChecked={displayCellsDirection}
+                onCheckedChange={e => setDisplayCellsDirection(!!e.checked)}
+            >
+                <Checkbox.HiddenInput />
+                <Checkbox.Label>Отображение направления клеток</Checkbox.Label>
                 <Checkbox.Control />
             </Checkbox.Root>
         </VStack>

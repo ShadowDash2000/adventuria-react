@@ -27,10 +27,10 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
                 .collection(pbCollections.players)
                 .getFullList<PlayerRecord>({
                     fields: joinExpand(
+                        'collectionName',
                         playerSchema.id,
                         'updated',
                         playerSchema.name,
-                        'collectionName',
                         playerSchema.avatar,
                         playerSchema.color,
                         playerSchema.isStreamLive,
@@ -48,11 +48,10 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
                     filter: eq(playerProgressSchema.season, gameState!.season),
                     fields: joinExpand(
                         playerProgressSchema.id,
+                        'updated',
                         playerProgressSchema.player,
                         playerProgressSchema.currentWorld,
                         playerProgressSchema.cellsPassed,
-                        'updated',
-                        'collectionName',
                     ),
                 }),
         refetchOnWindowFocus: false,
@@ -67,7 +66,14 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
                 .getFullList<CellRecord>({
                     sort: cellSchema.sort,
                     filter: `${cellSchema.disabled} = false`,
-                    fields: '*',
+                    fields: joinExpand(
+                        'collectionName',
+                        cellSchema.id,
+                        cellSchema.type,
+                        cellSchema.world,
+                        cellSchema.icon,
+                        cellSchema.cellEvent,
+                    ),
                 }),
         refetchOnWindowFocus: false,
         queryKey: queryKeys.cells,
@@ -79,7 +85,7 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
                 .collection(pbCollections.worlds)
                 .getFullList<WorldRecord>({
                     sort: worldSchema.sort,
-                    fields: joinExpand(worldSchema.id, worldSchema.sort, 'collectionName'),
+                    fields: joinExpand(worldSchema.id, worldSchema.sort),
                 }),
         refetchOnWindowFocus: false,
         queryKey: queryKeys.worlds,

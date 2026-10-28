@@ -10,7 +10,7 @@ export type CellRecord = {
     updated: IsoDateString;
     disabled: boolean;
     sort: number;
-    type: string;
+    type: CellType;
     world: RecordIdString;
     filter: RecordIdString;
     audio_preset: RecordIdString;
@@ -36,3 +36,15 @@ export type FilterRecordExpand = Partial<{
     audio_preset: AudioPresetRecord;
     world: WorldRecord;
 }>;
+
+export const enum CellType {
+    Game = 'game',
+    Movie = 'movie',
+    Gym = 'gym',
+    Karaoke = 'karaoke',
+    Jail = 'jail',
+    Shop = 'shop',
+    Casino = 'casino',
+    Teleport = 'teleport',
+    RollItem = 'roll_item',
+}

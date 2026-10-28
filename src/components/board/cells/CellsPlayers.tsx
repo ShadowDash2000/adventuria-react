@@ -68,7 +68,7 @@ const CellPlayers = ({ cellIndex, players }: CellPlayersProps) => {
             }
         >
             <IconButton
-                zIndex={20}
+                zIndex={14}
                 size="xl"
                 position="absolute"
                 positionAnchor="--cells-players"

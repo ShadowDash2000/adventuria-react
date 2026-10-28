@@ -17,7 +17,7 @@ export const Players = () => {
                     player={player}
                     playerProgress={playerProgress}
                     key={player.id}
-                    zIndex={10}
+                    zIndex={13}
                     pointerEvents="none"
                 />
             )}

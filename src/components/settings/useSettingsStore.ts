@@ -11,6 +11,8 @@ interface SettingsState {
     setTheme: (theme: Theme) => void;
     displayCellsNumber: boolean;
     setDisplayCellsNumber: (displayCellsNumber: boolean) => void;
+    displayCellsDirection: boolean;
+    setDisplayCellsDirection: (displayCellsDirection: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -19,9 +21,12 @@ export const useSettingsStore = create<SettingsState>()(
             appearance: 'adventuria-4',
             theme: 'disabled',
             displayCellsNumber: true,
+            displayCellsDirection: true,
             setAppearance: (appearance: Appearance) => set({ appearance }),
             setTheme: (theme: Theme) => set({ theme }),
             setDisplayCellsNumber: (displayCellsNumber: boolean) => set({ displayCellsNumber }),
+            setDisplayCellsDirection: (displayCellsDirection: boolean) =>
+                set({ displayCellsDirection }),
         }),
         {
             name: 'settings',

@@ -5,13 +5,23 @@ import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import type { WorldRecord } from '@shared/types/world';
 
 export type CellPosition = { worldId: string; row: number; col: number };
-export type CellBoard = { players?: PlayerRecord[] } & CellRecord;
+
+export type CellBoard = {
+    record: CellRecord;
+    players?: PlayerRecord[];
+    localIndex: number;
+    indexInLine: number;
+    isLastInLine: boolean;
+    isLastInWorld: boolean;
+};
+
+export type LineBoard = { cells: CellBoard[]; reversed: boolean; startIndex: number };
 
 export type WorldBoard = {
     id: string;
     rowOffset: number;
     cellIndexes: number[];
-    lines: CellBoard[][];
+    lines: LineBoard[];
     rows: number;
     cols: number;
     cellsCount: number;
@@ -133,7 +143,7 @@ export class BoardHelper {
         const positionByCellIndex = new Map<number, CellPosition>();
 
         for (const world of worldsById.values()) {
-            const worldLines: CellBoard[][] = [];
+            const worldLines: LineBoard[] = [];
             const cols = Math.min(lineSize, world.cellIndexes.length);
             world.rowOffset = lines.length;
 
@@ -141,17 +151,21 @@ export class BoardHelper {
                 const localRow = worldLines.length;
                 const row = world.rowOffset + localRow;
                 const lineIndexes = world.cellIndexes.slice(start, start + cols);
-                const lineCells = lineIndexes.map(cellIndex => ({
-                    ...cells[cellIndex],
+                const lineCells: CellBoard[] = lineIndexes.map((cellIndex, indexInLine) => ({
+                    record: cells[cellIndex],
                     players: playersByCellIndex.get(cellIndex),
+                    localIndex: start + indexInLine,
+                    indexInLine,
+                    isLastInLine: indexInLine === lineIndexes.length - 1,
+                    isLastInWorld: start + indexInLine === world.cellIndexes.length - 1,
                 }));
 
-                if (localRow % 2 === 1) lineCells.reverse();
-                worldLines.push(lineCells);
+                const reversed = localRow % 2 === 1;
+                if (reversed) lineCells.reverse();
+                worldLines.push({ cells: lineCells, reversed, startIndex: start });
 
                 lineIndexes.forEach((cellIndex, indexInLine) => {
-                    const col =
-                        localRow % 2 === 1 ? lineIndexes.length - 1 - indexInLine : indexInLine;
+                    const col = reversed ? lineIndexes.length - 1 - indexInLine : indexInLine;
                     positionByCellIndex.set(cellIndex, { worldId: world.id, row, col });
                 });
             }
@@ -160,7 +174,7 @@ export class BoardHelper {
             world.rows = worldLines.length;
             world.cols = cols;
             world.cellsCount = world.cellIndexes.length;
-            lines.push(...worldLines);
+            lines.push(...worldLines.map(line => line.cells));
         }
 
         return { lines, positionByCellIndex };

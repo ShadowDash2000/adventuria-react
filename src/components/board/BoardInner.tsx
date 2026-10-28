@@ -28,7 +28,6 @@ export const BoardInner = () => {
     const board = BoardHelper.buildBoard(cells, worlds, players, playersProgress);
     worldsByIdRef.current = board.worldsById;
 
-    const cellsOrderedRev = board.lines.slice().reverse();
     const boardDimensions = useBoardDimensions(boardInnerRef);
 
     const rows = board.rows;
@@ -43,7 +42,6 @@ export const BoardInner = () => {
             value={{
                 cellsOrdered: board.lines,
                 playersByCellIndex: board.playersByCellIndex,
-                cellsOrderedRev,
                 positionByCellIndex: board.positionByCellIndex,
                 worldsById: board.worldsById,
                 players: players,

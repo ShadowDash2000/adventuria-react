@@ -121,7 +121,7 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
                 continue;
             }
 
-            paths.push(BoardHelper.getCoords(world, move.cell_global_order));
+            paths.push(BoardHelper.getCoords(world, move.cell_local_order));
         }
 
         addPaths(paths);
