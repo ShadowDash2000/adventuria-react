@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type PocketBase from 'pocketbase';
-import { invalidateAvailableActions, invalidateCells } from '@shared/queryClient';
+import { invalidateAvailableActions, invalidateCells } from '@shared/query';
 
 type CellsSubscriptionProps = { pb: PocketBase; isAuth: boolean };
 

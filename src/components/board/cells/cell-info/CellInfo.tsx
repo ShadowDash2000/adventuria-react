@@ -12,7 +12,7 @@ import {
     Heading,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import type { ClientResponseError } from 'pocketbase';
 import type { CellRecord } from '@shared/types/cell';
@@ -34,8 +34,8 @@ export const CellInfo = ({ cellId }: CellInfoProps) => {
         isError,
         error,
     } = useQuery({
-        queryFn: () =>
-            pb
+        queryFn: async () => {
+            const result = await pb
                 .collection(pbCollections.cells)
                 .getOne<CellRecord>(cellId, {
                     expand: joinExpand(
@@ -47,7 +47,20 @@ export const CellInfo = ({ cellId }: CellInfoProps) => {
                         dotExpand(cellSchema.filter, activityFilterSchema.themes),
                         dotExpand(cellSchema.filter, activityFilterSchema.activities),
                     ),
-                }),
+                });
+
+            if (result.expand?.filter?.expand?.activities) {
+                result.expand.filter.expand.activities =
+                    result.expand?.filter?.expand?.activities.map(activity => ({
+                        ...activity,
+                        cover_alt: activity.cover_alt
+                            ? pb.files.getURL(activity, activity.cover_alt)
+                            : '',
+                    }));
+            }
+
+            return result;
+        },
         queryKey: queryKeys.cell(cellId),
         refetchOnWindowFocus: false,
     });

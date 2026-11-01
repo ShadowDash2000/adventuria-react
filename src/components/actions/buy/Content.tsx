@@ -1,6 +1,6 @@
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import { Box, For, Grid, GridItem, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { Item } from '@components/actions/buy/Item';
 import { RefreshShopButton } from './RefreshShopButton';

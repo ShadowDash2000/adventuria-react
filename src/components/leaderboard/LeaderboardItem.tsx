@@ -1,3 +1,4 @@
+import { useAppContext } from '@context/AppContext';
 import { Box, Table, Link as ChakraLink } from '@chakra-ui/react';
 import { PlayerAvatar } from '@components/PlayerAvatar';
 import { PlayerProfileLink } from '@components/profile/Link';
@@ -12,11 +13,19 @@ interface LeaderboardItemProps {
 }
 
 export const LeaderboardItem = ({ player, playerProgress, playerStats }: LeaderboardItemProps) => {
+    const { pb } = useAppContext();
+
     return (
         <Table.Row bg="none">
             <Table.Cell>
                 <Box position="relative" w={12} h={12}>
-                    <PlayerAvatar player={player} w="full" h="full" showStreamLive />
+                    <PlayerAvatar
+                        avatarUrl={pb.files.getURL(player, player.avatar)}
+                        color={player.color}
+                        w="full"
+                        h="full"
+                        showStreamLive
+                    />
                 </Box>
             </Table.Cell>
             <Table.Cell>

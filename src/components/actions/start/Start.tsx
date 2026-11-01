@@ -8,7 +8,7 @@ import {
     invalidateAllActions,
     invalidateGameState,
     invalidatePlayersProgress,
-} from '@shared/queryClient';
+} from '@shared/query';
 
 export class Start extends ActionDispenser {
     buttonNode(): ReactNode {

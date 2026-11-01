@@ -1,8 +1,6 @@
 import type { RefObject } from 'react';
-import type { CellBoard, CellPosition, WorldBoard } from '@components/board/BoardHelper';
-import type { PlayerRecord } from '@shared/types/player';
-import type { RecordIdString } from '@shared/types/pocketbase';
-import type { PlayerProgressRecord } from '@shared/types/player_progress';
+import type { WorldBoard } from '@components/board/BoardHelper';
+import { ActivePlayer } from '@shared/query/requests';
 
 export type BoardContextType = {
     boardRef: RefObject<HTMLDivElement | null>;
@@ -10,11 +8,8 @@ export type BoardContextType = {
 };
 
 export type BoardInnerContextType = {
+    activePlayers: ActivePlayer[];
     worldsById: Map<string, WorldBoard>;
-    positionByCellIndex: Map<number, CellPosition>;
-    playersByCellIndex: Map<number, PlayerRecord[]>;
-    players: Map<RecordIdString, PlayerRecord>;
-    playersProgress: Map<RecordIdString, PlayerProgressRecord>;
     cellWidth: number;
     cellHeight: number;
 };

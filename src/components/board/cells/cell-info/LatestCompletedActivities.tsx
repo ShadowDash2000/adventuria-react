@@ -3,13 +3,16 @@ import type { ClientResponseError } from 'pocketbase';
 import type { JSX } from 'react';
 import { Carousel, For, Heading, HStack, IconButton, Text, VStack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
 import { Tooltip } from '@ui/tooltip';
 import { Cover } from '@components/activities/Cover';
 import { PlayerAvatar } from '@components/PlayerAvatar';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import { ToggleTip } from '@ui/toggle-tip';
 import { formatDateLocalized } from '@shared/helpers/helper';
+import {
+    completedActivitiesQueryOptions,
+    type PlayerStatus,
+} from '@shared/query/requests/completed-activities';
 
 const MAX_PLAYERS = 6;
 
@@ -19,8 +22,7 @@ interface LatestCompletedActivitiesProps {
 
 export const LatestCompletedActivities = ({ cellId }: LatestCompletedActivitiesProps) => {
     const completedActivities = useQuery({
-        queryFn: () => getCompletedActivities(cellId),
-        queryKey: [...queryKeys.latestCompletedActivities(cellId)],
+        ...completedActivitiesQueryOptions(cellId),
         refetchOnWindowFocus: false,
     });
 
@@ -33,7 +35,7 @@ export const LatestCompletedActivities = ({ cellId }: LatestCompletedActivitiesP
         return <Text>Error: {e.message}</Text>;
     }
 
-    if (completedActivities.data.data.length === 0) {
+    if (completedActivities.data.length === 0) {
         return null;
     }
 
@@ -44,18 +46,19 @@ export const LatestCompletedActivities = ({ cellId }: LatestCompletedActivitiesP
             </Heading>
             <Carousel.Root
                 w="full"
-                slideCount={completedActivities.data.data.length}
+                slideCount={completedActivities.data.length}
                 autoplay={{ delay: 10000 }}
                 allowMouseDrag
                 loop
-                slidesPerPage={completedActivities.data.data.length === 1 ? 1 : 2}
+                slidesPerPage={completedActivities.data.length === 1 ? 1 : 2}
             >
                 <Carousel.ItemGroup>
-                    {completedActivities.data.data.map((activity, index) => (
+                    {completedActivities.data.map((activity, index) => (
                         <Carousel.Item key={activity.id} index={index} position="relative">
                             <Tooltip content={activity.name} openDelay={100}>
                                 <Cover
-                                    activity={activity}
+                                    coverUrl={activity.cover}
+                                    coverAltUrl={activity.cover_alt}
                                     width="full"
                                     minH="150px"
                                     maxH="300px"
@@ -92,47 +95,6 @@ export const LatestCompletedActivities = ({ cellId }: LatestCompletedActivitiesP
     );
 };
 
-type GetCompletedActivitiesData = CompletedActivity[];
-
-type CompletedActivity = {
-    collectionName: string;
-    id: RecordIdString;
-    name: string;
-    cover: string;
-    cover_alt: string;
-    players: PlayerStatus[];
-};
-
-type PlayerStatus = { player: Player; status: string; date: IsoDateString };
-
-type Player = {
-    collectionName: string;
-    id: RecordIdString;
-    name: string;
-    avatar: string;
-    color: string;
-};
-
-type GetCompletedActivitiesSuccess = {
-    success: true;
-    data: GetCompletedActivitiesData;
-    message?: string;
-    error?: never;
-};
-
-type GetCompletedActivitiesError = { success: false; data: never; message: string; error: string };
-
-type GetCompletedActivitiesResult = GetCompletedActivitiesSuccess | GetCompletedActivitiesError;
-
-const getCompletedActivities = async (cellId: string) => {
-    const res = await fetch(
-        `${import.meta.env.VITE_PB_URL}/api/completed-activities?cellId=${cellId}`,
-        { method: 'GET' },
-    );
-
-    return (await res.json()) as GetCompletedActivitiesResult;
-};
-
 interface PlayersListButtonProps {
     players: PlayerStatus[];
 }
@@ -157,7 +119,10 @@ const PlayersListButton = ({ players }: PlayersListButtonProps) => {
                             {(playerStatus, index) => (
                                 <HStack key={`${playerStatus.player.id}_${index}`}>
                                     <VStack>
-                                        <PlayerAvatar player={playerStatus.player} />
+                                        <PlayerAvatar
+                                            avatarUrl={playerStatus.player.avatar}
+                                            color={playerStatus.player.color}
+                                        />
                                         <PlayerStatus status={playerStatus.status} />
                                     </VStack>
                                     <Text color="white">
@@ -200,7 +165,10 @@ const PlayersList = ({ players }: PlayersListProps) => {
                         openDelay={100}
                     >
                         <VStack userSelect="none">
-                            <PlayerAvatar player={playerStatus.player} />
+                            <PlayerAvatar
+                                avatarUrl={playerStatus.player.avatar}
+                                color={playerStatus.player.color}
+                            />
                             <PlayerStatus status={playerStatus.status} />
                         </VStack>
                     </Tooltip>

@@ -5,7 +5,7 @@ import { CloseButton, Drawer, For, Grid, HStack, Spinner, Text } from '@chakra-u
 import { InventoryItem } from './InventoryItem';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import { Coin } from '@shared/components/Coin';
 import {
     inventorySchema,

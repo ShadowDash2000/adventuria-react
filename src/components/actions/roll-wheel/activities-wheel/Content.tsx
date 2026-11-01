@@ -9,7 +9,7 @@ import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import type { ActivityViewDetailed } from '@components/actions/roll-wheel/activities-wheel/view';
 
 export const Content = () => {

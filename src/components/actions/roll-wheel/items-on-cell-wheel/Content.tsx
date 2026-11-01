@@ -1,7 +1,7 @@
 import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { invalidateGameState, queryKeys } from '@shared/queryClient';
+import { invalidateGameState, queryKeys } from '@shared/query';
 import { ItemInfo } from '@components/actions/roll-wheel/items-wheel/ItemInfo';
 import { useEffect, useRef, useState } from 'react';
 import {

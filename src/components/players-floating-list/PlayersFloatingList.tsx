@@ -20,42 +20,17 @@ import { TfiTarget } from 'react-icons/tfi';
 import { Tooltip } from '@ui/tooltip';
 import { Flex } from '@theme/flex';
 import { usePlayerFloatingListStore } from '@components/players-floating-list/usePlayersFloatingListStore';
-import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
-import { pbCollections, playerProgressSchema, playerSchema } from '@shared/pbSchema';
-import type { PlayerProgressRecord } from '@shared/types/player_progress';
-import { eq } from '@shared/pbFilter';
-import { dotExpand, joinExpand } from '@shared/pbExpand';
+import { activePlayersQueryOptions } from '@shared/query/requests';
 
 export const PlayersFloatingList = () => {
-    const { pb, gameState, isGameStateSuccess } = useAppContext();
     const open = usePlayerFloatingListStore(state => state.open);
     const setOpen = usePlayerFloatingListStore(state => state.setOpen);
 
-    const playersProgress = useQuery({
-        queryFn: () =>
-            pb
-                .collection(pbCollections.playersProgress)
-                .getFullList<PlayerProgressRecord>({
-                    filter: eq(playerProgressSchema.season, gameState!.season),
-                    expand: playerProgressSchema.player,
-                    fields: joinExpand(
-                        playerProgressSchema.id,
-                        dotExpand('expand', playerProgressSchema.player, playerSchema.id),
-                        dotExpand('expand', playerProgressSchema.player, 'collectionName'),
-                        dotExpand('expand', playerProgressSchema.player, playerSchema.name),
-                        dotExpand('expand', playerProgressSchema.player, playerSchema.avatar),
-                        dotExpand('expand', playerProgressSchema.player, playerSchema.color),
-                        dotExpand('expand', playerProgressSchema.player, playerSchema.isStreamLive),
-                    ),
-                }),
-        queryKey: [...queryKeys.playersProgress, 'floating-list', gameState?.season],
-        enabled: isGameStateSuccess,
-    });
+    const activePlayers = useQuery({ ...activePlayersQueryOptions(), refetchOnWindowFocus: false });
 
-    if (playersProgress.isPending) return <Spinner />;
-    if (playersProgress.isError) return <Text>Error: {playersProgress.error?.message}</Text>;
+    if (activePlayers.isPending) return <Spinner />;
+    if (activePlayers.isError) return <Text>Error: {activePlayers.error?.message}</Text>;
 
     return (
         <ChakraFlex
@@ -76,43 +51,36 @@ export const PlayersFloatingList = () => {
                 <Collapsible.Content>
                     <Flex variant="solid">
                         <VStack p={4} maxH={96} overflowY="auto" w="full" scrollbarWidth="none">
-                            <For each={playersProgress.data}>
-                                {playerProgress => (
-                                    <Box key={playerProgress.id} w="full">
+                            <For each={activePlayers.data}>
+                                {player => (
+                                    <Box key={player.id} w="full">
                                         <HStack minH={14} justify="space-between" align="center">
                                             <ChakraLink asChild minW={0}>
-                                                <PlayerProfileLink
-                                                    playerName={playerProgress.expand!.player.name}
-                                                >
+                                                <PlayerProfileLink playerName={player.name}>
                                                     <HStack gap={4} minW={0}>
                                                         <Box pos="relative">
                                                             <PlayerAvatar
-                                                                player={
-                                                                    playerProgress.expand!.player
-                                                                }
+                                                                avatarUrl={player.avatar}
+                                                                color={player.color}
                                                                 w={8}
                                                                 h={8}
                                                                 outlineWidth="0.20vw"
                                                                 showStreamLive
                                                             />
                                                         </Box>
-                                                        <Text truncate>
-                                                            {playerProgress.expand!.player.name}
-                                                        </Text>
+                                                        <Text truncate>{player.name}</Text>
                                                     </HStack>
                                                 </PlayerProfileLink>
                                             </ChakraLink>
                                             <ButtonGroup size="xs">
-                                                <PlayerInventoryButton
-                                                    playerId={playerProgress.expand!.player.id}
-                                                />
+                                                <PlayerInventoryButton playerId={player.id} />
                                                 <Tooltip content="Показать игрока">
                                                     <IconButton
                                                         _hover={{ bg: 'orange' }}
                                                         onClick={() =>
                                                             document.dispatchEvent(
                                                                 new Event(
-                                                                    `player.scroll.${playerProgress.expand!.player.id}`,
+                                                                    `player.scroll.${player.id}`,
                                                                 ),
                                                             )
                                                         }

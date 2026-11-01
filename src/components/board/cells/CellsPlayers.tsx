@@ -1,38 +1,67 @@
-import { useBoardInnerContext } from '@components/board';
+import type { CellPosition } from '@components/board/BoardHelper';
+import type { ActivePlayer } from '@shared/query/requests';
+import { usePlayersStore } from '../players/usePlayersStore';
 import { For, HStack, IconButton, VStack, Text, Box } from '@chakra-ui/react';
 import { ToggleTip } from '@ui/toggle-tip';
-import type { PlayerRecord } from '@shared/types/player';
 import { PlayerAvatar } from '../../PlayerAvatar';
 import { CELL_MAX_PLAYERS } from '../Board';
 
-export const CellsPlayers = () => {
-    const { playersByCellIndex } = useBoardInnerContext();
+interface CellsPlayersProps {
+    activePlayers: ActivePlayer[];
+    cellWidth: number;
+    cellHeight: number;
+}
 
-    const cellsWithoutSpace = new Map<number, PlayerRecord[]>();
-    for (const [cellIndex, players] of playersByCellIndex) {
-        if (players.length <= CELL_MAX_PLAYERS) continue;
-        cellsWithoutSpace.set(cellIndex, players);
+export const CellsPlayers = ({ activePlayers, cellWidth, cellHeight }: CellsPlayersProps) => {
+    const playerStates = usePlayersStore(state => state.playerStates);
+    const playersById = new Map(activePlayers.map(player => [player.id, player]));
+    const cells = new Map<string, { position: CellPosition; players: ActivePlayer[] }>();
+
+    const orderedPlayers = Array.from(playerStates.entries()).sort(
+        ([aId, a], [bId, b]) => a.updated - b.updated || aId.localeCompare(bId),
+    );
+
+    for (const [playerId, state] of orderedPlayers) {
+        const player = playersById.get(playerId);
+        if (!player) continue;
+
+        const { worldId, row, col } = state.cellPosition;
+        const key = JSON.stringify([worldId, row, col]);
+        const cell = cells.get(key);
+        if (cell) {
+            cell.players.push(player);
+        } else {
+            cells.set(key, { position: state.cellPosition, players: [player] });
+        }
     }
 
+    const cellsWithoutSpace = Array.from(cells.entries()).filter(
+        ([, cell]) => cell.players.length > CELL_MAX_PLAYERS,
+    );
+
     return (
-        <For each={[...cellsWithoutSpace.entries()]}>
-            {([cellIndex, players]) => (
-                <CellPlayers key={cellIndex} cellIndex={cellIndex} players={players} />
+        <For each={cellsWithoutSpace}>
+            {([key, cell]) => (
+                <CellPlayers
+                    key={key}
+                    position={cell.position}
+                    players={cell.players}
+                    cellWidth={cellWidth}
+                    cellHeight={cellHeight}
+                />
             )}
         </For>
     );
 };
 
 interface CellPlayersProps {
-    cellIndex: number;
-    players: PlayerRecord[];
+    position: CellPosition;
+    players: ActivePlayer[];
+    cellWidth: number;
+    cellHeight: number;
 }
 
-const CellPlayers = ({ cellIndex, players }: CellPlayersProps) => {
-    const { cellWidth, cellHeight, positionByCellIndex } = useBoardInnerContext();
-    const position = positionByCellIndex.get(cellIndex);
-    if (!position) return null;
-
+const CellPlayers = ({ position, players, cellWidth, cellHeight }: CellPlayersProps) => {
     const x = cellWidth * position.col + cellWidth / 2;
     const y = -(cellHeight * position.row) - cellHeight / 2;
 
@@ -54,7 +83,9 @@ const CellPlayers = ({ cellIndex, players }: CellPlayersProps) => {
                             <HStack key={player.id} gap={4}>
                                 <Box position="relative">
                                     <PlayerAvatar
-                                        player={player}
+                                        avatarUrl={player.avatar}
+                                        color={player.color}
+                                        isStreamLive={player.is_stream_live}
                                         showStreamLive
                                         size="xs"
                                         outlineWidth="0.20vw"

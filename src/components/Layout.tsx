@@ -2,12 +2,13 @@ import { Outlet, ScrollRestoration } from 'react-router-dom';
 import { Header } from './Header';
 import { Box, Flex } from '@chakra-ui/react';
 import { Toaster } from '@ui/toaster';
-import { useWheelIncrease } from '@components/notifications/wheel-increase';
-import { useEnergyIncrease } from '@components/notifications/energy-increase';
 import { type Theme, useSettingsStore } from '@components/settings/useSettingsStore';
 import { type ReactNode } from 'react';
 import { ItemDetailsDialog } from '@components/items/ItemDetailsDialog';
-import { useBalanceIncrease } from '@components/notifications/balance-increase';
+import { useWheelChange } from '@shared/query/subscriptions/wheel-change';
+import { useEnergyChange } from '@shared/query/subscriptions/energy-change';
+import { useBalanceChange } from '@shared/query/subscriptions/balance-change';
+import { useActivePlayersSubscription } from '@shared/query/subscriptions/active-players';
 
 const themes: Record<Theme, ReactNode | null> = {
     disabled: null,
@@ -41,9 +42,10 @@ const themes: Record<Theme, ReactNode | null> = {
 };
 
 const Layout = () => {
-    useWheelIncrease();
-    useEnergyIncrease();
-    useBalanceIncrease();
+    useWheelChange();
+    useEnergyChange();
+    useBalanceChange();
+    useActivePlayersSubscription();
     const theme = useSettingsStore(state => state.theme);
 
     return (

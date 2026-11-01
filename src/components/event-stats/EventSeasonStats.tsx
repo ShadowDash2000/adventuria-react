@@ -3,10 +3,9 @@ import { Cell } from '@components/board/cells/Cell';
 import { ItemIcon } from '@components/items/ItemIcon';
 import { PlayerAvatar } from '@components/PlayerAvatar';
 import { useQuery } from '@tanstack/react-query';
+import { type EventStatsEntries, eventStatsQueryOptions } from '@shared/query/requests/event-stats';
 import type { ClientResponseError } from 'pocketbase';
-import type { PlayerRecord } from '@shared/types/player';
 import type { CellRecord } from '@shared/types/cell';
-import type { ItemRecord } from '@shared/types/item';
 import { useCellsStore } from '@components/board/useCellsStore';
 import { useAppContext } from '@context/AppContext';
 
@@ -38,8 +37,7 @@ export const EventSeasonStats = ({ seasonId, ...props }: EventSeasonStatsProps) 
     const openCellInfo = useCellsStore(state => state.openCellInfo);
 
     const eventStats = useQuery({
-        queryFn: () => getEventStats(seasonId),
-        queryKey: ['event-stats', seasonId],
+        ...eventStatsQueryOptions(seasonId),
         refetchOnWindowFocus: false,
     });
 
@@ -114,7 +112,8 @@ export const EventSeasonStats = ({ seasonId, ...props }: EventSeasonStatsProps) 
                                 return (
                                     <HStack key={record.id} gap={2}>
                                         <PlayerAvatar
-                                            player={record as PlayerRecord}
+                                            avatarUrl={record.avatar}
+                                            color={record.color}
                                             w={14}
                                             h={14}
                                         />
@@ -132,50 +131,4 @@ export const EventSeasonStats = ({ seasonId, ...props }: EventSeasonStatsProps) 
             ))}
         </VStack>
     );
-};
-
-type EventStatsData = { stats: EventStatsEntries };
-
-type EventStatsEntries = {
-    most_games_completed: EventUserStatEntry[];
-    most_drops: EventUserStatEntry[];
-    most_rerolls: EventUserStatEntry[];
-    most_gyms_completed: EventUserStatEntry[];
-    most_movies_watched: EventUserStatEntry[];
-    most_karaoke_completed: EventUserStatEntry[];
-    most_wanted: EventUserStatEntry[];
-    most_items_used: EventUserStatEntry[];
-    most_roblox_played: EventUserStatEntry[];
-    most_happy_wheels_played: EventUserStatEntry[];
-    most_visited_cells: EventCellStatEntry[];
-    least_visited_cells: EventCellStatEntry[];
-    most_used_items: EventItemStatEntry[];
-};
-
-type EventUserStatEntry = { count: number; record: PlayerRecord };
-
-type EventCellStatEntry = { count: number; record: CellRecord };
-
-type EventItemStatEntry = { count: number; record: ItemRecord };
-
-type EventStatsSuccess = { success: true; data: EventStatsData; error?: never };
-
-type EventStatsError = { success: false; data: never; error: never };
-
-type EventStatsResult = EventStatsSuccess | EventStatsError;
-
-const getEventStats = async (seasonId: string) => {
-    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/event-stats?seasonId=${seasonId}`, {
-        method: 'GET',
-    });
-    if (!res.ok) {
-        const error = await res
-            .json()
-            .then(res => res.error)
-            .catch(() => '');
-        const text = await res.text().catch(() => '');
-        throw new Error(error || text || `Failed to get event stats`);
-    }
-
-    return (await res.json()) as EventStatsResult;
 };

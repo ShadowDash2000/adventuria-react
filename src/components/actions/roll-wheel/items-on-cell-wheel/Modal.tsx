@@ -4,7 +4,7 @@ import { Button } from '@theme/button';
 import { LuFerrisWheel } from 'react-icons/lu';
 import { Content } from './Content';
 import { useRollWheelStore } from '@components/actions/roll-wheel/useRollWheelStore';
-import { invalidateAllActions } from '@shared/queryClient';
+import { invalidateAllActions } from '@shared/query';
 
 export const Modal = () => {
     const [open, setOpen] = useState(false);

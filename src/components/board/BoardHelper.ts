@@ -1,14 +1,10 @@
 import type { CellRecord } from '@shared/types/cell';
-import type { RecordIdString } from '@shared/types/pocketbase';
-import type { PlayerRecord } from '@shared/types/player';
-import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import type { WorldRecord } from '@shared/types/world';
 
 export type CellPosition = { worldId: string; row: number; col: number };
 
 export type CellBoard = {
     record: CellRecord;
-    players?: PlayerRecord[];
     localIndex: number;
     indexInLine: number;
     isLastInLine: boolean;
@@ -27,13 +23,7 @@ export type WorldBoard = {
     cellsCount: number;
 };
 
-export type BoardModel = {
-    worldsById: Map<string, WorldBoard>;
-    rows: number;
-    cols: number;
-    playersByCellIndex: Map<number, PlayerRecord[]>;
-    positionByCellIndex: Map<number, CellPosition>;
-};
+export type BoardModel = { worldsById: Map<string, WorldBoard>; rows: number; cols: number };
 
 export class BoardHelper {
     static getPlayerCellIndex(cellsPassed: number, cellsCount: number) {
@@ -44,28 +34,14 @@ export class BoardHelper {
         return ((a % m) + m) % m;
     }
 
-    static buildBoard(
-        cells: CellRecord[],
-        worlds: WorldRecord[],
-        players: Map<RecordIdString, PlayerRecord>,
-        playersProgress: Map<RecordIdString, PlayerProgressRecord>,
-        lineSize = 7,
-    ): BoardModel {
+    static buildBoard(cells: CellRecord[], worlds: WorldRecord[], lineSize = 7): BoardModel {
         const worldsById = this.buildWorlds(cells, worlds);
-        const playersByCellIndex = this.placePlayers(players, playersProgress, worldsById);
-        const { rows, positionByCellIndex } = this.buildLayouts(
-            cells,
-            worldsById,
-            playersByCellIndex,
-            lineSize,
-        );
+        const rows = this.buildLayouts(cells, worldsById, lineSize);
 
         return {
             worldsById,
             rows: rows,
             cols: Math.max(0, ...Array.from(worldsById.values(), world => world.cols)),
-            playersByCellIndex,
-            positionByCellIndex,
         };
     }
 
@@ -97,48 +73,12 @@ export class BoardHelper {
         return worldsById;
     }
 
-    private static placePlayers(
-        players: Map<RecordIdString, PlayerRecord>,
-        playersProgress: Map<RecordIdString, PlayerProgressRecord>,
-        worldsById: Map<string, WorldBoard>,
-    ): Map<number, PlayerRecord[]> {
-        const playersByCellIndex = new Map<number, PlayerRecord[]>();
-
-        for (const [, player] of players) {
-            const progress = playersProgress.get(player.id);
-            if (!progress) continue;
-
-            const world = worldsById.get(progress.current_world);
-            if (!world?.cellIndexes.length) continue;
-
-            const localIndex = this.getPlayerCellIndex(
-                progress.cells_passed,
-                world.cellIndexes.length,
-            );
-            const cellIndex = world.cellIndexes[localIndex];
-            const cellPlayers = playersByCellIndex.get(cellIndex) || [];
-            playersByCellIndex.set(cellIndex, [...cellPlayers, player]);
-        }
-
-        playersByCellIndex.forEach(cellPlayers => {
-            cellPlayers.sort((a, b) => {
-                const aUpdated = playersProgress.get(a.id)?.updated;
-                const bUpdated = playersProgress.get(b.id)?.updated;
-                return new Date(aUpdated || 0).getTime() - new Date(bUpdated || 0).getTime();
-            });
-        });
-
-        return playersByCellIndex;
-    }
-
     private static buildLayouts(
         cells: CellRecord[],
         worldsById: Map<string, WorldBoard>,
-        playersByCellIndex: Map<number, PlayerRecord[]>,
         lineSize: number,
-    ): { rows: number; positionByCellIndex: Map<number, CellPosition> } {
+    ): number {
         let rows = 0;
-        const positionByCellIndex = new Map<number, CellPosition>();
 
         for (const world of worldsById.values()) {
             const worldLines: LineBoard[] = [];
@@ -147,11 +87,9 @@ export class BoardHelper {
 
             for (let start = 0; start < world.cellIndexes.length; start += cols) {
                 const localRow = worldLines.length;
-                const row = world.rowOffset + localRow;
                 const lineIndexes = world.cellIndexes.slice(start, start + cols);
                 const lineCells: CellBoard[] = lineIndexes.map((cellIndex, indexInLine) => ({
                     record: cells[cellIndex],
-                    players: playersByCellIndex.get(cellIndex),
                     localIndex: start + indexInLine,
                     indexInLine,
                     isLastInLine: indexInLine === lineIndexes.length - 1,
@@ -161,11 +99,6 @@ export class BoardHelper {
                 const reversed = localRow % 2 === 1;
                 if (reversed) lineCells.reverse();
                 worldLines.push({ cells: lineCells, reversed, startIndex: start });
-
-                lineIndexes.forEach((cellIndex, indexInLine) => {
-                    const col = reversed ? lineIndexes.length - 1 - indexInLine : indexInLine;
-                    positionByCellIndex.set(cellIndex, { worldId: world.id, row, col });
-                });
             }
 
             world.lines = worldLines;
@@ -176,7 +109,7 @@ export class BoardHelper {
             rows += world.rows;
         }
 
-        return { rows, positionByCellIndex };
+        return rows;
     }
 
     static getCoords(world: WorldBoard, cellIndex: number): CellPosition {

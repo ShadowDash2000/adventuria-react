@@ -4,7 +4,7 @@ import { PlayerAvatar } from '@components/PlayerAvatar';
 import { FaCrown } from 'react-icons/fa6';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import { pbCollections, playerProgressSchema, playerSchema } from '@shared/pbSchema';
 import { dotExpand, joinExpand } from '@shared/pbExpand';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';
@@ -17,8 +17,8 @@ export const EventLeaders = ({ ...props }: StackProps) => {
     const { pb } = useAppContext();
 
     const playersProgress = useQuery({
-        queryFn: () =>
-            pb
+        queryFn: async () => {
+            const result = await pb
                 .collection(pbCollections.playersProgress)
                 .getFullList<PlayerProgressRecord>({
                     sort: `-${playerProgressSchema.points}`,
@@ -32,7 +32,21 @@ export const EventLeaders = ({ ...props }: StackProps) => {
                         dotExpand('expand', playerProgressSchema.player, playerSchema.avatar),
                         dotExpand('expand', playerProgressSchema.player, playerSchema.color),
                     ),
-                }),
+                });
+
+            return result.map(progress => {
+                if (!progress.expand?.player) {
+                    return progress;
+                }
+
+                progress.expand.player.avatar = pb.files.getURL(
+                    progress.expand.player,
+                    progress.expand.player.avatar,
+                );
+
+                return progress;
+            });
+        },
         queryKey: [...queryKeys.playersProgress, 'event-leaders'],
         refetchOnWindowFocus: false,
     });
@@ -63,7 +77,8 @@ export const EventLeaders = ({ ...props }: StackProps) => {
                             transform="translate(-50%, -60%)"
                         />
                         <PlayerAvatar
-                            player={firstPlace.expand!.player}
+                            avatarUrl={firstPlace.expand!.player.avatar}
+                            color={firstPlace.expand!.player.color}
                             w={PLAYER_SIZES.first}
                             h={PLAYER_SIZES.first}
                         />
@@ -90,7 +105,8 @@ export const EventLeaders = ({ ...props }: StackProps) => {
                                 transform="translate(-50%, -60%)"
                             />
                             <PlayerAvatar
-                                player={playerProgress.expand!.player}
+                                avatarUrl={playerProgress.expand!.player.avatar}
+                                color={playerProgress.expand!.player.color}
                                 w={PLAYER_SIZES.other}
                                 h={PLAYER_SIZES.other}
                             />

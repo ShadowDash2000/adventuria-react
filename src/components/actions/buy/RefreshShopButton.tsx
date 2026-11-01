@@ -6,7 +6,7 @@ import {
     invalidateRefreshShopView,
     invalidateShopView,
     invalidateGameState,
-} from '@shared/queryClient';
+} from '@shared/query';
 import { ButtonProps, Spinner, Text } from '@chakra-ui/react';
 import { Button } from '@theme/button';
 import type { ClientResponseError } from 'pocketbase';

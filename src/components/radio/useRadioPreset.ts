@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import { useAppContext } from '@context/AppContext';
 import { audioPresetSchema, pbCollections } from '@shared/pbSchema';
 

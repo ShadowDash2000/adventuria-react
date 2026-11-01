@@ -1,39 +1,8 @@
 import { QueryClient } from '@tanstack/react-query';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import type { ActionRecord } from '@shared/types/action';
-import type PocketBase from 'pocketbase';
-import type { RecordListOptions } from 'pocketbase';
-import { actionSchema, pbCollections } from '@shared/pbSchema';
+import { queryKeys } from './keys';
 
 export const queryClient = new QueryClient();
-
-export const queryKeys = {
-    gameState: ['game-state'],
-    players: ['players'],
-    playerProgress: (playerId: RecordIdString) => ['player-progress', playerId],
-    playersProgress: ['players-progress'],
-    playerStats: ['player-stats'],
-    actions: ['actions'],
-    availableActions: ['available-actions'],
-    radioAudioPreset: ['radio-audio-preset'],
-    shopView: ['shop-view'],
-    coinsForItemView: ['coins-for-item-view'],
-    completeActivityView: ['complete-activity-view'],
-    items: ['items'],
-    rules: ['rules'],
-    cells: ['cells'],
-    worlds: ['worlds'],
-    activityWheel: ['activity-wheel'],
-    itemsWheel: ['items-wheel'],
-    refreshShopView: ['refresh-shop-view'],
-    seasons: ['seasons'],
-    isEventEnded: ['is-event-ended'],
-    cell: (cellId: RecordIdString) => ['cells', 'cell', cellId],
-    inventory: (playerId: RecordIdString) => ['inventory', playerId],
-    item: (itemId: RecordIdString) => ['items', itemId],
-    latestCompletedActivities: (cellId: RecordIdString) => ['latest-completed-activities', cellId],
-    playerEvents: (actionId: RecordIdString) => ['player-events', actionId],
-} as const;
 
 export const invalidateGameState = async () => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.gameState });

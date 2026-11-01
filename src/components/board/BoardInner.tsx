@@ -6,28 +6,15 @@ import { CellsPlayers } from './cells/CellsPlayers';
 import { PlayerActionMenu } from '@components/PlayerActionMenu';
 import { BoardInnerContext, useBoardContext, useBoardDataContext } from '.';
 import { useBoardDimensions } from './useBoardDimensions';
-import { usePlayersProgressSubscription } from './usePlayersProgressSubscription';
+import { usePlayersMovementSubscription } from './usePlayersMovementSubscription';
 import { useCellsSubscription } from '@components/board/useCellsSubscription';
 
 export const BoardInner = () => {
-    const { pb, isAuth, playerId, gameState } = useAppContext();
+    const { pb, isAuth, playerId } = useAppContext();
     const { boardInnerRef } = useBoardContext();
-    const {
-        players: playersRaw,
-        playersProgress: playersProgressRaw,
-        cells,
-        worlds,
-    } = useBoardDataContext();
-    const players = new Map(playersRaw.map(p => [p.id, p]));
-    const { playersProgress, worldsByIdRef } = usePlayersProgressSubscription({
-        pb,
-        isAuth,
-        playerId: playerId,
-        seasonId: gameState?.season || '',
-        initialProgress: playersProgressRaw,
-    });
-    const board = BoardHelper.buildBoard(cells, worlds, players, playersProgress);
-    worldsByIdRef.current = board.worldsById;
+    const { activePlayers, cells, worlds } = useBoardDataContext();
+
+    const board = BoardHelper.buildBoard(cells, worlds);
 
     const boardDimensions = useBoardDimensions(boardInnerRef);
 
@@ -37,22 +24,19 @@ export const BoardInner = () => {
     const cellHeight = rows ? Math.floor(boardDimensions.height / Math.max(rows, 1)) : 0;
 
     useCellsSubscription({ pb, isAuth });
+    usePlayersMovementSubscription({ pb, isAuth, playerId, worldsById: board.worldsById });
 
     return (
         <BoardInnerContext.Provider
-            value={{
-                playersByCellIndex: board.playersByCellIndex,
-                positionByCellIndex: board.positionByCellIndex,
-                worldsById: board.worldsById,
-                players: players,
-                playersProgress,
-                cellWidth,
-                cellHeight,
-            }}
+            value={{ activePlayers, worldsById: board.worldsById, cellWidth, cellHeight }}
         >
             <Cells />
             {cellWidth !== 0 && cellHeight !== 0 && <Players />}
-            <CellsPlayers />
+            <CellsPlayers
+                activePlayers={activePlayers}
+                cellWidth={cellWidth}
+                cellHeight={cellHeight}
+            />
             {isAuth ? <PlayerActionMenu /> : null}
         </BoardInnerContext.Provider>
     );

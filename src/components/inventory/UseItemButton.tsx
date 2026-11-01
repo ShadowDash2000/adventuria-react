@@ -1,10 +1,6 @@
 import { Button } from '@theme/button';
 import { useKbdSettingsStore } from '@shared/hook/useKbdSettings';
-import {
-    invalidateAllActions,
-    invalidateGameState,
-    invalidatePlayerProgress,
-} from '@shared/queryClient';
+import { invalidateAllActions, invalidateGameState, invalidatePlayerProgress } from '@shared/query';
 import { useAppAuthContext } from '@context/AppContext';
 import {
     EffectFactory,

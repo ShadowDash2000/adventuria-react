@@ -1,28 +1,18 @@
+import { type RefObject, useEffect, useState } from 'react';
+import type { AudioPresetRecord } from '@shared/types/audio-preset';
+import type { Move } from '@shared/types/move';
 import { DiceFactory, type DiceFactoryItem, type DiceType } from './dices';
 import { useAppAuthContext } from '@context/AppContext';
 import { useBoardInnerContext } from '@components/board';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
-import { type RefObject, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import { BoardHelper, type CellPosition } from '@components/board/BoardHelper';
-import { invalidateAllActions, invalidateGameState } from '@shared/queryClient';
+import { invalidateAllActions, invalidateGameState } from '@shared/query';
 import { performFadeOut } from '@components/actions/roll-dice/dices/roll';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { usePlayer } from '@components/board/players/usePlayer';
 import { audioPresetSchema, pbCollections } from '@shared/pbSchema';
-import type { RecordIdString } from '@shared/types/pocketbase';
 import { handleApiResponse } from '@shared/helpers/api';
-
-type Move = {
-    type: string;
-    world_id: RecordIdString;
-    world_slug: string;
-    cell_local_order: number;
-    cell_global_order: number;
-    total_steps: number;
-    prev_total_steps: number;
-};
 
 type RollDiceResultData = {
     roll: number;

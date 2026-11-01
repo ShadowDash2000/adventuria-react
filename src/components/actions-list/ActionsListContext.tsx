@@ -2,7 +2,7 @@ import { createContext, useContext, type ReactNode, useState } from 'react';
 import { Flex, type FlexProps, Spinner, Text } from '@chakra-ui/react';
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useAppContext } from '@context/AppContext';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import { actionSchema, pbCollections, seasonsSchema } from '@shared/pbSchema';
 import { joinExpand } from '@shared/pbExpand';
 import type { ClientResponseError, ListResult } from 'pocketbase';
@@ -51,8 +51,8 @@ export const ActionsListProvider = ({
     const filter = [playerFilter, queryFilter].filter(Boolean).join(' && ');
 
     const actions = useInfiniteQuery({
-        queryFn: ({ pageParam }) =>
-            pb
+        queryFn: async ({ pageParam }) => {
+            const result = await pb
                 .collection(pbCollections.actions)
                 .getList<ActionRecord>(pageParam, perPage, {
                     filter,
@@ -63,7 +63,25 @@ export const ActionsListProvider = ({
                         actionSchema.player,
                         actionSchema.review,
                     ),
-                }),
+                });
+
+            for (const action of result.items) {
+                if (action.expand?.activity?.cover_alt) {
+                    action.expand.activity.cover_alt = pb.files.getURL(
+                        action.expand.activity,
+                        action.expand.activity.cover_alt,
+                    );
+                }
+                if (action.expand?.player) {
+                    action.expand.player.avatar = pb.files.getURL(
+                        action.expand.player,
+                        action.expand.player.avatar,
+                    );
+                }
+            }
+
+            return result;
+        },
         getNextPageParam: (lastPage, _allPages, lastPageParam) => {
             if (lastPage.page === lastPage.totalPages) return null;
             return lastPageParam + 1;

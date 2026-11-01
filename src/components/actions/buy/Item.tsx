@@ -2,11 +2,7 @@ import { Image, Text, ImageProps, Float, Flex } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { Tooltip } from '@ui/tooltip';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import {
-    invalidateAvailableActions,
-    invalidateShopView,
-    invalidateGameState,
-} from '@shared/queryClient';
+import { invalidateAvailableActions, invalidateShopView, invalidateGameState } from '@shared/query';
 import PriceBadgeImage from '@public/price-badge.png';
 import { Coin } from '@shared/components/Coin';
 import { MotionVStack } from '@shared/components/MotionVStack';

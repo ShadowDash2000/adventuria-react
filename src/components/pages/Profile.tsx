@@ -7,7 +7,7 @@ import { ActionsFilter } from '@components/actions-list/ActionsFilter';
 import { ActionsListProvider } from '@components/actions-list/ActionsListContext';
 import { pbCollections, playerSchema } from '@shared/pbSchema';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import type { PlayerRecord } from '@shared/types/player';
 import type { ClientResponseError } from 'pocketbase';
 
@@ -16,12 +16,17 @@ const Profile = () => {
     const login = useParams().login;
 
     const player = useQuery({
-        queryFn: () =>
-            pb
+        queryFn: async () => {
+            const result = await pb
                 .collection(pbCollections.players)
                 .getFirstListItem<PlayerRecord>(
                     `${playerSchema.name}:lower = "${login?.toLowerCase()}"`,
-                ),
+                );
+
+            result.avatar = pb.files.getURL(result, result.avatar);
+
+            return result;
+        },
         queryKey: [...queryKeys.players, 'player-profile', login],
         refetchOnWindowFocus: false,
     });

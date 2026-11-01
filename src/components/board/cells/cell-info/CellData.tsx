@@ -135,7 +135,8 @@ export const CellData = ({ cell }: CellDataProps) => {
                                     openDelay={100}
                                 >
                                     <Cover
-                                        activity={activity}
+                                        coverUrl={activity.cover}
+                                        coverAltUrl={activity.cover_alt}
                                         width="100%"
                                         aspectRatio="2/3"
                                         objectFit="cover"

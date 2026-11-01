@@ -4,7 +4,7 @@ import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import { Box, For, Menu } from '@chakra-ui/react';
 import { useAppContext } from '@context/AppContext';
 import { handleApiResponse } from '@shared/helpers/api';
-import { invalidateAllActions, queryKeys } from '@shared/queryClient';
+import { invalidateAllActions, queryKeys } from '@shared/query';
 import { useQuery } from '@tanstack/react-query';
 import { pbCollections, playerProgressSchema, playerSchema } from '@shared/pbSchema';
 import { and, eq, notEq } from '@shared/pbFilter';

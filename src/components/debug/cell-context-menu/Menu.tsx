@@ -2,7 +2,7 @@ import { For, Menu, Portal } from '@chakra-ui/react';
 import { useAppContext } from '@context/AppContext';
 import { useCellContextMenuStore } from '@components/debug/cell-context-menu/useCellContextMenuStore';
 import { handleApiResponse } from '@shared/helpers/api';
-import { invalidateAllActions, queryKeys } from '@shared/queryClient';
+import { invalidateAllActions, queryKeys } from '@shared/query';
 import { useQuery } from '@tanstack/react-query';
 import { pbCollections, playerProgressSchema, playerSchema } from '@shared/pbSchema';
 import type { PlayerProgressRecord } from '@shared/types/player_progress';

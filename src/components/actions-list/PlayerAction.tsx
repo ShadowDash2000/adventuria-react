@@ -109,7 +109,8 @@ export const PlayerAction = ({ action }: ActionProps) => {
                                     gap={0}
                                 />
                                 <Cover
-                                    activity={activity}
+                                    coverUrl={activity.cover}
+                                    coverAltUrl={activity.cover_alt}
                                     w={220}
                                     aspectRatio="2/3"
                                     objectFit="contain"
@@ -184,7 +185,10 @@ export const PlayerAction = ({ action }: ActionProps) => {
                         </Card.Description>
                     </VStack>
                     <VStack position="absolute" right="5%">
-                        <PlayerAvatar player={action.expand!.player!} />
+                        <PlayerAvatar
+                            avatarUrl={action.expand!.player.avatar}
+                            color={action.expand!.player.color}
+                        />
                         <Text>{action.expand?.player.name}</Text>
                     </VStack>
                 </Stack>

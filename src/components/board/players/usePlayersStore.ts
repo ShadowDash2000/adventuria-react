@@ -2,9 +2,18 @@ import type { RecordIdString } from '@shared/types/pocketbase';
 import type { CellPosition } from '@components/board/BoardHelper';
 import { create } from 'zustand/react';
 
+export type PlayerPosition = { x: number; y: number; offsetX: number; offsetY: number };
+
+export type PlayerMovementState = { cellPosition: CellPosition; updated: number };
+
 type PlayerStoreState = {
+    playerStates: Map<RecordIdString, PlayerMovementState>;
     paths: Map<RecordIdString, CellPosition[]>;
     moveTimes: Map<RecordIdString, number>;
+    setPlayerState: (playerId: RecordIdString, playerState: PlayerMovementState) => void;
+    getPlayerState: (playerId: RecordIdString) => PlayerMovementState | null;
+    updatePlayerState: (playerId: RecordIdString, patch: Partial<PlayerMovementState>) => void;
+    clearPlayerState: (playerId: RecordIdString) => void;
     addPaths: (playerId: RecordIdString, paths: CellPosition[]) => void;
     getPaths: (playerId: RecordIdString) => CellPosition[] | null;
     pullPath: (playerId: RecordIdString) => CellPosition | null;
@@ -14,8 +23,36 @@ type PlayerStoreState = {
 };
 
 export const usePlayersStore = create<PlayerStoreState>((set, get) => ({
+    playerStates: new Map<RecordIdString, PlayerMovementState>(),
     paths: new Map<RecordIdString, CellPosition[]>(),
     moveTimes: new Map<RecordIdString, number>(),
+
+    setPlayerState: (playerId, playerState) => {
+        set(state => ({ playerStates: new Map(state.playerStates).set(playerId, playerState) }));
+    },
+
+    getPlayerState: playerId => get().playerStates.get(playerId) ?? null,
+
+    updatePlayerState: (playerId, patch) => {
+        set(state => {
+            const previous = state.playerStates.get(playerId);
+            if (!previous) return state;
+
+            return {
+                playerStates: new Map(state.playerStates).set(playerId, { ...previous, ...patch }),
+            };
+        });
+    },
+
+    clearPlayerState: playerId => {
+        set(state => {
+            if (!state.playerStates.has(playerId)) return state;
+
+            const playerStates = new Map(state.playerStates);
+            playerStates.delete(playerId);
+            return { playerStates };
+        });
+    },
 
     addPaths: (playerId, paths) => {
         const prevPaths = get().paths.get(playerId) || [];

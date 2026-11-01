@@ -1,63 +1,19 @@
 import { type ReactNode } from 'react';
-import type { PlayerRecord } from '@shared/types/player';
 import type { CellRecord } from '@shared/types/cell';
-import type { PlayerProgressRecord } from '@shared/types/player_progress';
 import type { WorldRecord } from '@shared/types/world';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { Spinner, Text } from '@chakra-ui/react';
 import { BoardDataContext } from '.';
-import { queryKeys } from '@shared/queryClient';
-import {
-    cellSchema,
-    pbCollections,
-    playerProgressSchema,
-    playerSchema,
-    worldSchema,
-} from '@shared/pbSchema';
+import { queryKeys } from '@shared/query';
+import { activePlayersQueryOptions } from '@shared/query/requests';
+import { cellSchema, pbCollections, worldSchema } from '@shared/pbSchema';
 import { joinExpand } from '@shared/pbExpand';
-import { eq } from '@shared/pbFilter';
 
 export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
-    const { pb, gameState, isGameStateSuccess, isGameStateError, gameStateError } = useAppContext();
+    const { pb } = useAppContext();
 
-    const players = useQuery({
-        queryFn: () =>
-            pb
-                .collection(pbCollections.players)
-                .getFullList<PlayerRecord>({
-                    fields: joinExpand(
-                        'collectionName',
-                        playerSchema.id,
-                        'updated',
-                        playerSchema.name,
-                        playerSchema.avatar,
-                        playerSchema.color,
-                        playerSchema.isStreamLive,
-                    ),
-                }),
-        refetchOnWindowFocus: false,
-        queryKey: queryKeys.players,
-    });
-
-    const playersProgress = useQuery({
-        queryFn: () =>
-            pb
-                .collection(pbCollections.playersProgress)
-                .getFullList<PlayerProgressRecord>({
-                    filter: eq(playerProgressSchema.season, gameState!.season),
-                    fields: joinExpand(
-                        playerProgressSchema.id,
-                        'updated',
-                        playerProgressSchema.player,
-                        playerProgressSchema.currentWorld,
-                        playerProgressSchema.cellsPassed,
-                    ),
-                }),
-        refetchOnWindowFocus: false,
-        enabled: isGameStateSuccess,
-        queryKey: [...queryKeys.playersProgress, gameState?.season],
-    });
+    const activePlayers = useQuery({ ...activePlayersQueryOptions(), refetchOnWindowFocus: false });
 
     const cells = useQuery({
         queryFn: () =>
@@ -91,22 +47,14 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
         queryKey: queryKeys.worlds,
     });
 
-    if (isGameStateError) return <Text>Error: {gameStateError?.message}</Text>;
-    if (players.isPending || playersProgress.isPending || cells.isPending || worlds.isPending)
-        return <Spinner />;
-    if (players.isError) return <Text>Error: {players.error?.message}</Text>;
-    if (playersProgress.isError) return <Text>Error: {playersProgress.error?.message}</Text>;
+    if (activePlayers.isPending || cells.isPending || worlds.isPending) return <Spinner />;
+    if (activePlayers.isError) return <Text>Error: {activePlayers.error?.message}</Text>;
     if (cells.isError) return <Text>Error: {cells.error?.message}</Text>;
     if (worlds.isError) return <Text>Error: {worlds.error?.message}</Text>;
 
     return (
         <BoardDataContext.Provider
-            value={{
-                players: players.data,
-                playersProgress: playersProgress.data,
-                cells: cells.data,
-                worlds: worlds.data,
-            }}
+            value={{ activePlayers: activePlayers.data, cells: cells.data, worlds: worlds.data }}
         >
             {children}
         </BoardDataContext.Provider>

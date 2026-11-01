@@ -2,7 +2,7 @@ import { Box, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import ShopImage from '@public/shop.gif';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import { useQuery } from '@tanstack/react-query';
-import { invalidateAvailableActions, invalidateGameState, queryKeys } from '@shared/queryClient';
+import { invalidateAvailableActions, invalidateGameState, queryKeys } from '@shared/query';
 import { useAppContext } from '@context/AppContext';
 import { ItemIcon } from '@components/items/ItemIcon';
 import { Button } from '@theme/button';

@@ -1,7 +1,7 @@
 import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { invalidateGameState, invalidatePlayerProgress, queryKeys } from '@shared/queryClient';
+import { invalidateGameState, invalidatePlayerProgress, queryKeys } from '@shared/query';
 import { ItemInfo } from './ItemInfo';
 import { useRef, useState } from 'react';
 import { WheelOFortune, type WheelOFortuneHandle } from '../WheelOFortune';

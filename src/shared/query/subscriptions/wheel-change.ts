@@ -1,7 +1,7 @@
 import { useAppContext } from '@context/AppContext';
 import { useEffect } from 'react';
 import { toaster } from '@ui/toaster';
-import { invalidateGameState } from '@shared/queryClient';
+import { invalidateGameState } from '@shared/query';
 
 const wordMap = new Map<string, string>([
     ['one', 'колесо'],
@@ -14,7 +14,7 @@ const plural = new Intl.PluralRules('ru-RU');
 
 type ItemWheelsChangeData = { amount: number };
 
-export const useWheelIncrease = () => {
+export const useWheelChange = () => {
     const { pb, isAuth, gameState, isGameStateSuccess } = useAppContext();
 
     useEffect(() => {
@@ -27,14 +27,14 @@ export const useWheelIncrease = () => {
             .subscribe(
                 `item_wheels_change#${gameState.player_progress_id}`,
                 async (data: ItemWheelsChangeData) => {
-                    if (data.amount <= 0) return;
-
-                    toaster.create({
-                        type: 'info',
-                        title: 'Время крутить казик!',
-                        description: `Начислено ${data.amount} ${wordMap.get(plural.select(data.amount))}.`,
-                        closable: true,
-                    });
+                    if (data.amount > 0) {
+                        toaster.create({
+                            type: 'info',
+                            title: 'Время крутить казик!',
+                            description: `Начислено ${data.amount} ${wordMap.get(plural.select(data.amount))}.`,
+                            closable: true,
+                        });
+                    }
 
                     await invalidateGameState();
                 },

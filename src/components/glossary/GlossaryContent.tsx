@@ -1,6 +1,6 @@
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import type { ItemRecord } from '@shared/types/item';
 import NotFound from '@components/pages/404';
 import { For, Grid, GridItem, type GridProps, Spinner, Text } from '@chakra-ui/react';

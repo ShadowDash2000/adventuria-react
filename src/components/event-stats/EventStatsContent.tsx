@@ -1,7 +1,7 @@
 import type { SeasonRecord } from '@shared/types/season';
 import { useQuery } from '@tanstack/react-query';
 import { pbCollections, seasonsSchema } from '@shared/pbSchema';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import { useAppContext } from '@context/AppContext';
 import { Portal, Select, Spinner, Text, useListCollection } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';

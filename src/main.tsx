@@ -6,7 +6,7 @@ import { AppearanceProvider } from './theme/AppearanceProvider';
 import { AppContextProvider } from '@context/AppContext';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { queryClient } from '@shared/queryClient';
+import { queryClient } from '@shared/query';
 import { ThemeProvider } from 'next-themes';
 import { colorModeConfig } from './theme/theme';
 import UmamiAnalytics from '@danielgtmn/umami-react';

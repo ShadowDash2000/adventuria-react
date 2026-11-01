@@ -1,7 +1,7 @@
 import type { AppProviderType, AppContextProviderProps } from './types';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import { AppContext, pb } from './index';
 import { ApiError } from '@shared/types/api-error';
 import { RecordIdString } from '@shared/types/pocketbase';

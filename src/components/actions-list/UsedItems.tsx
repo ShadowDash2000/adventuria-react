@@ -2,7 +2,7 @@ import type { ItemRecord } from '@shared/types/item';
 import { For, Spinner, Text } from '@chakra-ui/react';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import { ItemIcon } from '@components/items/ItemIcon';
 import { pbCollections } from '@shared/pbSchema';
 

@@ -6,7 +6,7 @@ import { Coin } from '@shared/components/Coin';
 import parse from 'html-react-parser';
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import { pbCollections } from '@shared/pbSchema';
 
 interface ItemDetailsContentProps {

@@ -1,6 +1,6 @@
 import { useAppContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/queryClient';
+import { queryKeys } from '@shared/query';
 import { Spinner, Table, Text } from '@chakra-ui/react';
 import { LeaderboardItem } from './LeaderboardItem';
 import {

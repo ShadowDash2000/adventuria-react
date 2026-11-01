@@ -1,4 +1,5 @@
 import { type RefObject, useEffect, useRef, useState } from 'react';
+import type { RecordIdString } from '@shared/types/pocketbase';
 import { useBoardInnerContext } from '@components/board';
 import { useAppContext } from '@context/AppContext';
 import { BoardHelper, type CellPosition } from '../BoardHelper';
@@ -6,12 +7,11 @@ import { CELL_MAX_PLAYERS, CELL_MAX_PLAYERS_LINE } from '../Board';
 import { usePlayer } from '@components/board/players/usePlayer';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
-import type { PlayerProgressRecord } from '@shared/types/player_progress';
-
-type PlayerPosition = { x: number; y: number; offsetX: number; offsetY: number };
+import { usePlayersStore, type PlayerPosition } from './usePlayersStore';
 
 interface PlayerMovementProps {
-    playerProgress: PlayerProgressRecord;
+    playerId: RecordIdString;
+    playerProgress: PlayerProgress;
     playerRef: RefObject<HTMLElement | null>;
 }
 
@@ -22,69 +22,64 @@ interface PlayerMovementReturn {
     visible: boolean;
 }
 
+type PlayerProgress = { currentWorld: RecordIdString; cellsPassed: number; updated?: number };
+
 const SCROLL_INTERVAL = 50;
+const EMPTY_POSITION: PlayerPosition = { x: 0, y: 0, offsetX: 0, offsetY: 0 };
 
 export const usePlayerMovement = ({
+    playerId,
     playerProgress,
     playerRef,
 }: PlayerMovementProps): PlayerMovementReturn => {
-    const { playerId } = useAppContext();
+    const { playerId: authPlayerId } = useAppContext();
     const { cellWidth, cellHeight, worldsById } = useBoardInnerContext();
-    const isCurrentPlayer = playerId ? playerProgress.player === playerId : false;
+    const isCurrentPlayer = authPlayerId ? playerId === authPlayerId : false;
     const [moving, setMoving] = useState<boolean>(false);
     const { incrementBlocked, decrementBlocked } = useKbdSettings(KbdKey.inventory);
 
-    const { pullPath, paths, moveTime, clearMoveTime } = usePlayer(playerProgress.player);
+    const {
+        playerState,
+        getPlayerState,
+        setPlayerState,
+        pullPath,
+        paths,
+        moveTime,
+        clearMoveTime,
+    } = usePlayer(playerId);
+    const playerStates = usePlayersStore(state => state.playerStates);
 
     const isMovingRef = useRef(false);
     const startedMovementRef = useRef(false);
     const nextStepAtRef = useRef<number | null>(null);
 
-    const calculateState = ({
-        worldId,
-        row,
-        col,
-    }: CellPosition): { position: PlayerPosition; visible: boolean } => {
-        const world = worldsById.get(worldId);
-        const cell = world?.lines[row - world.rowOffset].cells[col];
-        let playerCol = 0;
-        let playerRow = 0;
-        let isVisible = true;
+    let position = EMPTY_POSITION;
+    let visible = false;
 
-        if (cell && cell.players) {
-            const index = cell.players.findIndex(player => player.id === playerProgress.player);
-            if (index !== -1) {
-                playerCol = index % CELL_MAX_PLAYERS_LINE;
-                playerRow = Math.floor(index / CELL_MAX_PLAYERS_LINE);
-            }
-            isVisible = cell.players.length <= CELL_MAX_PLAYERS;
-        }
+    if (playerState) {
+        const { worldId, row, col } = playerState.cellPosition;
+        const cellPlayers = Array.from(playerStates.entries())
+            .filter(([, state]) => {
+                const cell = state.cellPosition;
+                return cell.worldId === worldId && cell.row === row && cell.col === col;
+            })
+            .sort(([aId, a], [bId, b]) => a.updated - b.updated || aId.localeCompare(bId));
+        const index = cellPlayers.findIndex(([id]) => id === playerId);
 
-        const x = cellWidth * col;
-        const y = -(cellHeight * row) - cellHeight;
-        const offsetX = 50 + 100 * playerCol;
-        const offsetY = 130 + 100 * playerRow;
-
-        return { position: { x, y, offsetX, offsetY }, visible: isVisible };
-    };
-
-    const [initialState] = useState(() => {
-        const worldId = playerProgress.current_world;
-        const world = worldsById.get(worldId);
-        if (!world?.cellsCount) {
-            return { position: { x: 0, y: 0, offsetX: 0, offsetY: 0 }, visible: false };
-        }
-        const pos = BoardHelper.getCoords(world, playerProgress.cells_passed);
-        return calculateState(pos);
-    });
-
-    const [position, setPosition] = useState<PlayerPosition>(initialState.position);
-    const [visible, setVisible] = useState<boolean>(initialState.visible);
+        position = {
+            x: cellWidth * col,
+            y: -(cellHeight * row) - cellHeight,
+            offsetX: 50 + 100 * (index % CELL_MAX_PLAYERS_LINE),
+            offsetY: 130 + 100 * Math.floor(index / CELL_MAX_PLAYERS_LINE),
+        };
+        visible = cellPlayers.length <= CELL_MAX_PLAYERS;
+    }
 
     const move = (pos: CellPosition) => {
-        const newState = calculateState(pos);
-        setPosition(newState.position);
-        setVisible(newState.visible);
+        setPlayerState({
+            cellPosition: pos,
+            updated: Math.max(Date.now(), getPlayerState()?.updated ?? 0),
+        });
     };
 
     const scrollToPlayer = () => {
@@ -96,27 +91,31 @@ export const usePlayerMovement = ({
     };
 
     useEffect(() => {
+        const saved = getPlayerState();
+        const updated = playerProgress.updated ?? 0;
+        if (saved && saved.updated >= updated) return;
         if (moving || paths || (useRollDiceStore.getState().isRolling && isCurrentPlayer)) return;
 
-        const worldId = playerProgress.current_world;
-        const world = worldsById.get(worldId);
-        if (!world?.cellsCount) {
-            setVisible(false);
-            return;
-        } else {
-            const pos = BoardHelper.getCoords(world, playerProgress.cells_passed);
-            if (!pos) {
-                setVisible(false);
-                return;
-            }
+        const world = worldsById.get(playerProgress.currentWorld);
+        if (!world?.cellsCount) return;
 
-            move(pos);
-        }
-    }, [moving, paths, cellWidth, cellHeight, worldsById]);
+        const cellPosition = BoardHelper.getCoords(world, playerProgress.cellsPassed);
+        setPlayerState({ cellPosition, updated });
+    }, [
+        playerProgress.currentWorld,
+        playerProgress.cellsPassed,
+        playerProgress.updated,
+        worldsById,
+        moving,
+        paths,
+        isCurrentPlayer,
+        getPlayerState,
+        setPlayerState,
+    ]);
 
     useEffect(() => {
         const abortController = new AbortController();
-        document.addEventListener(`player.scroll.${playerProgress.player}`, scrollToPlayer, {
+        document.addEventListener(`player.scroll.${playerId}`, scrollToPlayer, {
             signal: abortController.signal,
         });
         return () => {

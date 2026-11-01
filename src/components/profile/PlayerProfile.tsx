@@ -1,17 +1,6 @@
 import type { PlayerRecord } from '@shared/types/player';
 import { PlayerAvatar } from '../PlayerAvatar';
-import {
-    Box,
-    ButtonGroup,
-    Text,
-    Link,
-    DataList,
-    Float,
-    Circle,
-    VStack,
-    For,
-    useToken,
-} from '@chakra-ui/react';
+import { Box, ButtonGroup, Text, Link, DataList, VStack, For, useToken } from '@chakra-ui/react';
 import { LuTwitch, LuYoutube } from 'react-icons/lu';
 import { Flex } from '@theme/flex';
 import { Button } from '@theme/button';
@@ -42,12 +31,14 @@ export const PlayerProfile = ({ player }: PlayerProfileProps) => {
             <VStack zIndex={1}>
                 <VStack w="40%">
                     <Box pos="relative">
-                        <PlayerAvatar player={player} w={40} h={40} />
-                        {player.is_stream_live && (
-                            <Float placement="bottom-end">
-                                <Circle bg="red.solid" w={4} h={4} />
-                            </Float>
-                        )}
+                        <PlayerAvatar
+                            avatarUrl={player.avatar}
+                            color={player.color}
+                            isStreamLive={player.is_stream_live}
+                            showStreamLive
+                            w={40}
+                            h={40}
+                        />
                     </Box>
                     <Text>{player.name}</Text>
                     {stats && (

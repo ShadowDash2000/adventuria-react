@@ -3,7 +3,7 @@ import { CloseButton, Dialog, Portal } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { Content } from './Content';
 import { useRollWheelStore } from '../useRollWheelStore';
-import { invalidateAllActions } from '@shared/queryClient';
+import { invalidateAllActions } from '@shared/query';
 import { Button } from '@theme/button';
 
 export const Modal = () => {

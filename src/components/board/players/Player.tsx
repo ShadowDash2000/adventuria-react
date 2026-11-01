@@ -1,21 +1,33 @@
 import { type CSSProperties, useEffect, useRef } from 'react';
+import type { RecordIdString } from '@shared/types/pocketbase';
 import { PlayerAvatar } from '../../PlayerAvatar';
 import { usePlayerMovement } from './usePlayerMovement';
 import { useAnimationControls } from 'framer-motion';
 import { Box, type BoxProps } from '@chakra-ui/react';
-import type { PlayerRecord } from '@shared/types/player';
-import type { PlayerProgressRecord } from '@shared/types/player_progress';
 
 interface PlayerProps extends BoxProps {
-    player: PlayerRecord;
-    playerProgress: PlayerProgressRecord;
+    playerId: RecordIdString;
+    avatar: string;
+    color: string;
+    currenWorld: RecordIdString;
+    cellsPassed: number;
+    updated?: number;
 }
 
-export const Player = ({ player, playerProgress, ...rest }: PlayerProps) => {
+export const Player = ({
+    playerId,
+    avatar,
+    color,
+    currenWorld,
+    cellsPassed,
+    updated,
+    ...rest
+}: PlayerProps) => {
     const avatarRef = useRef<HTMLDivElement | null>(null);
     const controls = useAnimationControls();
     const { position, visible, moving, moveTime } = usePlayerMovement({
-        playerProgress: playerProgress,
+        playerId,
+        playerProgress: { currentWorld: currenWorld, cellsPassed, updated },
         playerRef: avatarRef,
     });
 
@@ -39,11 +51,11 @@ export const Player = ({ player, playerProgress, ...rest }: PlayerProps) => {
             void highlightPlayer();
         };
 
-        document.addEventListener(`player.scroll.${player.id}`, handler);
+        document.addEventListener(`player.scroll.${playerId}`, handler);
         return () => {
-            document.removeEventListener(`player.scroll.${player.id}`, handler);
+            document.removeEventListener(`player.scroll.${playerId}`, handler);
         };
-    }, [controls, player.id]);
+    }, [controls, playerId]);
 
     return (
         <Box
@@ -68,7 +80,7 @@ export const Player = ({ player, playerProgress, ...rest }: PlayerProps) => {
                 '&[data-not-visible="true"]': { visibility: 'hidden' },
             }}
         >
-            <PlayerAvatar player={player} animate={controls} initial={false} />
+            <PlayerAvatar avatarUrl={avatar} color={color} animate={controls} initial={false} />
         </Box>
     );
 };

@@ -3,19 +3,18 @@ import { Player } from './Player';
 import { useBoardInnerContext } from '@components/board';
 
 export const Players = () => {
-    const { players, playersProgress } = useBoardInnerContext();
-
-    const playersWithProgress = [...players.entries()].flatMap(([id, player]) => {
-        const playerProgress = playersProgress.get(id);
-        return playerProgress ? [{ player, playerProgress }] : [];
-    });
+    const { activePlayers } = useBoardInnerContext();
 
     return (
-        <For each={playersWithProgress}>
-            {({ player, playerProgress }) => (
+        <For each={activePlayers}>
+            {player => (
                 <Player
-                    player={player}
-                    playerProgress={playerProgress}
+                    playerId={player.id}
+                    avatar={player.avatar}
+                    color={player.color}
+                    currenWorld={player.progress.current_world}
+                    cellsPassed={player.progress.cells_passed}
+                    updated={new Date(player.progress.updated).getTime()}
                     key={player.id}
                     zIndex={13}
                     pointerEvents="none"

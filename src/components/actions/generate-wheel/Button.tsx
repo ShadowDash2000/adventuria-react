@@ -1,6 +1,6 @@
 import { LuFerrisWheel } from 'react-icons/lu';
 import { Button as ThemeButton } from '@theme/button';
-import { invalidateAllActions } from '@shared/queryClient';
+import { invalidateAllActions } from '@shared/query';
 import { useAppContext } from '@context/AppContext';
 import { useState } from 'react';
 import { handleApiResponse } from '@shared/helpers/api';

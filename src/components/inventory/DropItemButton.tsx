@@ -1,11 +1,7 @@
 import { Button } from '@theme/button';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import type { InventoryItemRecord } from '@shared/types/inventory-item';
-import {
-    invalidateGameState,
-    invalidateInventory,
-    invalidatePlayerProgress,
-} from '@shared/queryClient';
+import { invalidateGameState, invalidateInventory, invalidatePlayerProgress } from '@shared/query';
 import { useAppAuthContext } from '@context/AppContext';
 import { ButtonGroup, CloseButton, Dialog, Portal, Text } from '@chakra-ui/react';
 import { useState } from 'react';

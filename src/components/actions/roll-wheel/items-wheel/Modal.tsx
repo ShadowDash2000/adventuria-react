@@ -6,7 +6,7 @@ import { useAppAuthContext } from '@context/AppContext';
 import { Content } from './Content';
 import { useRollWheelStore } from '../useRollWheelStore';
 import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
-import { invalidateAllActions } from '@shared/queryClient';
+import { invalidateAllActions } from '@shared/query';
 
 export const Modal = () => {
     const {
