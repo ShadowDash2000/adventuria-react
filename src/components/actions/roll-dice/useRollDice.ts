@@ -1,54 +1,27 @@
-import { type RefObject, useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import type { Move } from '@shared/types/move';
-import { DiceFactory, type DiceFactoryItem, type DiceType } from './dices';
+import { type DiceRoll, type DiceType, useRollDice as useRollDiceState } from '@components/dices';
 import { useAppAuthContext } from '@context/AppContext';
 import { useBoardInnerContext } from '@components/board';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { useQuery } from '@tanstack/react-query';
 import { BoardHelper, type CellPosition } from '@components/board/BoardHelper';
 import { invalidateAllActions, invalidateGameState } from '@shared/query';
-import { performFadeOut } from '@components/actions/roll-dice/dices/roll';
-import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
 import { usePlayer } from '@components/board/players/usePlayer';
 import { audioPresetSchema, pbCollections } from '@shared/pbSchema';
 import { handleApiResponse } from '@shared/helpers/api';
 
-type RollDiceResultData = {
-    roll: number;
-    dice_rolls: Array<{ type: DiceType; roll: number }>;
-    moves: Array<Move>;
-};
-
-type RollDiceResult =
-    | { success: true; data: RollDiceResultData; message?: string; error?: never }
-    | { success: false; message: string; error: string; data?: never };
-
-const diceRollRequest = async (authToken: string) => {
-    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/roll`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${authToken}` },
-    });
-
-    return (await res.json()) as RollDiceResult;
-};
-
-const FADEOUT_DURATION = 3;
 const DEFAULT_ANIMATION_DURATION = 10;
 
-export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
+export const useRollDice = () => {
     const { pb, playerId } = useAppAuthContext();
     const { worldsById } = useBoardInnerContext();
     const { play } = useAudioPlayer(AudioKey.music);
     const { addPaths, setMoveTime } = usePlayer(playerId);
 
     const [isPending, setIsPending] = useState(false);
-    const isRolling = useRollDiceStore(state => state.isRolling);
-    const setIsRolling = useRollDiceStore(state => state.setIsRolling);
-
-    const [dices, setDices] = useState<DiceFactoryItem[] | null>(null);
-    const [pendingRolls, setPendingRolls] = useState<number[] | null>(null);
-    const [animationDuration, setAnimationDuration] = useState<number>(DEFAULT_ANIMATION_DURATION);
+    const { isRolling, setIsRolling, setPendingRoll } = useRollDiceState();
 
     const audioPreset = useQuery({
         queryFn: async () => {
@@ -77,14 +50,6 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
 
         setIsPending(false);
 
-        const newDices: DiceFactoryItem[] = [];
-        const rollValues: number[] = [];
-
-        for (const [i, diceRoll] of res.data.dice_rolls.entries()) {
-            newDices.push(DiceFactory.create(diceRoll.type, { key: `${diceRoll.type}-${i}` }));
-            rollValues.push(diceRoll.roll);
-        }
-
         let duration = DEFAULT_ANIMATION_DURATION;
         if (audioPreset.isSuccess && audioPreset.data.expand?.audio?.length) {
             const randIndex = Math.floor(Math.random() * audioPreset.data.expand.audio.length);
@@ -95,9 +60,12 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
             await play(audioUrl);
         }
 
-        setAnimationDuration(duration);
-        setDices(newDices);
-        setPendingRolls(rollValues);
+        const rolls: DiceRoll[] = [];
+        for (const diceRoll of res.data.dice_rolls) {
+            rolls.push({ dice: diceRoll.type, value: diceRoll.roll });
+        }
+
+        setPendingRoll(rolls, duration);
 
         const paths: CellPosition[] = [];
 
@@ -116,36 +84,31 @@ export const useRollDice = (diceSceneRef: RefObject<HTMLDivElement | null>) => {
 
         addPaths(paths);
         setMoveTime(duration / paths.length);
-        setTimeout(() => {
-            if (diceSceneRef.current) {
-                performFadeOut(diceSceneRef.current, FADEOUT_DURATION);
-            }
-            setTimeout(async () => {
-                setDices(null);
-                setPendingRolls(null);
-                setIsRolling(false);
-                await invalidateAllActions();
-                await invalidateGameState();
-                if (diceSceneRef.current) {
-                    diceSceneRef.current.style.opacity = '1';
-                }
-            }, FADEOUT_DURATION * 1000);
+        setTimeout(async () => {
+            setIsRolling(false);
+            await invalidateAllActions();
+            await invalidateGameState();
         }, duration * 1000);
     };
 
-    useEffect(() => {
-        if (!dices || !pendingRolls) return;
+    return { roll, canRoll: audioPreset.isSuccess && !isRolling, isPending };
+};
 
-        const durationDifference = 1;
-        let curDuration = animationDuration - (dices.length - 1) * durationDifference;
+type RollDiceResultData = {
+    roll: number;
+    dice_rolls: Array<{ type: DiceType; roll: number }>;
+    moves: Array<Move>;
+};
 
-        dices.forEach((dice, i) => {
-            dice.ref.current?.roll(pendingRolls[i], curDuration);
-            curDuration += durationDifference;
-        });
+type RollDiceResult =
+    | { success: true; data: RollDiceResultData; message?: string; error?: never }
+    | { success: false; message: string; error: string; data?: never };
 
-        setPendingRolls(null);
-    }, [dices, pendingRolls, animationDuration]);
+const diceRollRequest = async (authToken: string) => {
+    const res = await fetch(`${import.meta.env.VITE_PB_URL}/api/roll`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${authToken}` },
+    });
 
-    return { roll, isRolling, dices, canRoll: audioPreset.isSuccess && !isRolling, isPending };
+    return (await res.json()) as RollDiceResult;
 };

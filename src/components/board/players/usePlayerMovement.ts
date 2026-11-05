@@ -5,7 +5,7 @@ import { useAppContext } from '@context/AppContext';
 import { BoardHelper, type CellPosition } from '../BoardHelper';
 import { CELL_MAX_PLAYERS, CELL_MAX_PLAYERS_LINE } from '../Board';
 import { usePlayer } from '@components/board/players/usePlayer';
-import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
+import { useRollDice } from '@components/dices';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
 import { usePlayersStore, type PlayerPosition } from './usePlayersStore';
 
@@ -37,6 +37,7 @@ export const usePlayerMovement = ({
     const isCurrentPlayer = authPlayerId ? playerId === authPlayerId : false;
     const [moving, setMoving] = useState<boolean>(false);
     const { incrementBlocked, decrementBlocked } = useKbdSettings(KbdKey.inventory);
+    const { isRolling } = useRollDice();
 
     const {
         playerState,
@@ -94,7 +95,7 @@ export const usePlayerMovement = ({
         const saved = getPlayerState();
         const updated = playerProgress.updated ?? 0;
         if (saved && saved.updated >= updated) return;
-        if (moving || paths || (useRollDiceStore.getState().isRolling && isCurrentPlayer)) return;
+        if (moving || paths || (isRolling && isCurrentPlayer)) return;
 
         const world = worldsById.get(playerProgress.currentWorld);
         if (!world?.cellsCount) return;

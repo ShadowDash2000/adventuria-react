@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useAppAuthContext } from '@context/AppContext';
 import { Content } from './Content';
 import { useRollWheelStore } from '../useRollWheelStore';
-import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
+import { useRollDice } from '@components/dices';
 import { invalidateAllActions } from '@shared/query';
 
 export const Modal = () => {
@@ -19,7 +19,7 @@ export const Modal = () => {
     const [open, setOpen] = useState(false);
     const [wasSpinned, setWasSpinned] = useState(false);
     const isSpinning = useRollWheelStore(state => state.isSpinning);
-    const isRolling = useRollDiceStore(state => state.isRolling);
+    const { isRolling } = useRollDice();
 
     useEffect(() => {
         if (isSpinning) {

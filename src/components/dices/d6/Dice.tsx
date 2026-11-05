@@ -1,28 +1,32 @@
-import { forwardRef, useImperativeHandle, useRef, type CSSProperties, useState } from 'react';
-import { type DiceRef, RollResult } from './types';
-import { performRoll, performRotation } from './roll';
+import { useEffect, useRef, type CSSProperties } from 'react';
+import { type Angle, performRoll, performRotation } from '../roll';
 
-type D6DiceProps = { sizePx?: number };
+const diceConfig: Record<number, Angle> = {
+    1: { x: 0, y: 0 },
+    2: { x: 90, y: 0 },
+    3: { x: 0, y: -90 },
+    4: { x: 0, y: 90 },
+    5: { x: -90, y: 0 },
+    6: { x: 180, y: 0 },
+};
 
-export const D6Dice = forwardRef<DiceRef, D6DiceProps>(function D6Dice({ sizePx = 200 }, ref) {
+interface D6DiceProps {
+    value: number;
+    durationSec?: number;
+    sizePx?: number;
+}
+
+export const D6Dice = ({ value, durationSec, sizePx = 200 }: D6DiceProps) => {
     const rotateRef = useRef<HTMLDivElement | null>(null);
-    const [rollRes, setRollRes] = useState<RollResult | null>(null);
 
-    useImperativeHandle(
-        ref,
-        () => ({
-            roll: (value: number, durationSec: number = 4) => {
-                const el = rotateRef.current;
-                if (!el) return;
-                setRollRes(performRoll(el, 'd6', value, durationSec));
-            },
-        }),
-        [],
-    );
+    useEffect(() => {
+        if (!rotateRef.current) return;
 
-    if (rollRes && rotateRef.current) {
-        performRotation(rotateRef.current, { x: rollRes.x, y: rollRes.y });
-    }
+        const angle = diceConfig[value];
+
+        performRoll(rotateRef.current, durationSec);
+        performRotation(rotateRef.current, angle);
+    }, [value, durationSec]);
 
     const sizeStyle: CSSProperties = { width: sizePx, height: sizePx };
 
@@ -75,4 +79,4 @@ export const D6Dice = forwardRef<DiceRef, D6DiceProps>(function D6Dice({ sizePx 
             </div>
         </div>
     );
-});
+};

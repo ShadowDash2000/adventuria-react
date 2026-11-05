@@ -1,28 +1,29 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
-import { type DiceRef, RollResult } from './types';
-import { performRoll, performRotation } from './roll';
+import { useEffect, useRef } from 'react';
+import { type Angle, performRoll, performRotation } from '../roll';
 
-type D4DiceProps = { sizePx?: number };
+const diceConfig: Record<number, Angle> = {
+    1: { x: 0, y: 0 },
+    2: { x: 0, y: 120 },
+    3: { x: 0, y: 240 },
+    4: { x: 90, y: 180 },
+};
 
-export const D4Dice = forwardRef<DiceRef, D4DiceProps>(function D4Dice(_props, ref) {
+interface D4DiceProps {
+    value: number;
+    durationSec?: number;
+}
+
+export const D4Dice = ({ value, durationSec }: D4DiceProps) => {
     const rotateRef = useRef<HTMLDivElement | null>(null);
-    const [rollRes, setRollRes] = useState<RollResult | null>(null);
 
-    useImperativeHandle(
-        ref,
-        () => ({
-            roll: (value: number, durationSec: number = 4) => {
-                const el = rotateRef.current;
-                if (!el) return;
-                setRollRes(performRoll(el, 'd4', value, durationSec));
-            },
-        }),
-        [],
-    );
+    useEffect(() => {
+        if (!rotateRef.current) return;
 
-    if (rollRes && rotateRef.current) {
-        performRotation(rotateRef.current, { x: rollRes.x, y: rollRes.y });
-    }
+        const angle = diceConfig[value];
+
+        performRoll(rotateRef.current, durationSec);
+        performRotation(rotateRef.current, angle);
+    }, [value, durationSec]);
 
     return (
         <div className="d4-container">
@@ -60,4 +61,4 @@ export const D4Dice = forwardRef<DiceRef, D4DiceProps>(function D4Dice(_props, r
             </div>
         </div>
     );
-});
+};

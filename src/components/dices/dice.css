@@ -1,17 +1,3 @@
-.scene {
-    gap: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    perspective: 600px;
-    padding: 100px 0;
-}
-
-@media only screen and (max-width: 768px) {
-    .scene { gap: 50px; }
-}
-
 /* D6 */
 .cube {
     display: flex;

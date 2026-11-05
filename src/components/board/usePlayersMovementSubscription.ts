@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import type PocketBase from 'pocketbase';
 import { BoardHelper, type CellPosition, type WorldBoard } from './BoardHelper';
 import { usePlayersStore } from './players/usePlayersStore';
-import { useRollDiceStore } from '@components/actions/roll-dice/useRollDiceStore';
+import { useRollDice } from '@components/dices';
 import type { RecordIdString } from '@shared/types/pocketbase';
 import type { Move } from '@shared/types/move';
 
@@ -22,6 +22,7 @@ export const usePlayersMovementSubscription = ({
     worldsById,
 }: PlayersProgressSubscriptionProps) => {
     const worldsByIdRef = useRef(worldsById);
+    const { getIsRolling } = useRollDice();
 
     useEffect(() => {
         worldsByIdRef.current = worldsById;
@@ -36,7 +37,7 @@ export const usePlayersMovementSubscription = ({
         void pb.realtime
             .subscribe('player_moved', (data: PlayerMoveData) => {
                 if (disposed) return;
-                if (data.player_id === playerId && useRollDiceStore.getState().isRolling) return;
+                if (data.player_id === playerId && getIsRolling()) return;
 
                 const paths: CellPosition[] = [];
 

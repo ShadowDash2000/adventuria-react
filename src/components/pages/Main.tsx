@@ -1,5 +1,6 @@
 import { Spacer } from '@chakra-ui/react';
 import { Board } from '../board/Board';
+import { DiceScene } from '@components/dices';
 import { ActionsList } from '@components/actions-list/ActionsList';
 import { ActionsFilter } from '@components/actions-list/ActionsFilter';
 import { ActionsListProvider } from '@components/actions-list/ActionsListContext';
@@ -11,6 +12,7 @@ const Main = () => {
         <>
             <EventSummary />
             <Board />
+            <DiceScene />
             <CellContextMenu />
             <Spacer h={10} />
             <ActionsListProvider maxW="1642px">
