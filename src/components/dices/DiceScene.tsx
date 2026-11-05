@@ -51,6 +51,7 @@ export const DiceScene = () => {
         );
 
         return () => {
+            clearPendingRoll();
             clearTimeout(fadeoutTimer);
             clearTimeout(clearRollTimer);
         };
