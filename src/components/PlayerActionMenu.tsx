@@ -2,6 +2,7 @@ import { useAppContext } from '@context/AppContext';
 import { ActionFactory } from './actions/action-factory';
 import { Flex, For, Spinner, Text } from '@chakra-ui/react';
 import { MotionBox } from '@shared/components/MotionBox';
+import { useRollDice } from '@components/dices';
 
 export const PlayerActionMenu = () => {
     const {
@@ -10,10 +11,12 @@ export const PlayerActionMenu = () => {
         isAvailableActionsError,
         availableActionsError,
     } = useAppContext();
+    const { isRolling } = useRollDice();
     const actions = ActionFactory.getAvailableActions(availableActions);
 
     return (
         <Flex
+            visibility={isRolling ? 'hidden' : 'visible'}
             position="fixed"
             left="50%"
             transform="translateX(-50%)"
