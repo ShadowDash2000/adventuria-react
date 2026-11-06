@@ -20,7 +20,7 @@ import { HiOutlineInformationCircle } from 'react-icons/hi';
 import { Button } from '@theme/button';
 import { PlayerActionReview } from '@components/profile/PlayerActionReview';
 import { useCellsStore } from '@components/board/useCellsStore';
-import { LinkButtons } from '@components/actions/roll-wheel/activities-wheel/LinkButtons';
+import { LinkButtons } from '@components/activities/LinkButtons';
 import { UsedItems } from './UsedItems';
 import { handleApiResponse } from '@shared/helpers/api';
 import { Cover } from '@components/activities/Cover';
@@ -103,7 +103,10 @@ export const PlayerAction = ({ action }: ActionProps) => {
                         {activity && (
                             <>
                                 <LinkButtons
-                                    activity={{ ...activity }}
+                                    activityType={activity.type}
+                                    steamAppId={activity.steam_app_id}
+                                    hltbId={activity.hltb_id}
+                                    slug={activity.slug}
                                     justify="center"
                                     size="sm"
                                     gap={0}

@@ -2,8 +2,8 @@ import { ActivityType } from '@shared/types/activity';
 import { DataList, Flex, Heading, Image } from '@chakra-ui/react';
 import { formatDateLocalized } from '@shared/helpers/helper';
 import { useAppContext } from '@context/AppContext';
-import { LinkButtons } from '@components/actions/roll-wheel/activities-wheel/LinkButtons';
-import type { ActivityViewDetailed } from '@components/actions/roll-wheel/activities-wheel/view';
+import { LinkButtons } from '@components/activities/LinkButtons';
+import type { ActivityViewDetailed } from './view';
 
 interface ActivityInfoProps {
     activityView: ActivityViewDetailed;
@@ -92,7 +92,14 @@ export const ActivityInfo = ({ activityView }: ActivityInfoProps) => {
                             <DataList.ItemValue>{themes}</DataList.ItemValue>
                         </DataList.Item>
                     </DataList.Root>
-                    <LinkButtons activity={activityView.activity} justify="center" py={4} />
+                    <LinkButtons
+                        activityType={activityView.activity.type}
+                        steamAppId={activityView.activity.steam_app_id}
+                        hltbId={activityView.activity.hltb_id}
+                        slug={activityView.activity.slug}
+                        justify="center"
+                        py={4}
+                    />
                 </>
             )}
         </>

@@ -3,11 +3,11 @@ import { CompleteActivity } from '@components/actions/complete_activity/complete
 import { ActionDispenser } from './action-base';
 import { RollDice } from './roll-dice/roll-dice';
 import { Unknown } from './unknown';
-import { RollWheel } from '@components/actions/roll-wheel/roll-wheel';
+import { RollWheel } from './roll-wheel/roll-wheel';
 import { Drop } from './drop/drop';
 import { Reroll } from './reroll/reroll';
 import { Buy } from '@components/actions/buy/buy';
-import { RollItemOnCell } from '@components/actions/roll-wheel/roll-item-on-cell';
+import { ItemsOnCell } from './items-on-cell/items-on-cell';
 import { GenerateWheel } from '@components/actions/generate-wheel/generate-wheel';
 import { NeedToRollWheel } from '@components/actions/need-to-roll-wheel/need_to_roll_wheel';
 import { Done } from '@components/actions/done/done';
@@ -27,7 +27,7 @@ export class ActionFactory {
         need_to_roll_wheel: { order: 0, dispenser: new NeedToRollWheel() },
         roll_wheel: { order: 0, dispenser: new RollWheel() },
         buy: { order: 5, dispenser: new Buy() },
-        roll_item_on_cell: { order: 0, dispenser: new RollItemOnCell() },
+        roll_item_on_cell: { order: 0, dispenser: new ItemsOnCell() },
         coins_for_item: { order: 10, dispenser: new CoinsForItem() },
     };
 

@@ -2,13 +2,10 @@ import { For, HStack, Image, Spinner, Text, VStack } from '@chakra-ui/react';
 import { useAppAuthContext } from '@context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { invalidateGameState, queryKeys } from '@shared/query';
-import { ItemInfo } from '@components/actions/roll-wheel/items-wheel/ItemInfo';
+import { ItemInfo } from '../items/ItemInfo';
 import { useEffect, useRef, useState } from 'react';
-import {
-    WheelOFortune,
-    type WheelOFortuneHandle,
-} from '@components/actions/roll-wheel/WheelOFortune';
-import { useWheel, type SpinResult } from '@components/actions/roll-wheel/useWheel';
+import { WheelOFortune, type WheelOFortuneHandle } from '../WheelOFortune';
+import { useWheel, type SpinResult } from '../useWheel';
 import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';

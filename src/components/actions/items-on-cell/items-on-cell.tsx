@@ -1,10 +1,10 @@
 import { type ReactElement } from 'react';
 import { ActionDispenser } from '../action-base';
-import { Modal } from '@components/actions/roll-wheel/items-on-cell-wheel/Modal';
+import { DialogButton } from './DialogButton';
 
-export class RollItemOnCell extends ActionDispenser {
+export class ItemsOnCell extends ActionDispenser {
     buttonNode(): ReactElement {
-        return <Modal key={this.key()} />;
+        return <DialogButton key={this.key()} />;
     }
 
     key() {

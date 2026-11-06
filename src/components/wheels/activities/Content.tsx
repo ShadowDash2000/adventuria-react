@@ -10,7 +10,7 @@ import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
 import { queryKeys } from '@shared/query';
-import type { ActivityViewDetailed } from '@components/actions/roll-wheel/activities-wheel/view';
+import type { ActivityViewDetailed } from './view';
 
 export const Content = () => {
     const { pb } = useAppAuthContext();
@@ -26,14 +26,14 @@ export const Content = () => {
                 throw new Error(res.message);
             }
 
-            return res;
+            return res.data;
         },
         queryKey: [...queryKeys.activityWheel],
         refetchOnWindowFocus: false,
     });
 
-    const audioPresetFilter = wheelView.data?.data?.audio_preset_id
-        ? { audioPresetId: wheelView.data.data.audio_preset_id }
+    const audioPresetFilter = wheelView.data?.audio_preset_id
+        ? { audioPresetId: wheelView.data.audio_preset_id }
         : { audioPresetSlug: 'roll-wheel' };
 
     const { spinning, handleSpin, currentItemIndex, setCurrentItemIndex, audioPreset } = useWheel({
@@ -49,13 +49,13 @@ export const Content = () => {
         }
     }, [spinning]);
 
-    if (wheelView.isPending || audioPreset.isPending) return <Spinner />;
+    if (wheelView.isPending || wheelView.isFetching || audioPreset.isPending) return <Spinner />;
     if (wheelView.isError) return <Text color="red.500">{wheelView.error.message}</Text>;
     if (audioPreset.isError)
         return <Text color="red.500">Error: {audioPreset.error?.message}</Text>;
 
     const wheelItems = wheelView.data
-        ? wheelView.data.data.items.map(activityView => ({
+        ? wheelView.data.items.map(activityView => ({
               key: activityView.activity.id,
               image:
                   activityView.activity.cover ||
@@ -63,7 +63,7 @@ export const Content = () => {
               title: activityView.activity.name,
           }))
         : [];
-    const currentActivity = wheelView.data.data.items[currentItemIndex];
+    const currentActivity = wheelView.data.items[currentItemIndex];
 
     return (
         <>

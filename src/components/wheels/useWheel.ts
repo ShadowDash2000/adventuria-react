@@ -1,6 +1,6 @@
 import { useAppAuthContext } from '@context/AppContext';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
-import { type WheelOFortuneHandle } from '@components/actions/roll-wheel/WheelOFortune';
+import { type WheelOFortuneHandle } from './WheelOFortune';
 import { RefObject, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';

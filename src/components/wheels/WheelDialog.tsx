@@ -1,15 +1,23 @@
-import { LuFerrisWheel } from 'react-icons/lu';
+import { type ReactNode, useEffect, useState } from 'react';
+import { useWheelDialogStore, WheelType } from './useWheelDialogStore';
+import { useRollWheelStore } from './useRollWheelStore';
 import { CloseButton, Dialog, Portal } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import { Content } from './Content';
-import { useRollWheelStore } from '../useRollWheelStore';
 import { invalidateAllActions } from '@shared/query';
-import { Button } from '@theme/button';
+import { Content as ActivitiesContent } from './activities/Content';
+import { Content as ItemsContent } from './items/Content';
+import { Content as ItemsOnCellContent } from './items-on-cell/Content';
 
-export const Modal = () => {
-    const [open, setOpen] = useState(false);
+const wheelsContent: Record<WheelType, ReactNode> = {
+    activities: <ActivitiesContent />,
+    items: <ItemsContent />,
+    'items-on-cell': <ItemsOnCellContent />,
+};
+
+export const WheelDialog = () => {
+    const { activeWheel, setActiveWheel } = useWheelDialogStore();
+    const { isSpinning } = useRollWheelStore();
     const [wasSpinned, setWasSpinned] = useState(false);
-    const isSpinning = useRollWheelStore(state => state.isSpinning);
+    const activeWheelContent = activeWheel ? wheelsContent[activeWheel] : null;
 
     useEffect(() => {
         if (isSpinning) {
@@ -22,11 +30,13 @@ export const Modal = () => {
             variant="transparent"
             lazyMount
             unmountOnExit
-            open={open}
+            open={!!activeWheel}
             onOpenChange={async e => {
-                if (!isSpinning) {
-                    setOpen(e.open);
-                    if (!e.open && wasSpinned) {
+                if (isSpinning) return;
+
+                if (!e.open) {
+                    setActiveWheel(null);
+                    if (wasSpinned) {
                         await invalidateAllActions();
                         setWasSpinned(false);
                     }
@@ -34,18 +44,12 @@ export const Modal = () => {
             }}
             size="full"
         >
-            <Dialog.Trigger asChild>
-                <Button colorPalette="purple">
-                    <LuFerrisWheel />
-                    Колесо
-                </Button>
-            </Dialog.Trigger>
             <Portal>
                 <Dialog.Backdrop bg="blackAlpha.300" backdropFilter="blur(0.2vw)" />
                 <Dialog.Positioner>
                     <Dialog.Content bg="none" boxShadow="none" mt={0}>
                         <Dialog.Body display="flex" justifyContent="space-around" p={0}>
-                            <Content />
+                            {activeWheelContent}
                         </Dialog.Body>
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />

@@ -10,7 +10,7 @@ import { SliderDebounced } from '@ui/slider-debounced';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
-import type { ItemView } from '@components/actions/roll-wheel/items-wheel/view';
+import type { ItemView } from './view';
 
 export const Content = () => {
     const {

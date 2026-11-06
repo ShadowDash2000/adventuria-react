@@ -12,20 +12,9 @@ export const useCellsSubscription = ({ pb, isAuth }: CellsSubscriptionProps) => 
         let unsubscribeFuncs: (() => void)[] = [];
 
         pb.realtime
-            .subscribe('cell_events_scheduler_start', async () => {
-                await invalidateAvailableActions();
-            })
-            .then(callback => {
-                if (disposed) {
-                    void callback();
-                } else {
-                    unsubscribeFuncs.push(callback);
-                }
-            });
-
-        pb.realtime
             .subscribe('cell_events_scheduler_end', async () => {
                 await invalidateCells();
+                // TODO: invalidate only when no processing player actions
                 await invalidateAvailableActions();
             })
             .then(callback => {

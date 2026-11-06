@@ -2,35 +2,40 @@ import { Button, ButtonGroup } from '@theme/button';
 import { Link } from 'react-router-dom';
 import { type ButtonGroupProps } from '@chakra-ui/react';
 import { ActivityType } from '@shared/types/activity';
-import type { ActivityView } from '@components/actions/roll-wheel/activities-wheel/view';
 
 interface ActivityLinkButtonsProps extends ButtonGroupProps {
-    activity: ActivityView;
+    activityType: ActivityType;
+    steamAppId: number;
+    hltbId: number;
+    slug: string;
 }
 
-export const LinkButtons = ({ activity, ...rest }: ActivityLinkButtonsProps) => {
+export const LinkButtons = ({
+    activityType,
+    steamAppId,
+    hltbId,
+    slug,
+    ...rest
+}: ActivityLinkButtonsProps) => {
     return (
         <ButtonGroup {...rest}>
-            {activity.steam_app_id > 0 && (
+            {steamAppId > 0 && (
                 <Button asChild>
-                    <Link
-                        to={`https://store.steampowered.com/app/${activity.steam_app_id}`}
-                        target="_blank"
-                    >
+                    <Link to={`https://store.steampowered.com/app/${steamAppId}`} target="_blank">
                         Steam
                     </Link>
                 </Button>
             )}
-            {activity.hltb_id > 0 && (
+            {hltbId > 0 && (
                 <Button asChild>
-                    <Link to={`https://howlongtobeat.com/game/${activity.hltb_id}`} target="_blank">
+                    <Link to={`https://howlongtobeat.com/game/${hltbId}`} target="_blank">
                         HLTB
                     </Link>
                 </Button>
             )}
-            {activity.type === ActivityType.Game && (
+            {activityType === ActivityType.Game && (
                 <Button asChild>
-                    <Link to={`https://www.igdb.com/games/${activity.slug}`} target="_blank">
+                    <Link to={`https://www.igdb.com/games/${slug}`} target="_blank">
                         IGDB
                     </Link>
                 </Button>
