@@ -21,7 +21,15 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
 
     const isRefreshShopAvailable = availableActions.includes('refresh_shop');
     const refreshShopView = useQuery({
-        queryFn: () => getRefreshShopView(pb.authStore.token),
+        queryFn: async () => {
+            const res = await getRefreshShopView(pb.authStore.token);
+
+            if (!res.success) {
+                throw new Error(res.message);
+            }
+
+            return res.data;
+        },
         queryKey: [...queryKeys.refreshShopView],
         enabled: isRefreshShopAvailable,
         refetchOnWindowFocus: false,
@@ -57,9 +65,7 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
         <Button
             {...props}
             loading={loading || isGameStatePending}
-            disabled={
-                isGameStateSuccess && gameState.balance < refreshShopView.data.data.refresh_price
-            }
+            disabled={isGameStateSuccess && gameState.balance < refreshShopView.data.refresh_price}
             onClick={async () => {
                 try {
                     setLoading(true);
@@ -71,7 +77,7 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
                 }
             }}
         >
-            Обновить {refreshShopView.data.data.refresh_price}
+            Обновить {refreshShopView.data.refresh_price}
             <Coin w={8} h={8} />
         </Button>
     );
@@ -79,9 +85,14 @@ export const RefreshShopButton = ({ ...props }: ButtonProps) => {
 
 type GetRefreshShopViewData = { refresh_price: number };
 
-type GetRefreshShopViewSuccess = { success: true; data: GetRefreshShopViewData; error?: never };
+type GetRefreshShopViewSuccess = {
+    success: true;
+    data: GetRefreshShopViewData;
+    message?: string;
+    error?: never;
+};
 
-type GetRefreshShopViewError = { success: false; data: never; error: string };
+type GetRefreshShopViewError = { success: false; data: never; message: string; error: string };
 
 type GetRefreshShopViewResult = GetRefreshShopViewSuccess | GetRefreshShopViewError;
 
