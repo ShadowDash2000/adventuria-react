@@ -51,11 +51,16 @@ export const DiceScene = () => {
         );
 
         return () => {
-            clearPendingRoll();
             clearTimeout(fadeoutTimer);
             clearTimeout(clearRollTimer);
         };
-    }, [pendingRoll]);
+    }, [pendingRoll, clearPendingRoll]);
+
+    useEffect(() => {
+        return () => {
+            clearPendingRoll();
+        };
+    }, [clearPendingRoll]);
 
     if (!rolls) {
         return null;
