@@ -3,6 +3,8 @@ import { DiceDispenser } from '../dice-base';
 import { D6Dice } from './Dice';
 
 export class D6 extends DiceDispenser {
+    sides = 6;
+
     node(value: number, durationSec?: number): ReactNode {
         return <D6Dice value={value} durationSec={durationSec} />;
     }
