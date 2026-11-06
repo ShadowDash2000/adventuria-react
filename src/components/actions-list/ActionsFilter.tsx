@@ -241,6 +241,7 @@ const cellTypesList = createListCollection({
         { label: 'Все', value: 'all' },
         { label: 'Игры', value: 'game' },
         { label: 'Фильмы', value: 'movie' },
+        { label: 'Караоке', value: 'karaoke' },
         { label: 'Тюрьма', value: 'jail' },
         { label: 'Качалки', value: 'gym' },
         { label: 'Буфет', value: 'shop' },
