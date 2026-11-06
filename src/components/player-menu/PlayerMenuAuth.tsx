@@ -7,6 +7,7 @@ import { VolumeButton } from '@components/player-menu/VolumeButton';
 import { PlayerBalance } from '@components/player-menu/PlayerBalance';
 import { PlayerDrops } from '@components/player-menu/PlayerDrops';
 import { Energy } from '@components/player-menu/Energy';
+import { DebugDialogIconButton } from '@components/debug/dialog/DebugDialogIconButton';
 
 export const PlayerMenuAuth = () => {
     const { playerId } = useAppAuthContext();
@@ -31,6 +32,7 @@ export const PlayerMenuAuth = () => {
                     <RollItemsDialogButton />
                     <RadioButton />
                     <VolumeButton />
+                    <DebugDialogIconButton />
                 </VStack>
             </VStack>
         </>
