@@ -46,7 +46,7 @@ const Profile = () => {
 
     return (
         <Flex w={{ base: '1280px', xlDown: 'vw' }} direction="column" gap="{spacing.5}">
-            <PlayerProfile player={player.data} />
+            <PlayerProfile player={player.data} h={{ base: '700px', lgDown: '100%' }} />
             <ActionsListProvider playerId={player.data.id}>
                 <ActionsFilter />
                 <ActionsList />

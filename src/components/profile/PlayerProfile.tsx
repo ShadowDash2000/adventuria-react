@@ -2,15 +2,15 @@ import type { PlayerRecord } from '@shared/types/player';
 import { PlayerAvatar } from '../PlayerAvatar';
 import { Box, ButtonGroup, Text, Link, DataList, VStack, For, useToken } from '@chakra-ui/react';
 import { LuTwitch, LuYoutube } from 'react-icons/lu';
-import { Flex } from '@theme/flex';
+import { Flex, type FlexProps } from '@theme/flex';
 import { Button } from '@theme/button';
 import { resolveRelativeImageUrlsFromHtml } from '@shared/helpers/helper';
 
-interface PlayerProfileProps {
+interface PlayerProfileProps extends FlexProps {
     player: PlayerRecord;
 }
 
-export const PlayerProfile = ({ player }: PlayerProfileProps) => {
+export const PlayerProfile = ({ player, ...rest }: PlayerProfileProps) => {
     const lgBreakpoint = useToken('breakpoints', 'lg');
 
     const stats = player.stats
@@ -27,8 +27,8 @@ export const PlayerProfile = ({ player }: PlayerProfileProps) => {
         : [];
 
     return (
-        <Flex variant="solid" align="center" flexDir="column" py={4} gap={2}>
-            <VStack zIndex={1}>
+        <Flex variant="solid" align="center" flexDir="column" py={4} gap={2} {...rest}>
+            <VStack zIndex={1} h="full" justify="space-between">
                 <VStack w="40%">
                     <Box pos="relative">
                         <PlayerAvatar
