@@ -73,6 +73,7 @@ export const DiceScene = () => {
                 position="fixed"
                 w="full"
                 justifyContent="center"
+                wrap="wrap"
                 gap="{spacing.40}"
                 top={0}
                 zIndex={100}
