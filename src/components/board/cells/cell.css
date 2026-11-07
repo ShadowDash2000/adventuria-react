@@ -1,0 +1,11 @@
+@property --borderAngle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes spinBorderAngle {
+    100% {
+        --borderAngle: 1turn;
+    }
+}

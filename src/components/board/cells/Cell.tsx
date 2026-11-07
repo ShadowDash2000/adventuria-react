@@ -1,3 +1,4 @@
+import './cell.css';
 import { Box, type BoxProps, Image } from '@chakra-ui/react';
 import { CellRecord } from '@shared/types/cell';
 import { useAppContext } from '@context/AppContext';
