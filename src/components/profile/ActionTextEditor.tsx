@@ -177,7 +177,7 @@ export const ActionTextEditor = ({
                 },
             },
             onUpdate: ({ editor }) => {
-                if (setContent) setContent(editor.getHTML());
+                setContent?.(editor.isEmpty ? null : editor.getHTML());
             },
         },
         [editable],
