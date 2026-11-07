@@ -10,7 +10,7 @@ import type { buttonRecipe } from '../../adventuria-3/recipes/button.recipe';
 import { forwardRef } from 'react';
 
 const { PropsProvider, usePropsContext, useRecipeResult } = createRecipeContext({
-    key: 'adventuria-button',
+    key: 'adventuriaButton',
 });
 
 type ButtonProps = HTMLChakraProps<'button', RecipeVariantProps<typeof buttonRecipe>> &

@@ -1,7 +1,7 @@
 import { defineRecipe } from '@chakra-ui/react';
 
 export const buttonRecipe = defineRecipe({
-    className: 'adventuria-button',
+    className: 'adventuriaButton',
     base: {
         display: 'inline-flex',
         position: 'relative',
