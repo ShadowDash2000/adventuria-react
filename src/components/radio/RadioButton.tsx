@@ -1,3 +1,4 @@
+import './radio.css';
 import { useEffect, useState } from 'react';
 import { Drawer, Float, HStack, IconButton, Kbd, Portal } from '@chakra-ui/react';
 import { FaRadio } from 'react-icons/fa6';
@@ -5,9 +6,11 @@ import { Tooltip } from '@ui/tooltip';
 import { Radio } from './Radio';
 import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
 import { RadioBackgroundController } from './RadioBackgroundController';
+import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 
 export const RadioButton = () => {
     const [open, setOpen] = useState<boolean>(false);
+    const { isPlaying } = useAudioPlayer(AudioKey.radio);
     const { isBlocked } = useKbdSettings(KbdKey.radio);
 
     useEffect(() => {
@@ -40,7 +43,11 @@ export const RadioButton = () => {
                 <Tooltip content="Радиопопия">
                     <Drawer.Trigger asChild>
                         <IconButton _hover={{ bg: 'green' }}>
-                            <FaRadio />
+                            <FaRadio
+                                data-playing={isPlaying}
+                                data-not-playing={!isPlaying}
+                                className="radio-icon"
+                            />
                         </IconButton>
                     </Drawer.Trigger>
                 </Tooltip>

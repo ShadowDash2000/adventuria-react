@@ -7,10 +7,12 @@ import {
     Stack,
     IconButton,
     Separator,
+    Box,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { type ActionRecord } from '@shared/types/action';
 import type { RecordIdString } from '@shared/types/pocketbase';
+import type { CardColorPaletteVariants } from '@theme/card';
 import { useAppContext } from '@context/AppContext';
 import { formatDateLocalized, resolveRelativeImageUrlsFromHtml } from '@shared/helpers/helper';
 import { ActionStatusFactory } from '@components/actions-statuses/action-status-factory';
@@ -25,6 +27,7 @@ import { UsedItems } from './UsedItems';
 import { handleApiResponse } from '@shared/helpers/api';
 import { Cover } from '@components/activities/Cover';
 import { Events } from '@components/actions-list/Events';
+import { PlayerProfileLink } from '@components/profile/Link';
 
 type ActionProps = { action: ActionRecord };
 
@@ -78,7 +81,11 @@ export const PlayerAction = ({ action }: ActionProps) => {
     };
 
     return (
-        <Card.Root variant="solid" w="100%">
+        <Card.Root
+            variant="solid"
+            colorPalette={actionStatus.color() as CardColorPaletteVariants}
+            w="100%"
+        >
             <Card.Body pb={0}>
                 <Stack
                     h="full"
@@ -95,14 +102,13 @@ export const PlayerAction = ({ action }: ActionProps) => {
                                     slug={activity.slug}
                                     justify="center"
                                     size="sm"
-                                    gap={0}
+                                    gap={2}
                                 />
                                 <Cover
+                                    variant="action"
                                     coverUrl={activity.cover}
                                     coverAltUrl={activity.cover_alt}
                                     w={220}
-                                    aspectRatio="2/3"
-                                    objectFit="contain"
                                 />
                                 <Text>{activity.name}</Text>
                                 {activity.hltb_campaign_time > 0 && (
@@ -173,13 +179,17 @@ export const PlayerAction = ({ action }: ActionProps) => {
                             )}
                         </Card.Description>
                     </VStack>
-                    <VStack position="absolute" right="5%">
-                        <PlayerAvatar
-                            avatarUrl={action.expand!.player.avatar}
-                            color={action.expand!.player.color}
-                        />
-                        <Text>{action.expand?.player.name}</Text>
-                    </VStack>
+                    <Box position="absolute" right="5%">
+                        <PlayerProfileLink playerName={action.expand!.player.name}>
+                            <VStack>
+                                <PlayerAvatar
+                                    avatarUrl={action.expand!.player.avatar}
+                                    color={action.expand!.player.color}
+                                />
+                                <Text>{action.expand?.player.name}</Text>
+                            </VStack>
+                        </PlayerProfileLink>
+                    </Box>
                 </Stack>
             </Card.Body>
             <Card.Footer pt={5} justifyContent="center">

@@ -4,9 +4,12 @@ import { PlayerAvatar } from '../../PlayerAvatar';
 import { usePlayerMovement } from './usePlayerMovement';
 import { useAnimationControls } from 'framer-motion';
 import { Box, type BoxProps } from '@chakra-ui/react';
+import { MotionBox } from '@shared/components/MotionBox';
+import { PlayerProfileLink } from '@components/profile/Link';
 
 interface PlayerProps extends BoxProps {
     playerId: RecordIdString;
+    playerName: string;
     avatar: string;
     color: string;
     currenWorld: RecordIdString;
@@ -16,6 +19,7 @@ interface PlayerProps extends BoxProps {
 
 export const Player = ({
     playerId,
+    playerName,
     avatar,
     color,
     currenWorld,
@@ -80,7 +84,16 @@ export const Player = ({
                 '&[data-not-visible="true"]': { visibility: 'hidden' },
             }}
         >
-            <PlayerAvatar avatarUrl={avatar} color={color} animate={controls} initial={false} />
+            <MotionBox whileHover={{ scale: 1.1 }}>
+                <PlayerProfileLink playerName={playerName}>
+                    <PlayerAvatar
+                        avatarUrl={avatar}
+                        color={color}
+                        animate={controls}
+                        initial={false}
+                    />
+                </PlayerProfileLink>
+            </MotionBox>
         </Box>
     );
 };

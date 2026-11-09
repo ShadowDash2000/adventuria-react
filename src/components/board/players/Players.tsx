@@ -10,6 +10,7 @@ export const Players = () => {
             {player => (
                 <Player
                     playerId={player.id}
+                    playerName={player.name}
                     avatar={player.avatar}
                     color={player.color}
                     currenWorld={player.progress.current_world}
@@ -17,7 +18,6 @@ export const Players = () => {
                     updated={new Date(player.progress.updated).getTime()}
                     key={player.id}
                     zIndex={13}
-                    pointerEvents="none"
                 />
             )}
         </For>

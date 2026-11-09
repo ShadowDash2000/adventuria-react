@@ -1,82 +1,16 @@
 import { useAppContext } from '@context/AppContext';
 import HTMLReactParser from 'html-react-parser';
-import {
-    Blockquote,
-    Spinner,
-    Text,
-    Image,
-    Dialog,
-    Flex,
-    HStack,
-    VStack,
-    Heading,
-} from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@shared/query';
-import type { RecordIdString } from '@shared/types/pocketbase';
-import type { ClientResponseError } from 'pocketbase';
-import type { CellRecord } from '@shared/types/cell';
+import { Blockquote, Image, Dialog, HStack, VStack, Heading } from '@chakra-ui/react';
 import { CellData } from '@components/board/cells/cell-info/CellData';
-import { activityFilterSchema, cellSchema, pbCollections } from '@shared/pbSchema';
-import { dotExpand, joinExpand } from '@shared/pbExpand';
 import { LatestCompletedActivities } from '@components/board/cells/cell-info/LatestCompletedActivities';
+import type { CellRecord } from '@shared/types/cell';
 
 interface CellInfoProps {
-    cellId: RecordIdString;
+    cell: CellRecord;
 }
 
-export const CellInfo = ({ cellId }: CellInfoProps) => {
+export const CellInfo = ({ cell }: CellInfoProps) => {
     const { pb } = useAppContext();
-
-    const {
-        data: cell,
-        isPending,
-        isError,
-        error,
-    } = useQuery({
-        queryFn: async () => {
-            const result = await pb
-                .collection(pbCollections.cells)
-                .getOne<CellRecord>(cellId, {
-                    expand: joinExpand(
-                        dotExpand(cellSchema.filter, activityFilterSchema.platforms),
-                        dotExpand(cellSchema.filter, activityFilterSchema.developers),
-                        dotExpand(cellSchema.filter, activityFilterSchema.publishers),
-                        dotExpand(cellSchema.filter, activityFilterSchema.genres),
-                        dotExpand(cellSchema.filter, activityFilterSchema.tags),
-                        dotExpand(cellSchema.filter, activityFilterSchema.themes),
-                        dotExpand(cellSchema.filter, activityFilterSchema.activities),
-                    ),
-                });
-
-            if (result.expand?.filter?.expand?.activities) {
-                result.expand.filter.expand.activities =
-                    result.expand?.filter?.expand?.activities.map(activity => ({
-                        ...activity,
-                        cover_alt: activity.cover_alt
-                            ? pb.files.getURL(activity, activity.cover_alt)
-                            : '',
-                    }));
-            }
-
-            return result;
-        },
-        queryKey: queryKeys.cell(cellId),
-        refetchOnWindowFocus: false,
-    });
-
-    if (isPending) {
-        return (
-            <Flex justify="center" p={6}>
-                <Spinner />
-            </Flex>
-        );
-    }
-
-    if (isError) {
-        const e = error as ClientResponseError;
-        return <Text>Error: {e.message}</Text>;
-    }
 
     return (
         <>
@@ -84,7 +18,7 @@ export const CellInfo = ({ cellId }: CellInfoProps) => {
                 <Dialog.Title>{cell.name}</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body display="flex" overflow="hidden">
-                <HStack overflow="hidden auto" alignItems="flex-start">
+                <HStack w="full" overflow="hidden auto" alignItems="flex-start">
                     <VStack flex={1}>
                         <CellData cell={cell} />
                     </VStack>
@@ -114,7 +48,7 @@ export const CellInfo = ({ cellId }: CellInfoProps) => {
                                 </Blockquote.Root>
                             </>
                         )}
-                        <LatestCompletedActivities cellId={cellId} />
+                        <LatestCompletedActivities cellId={cell.id} />
                     </VStack>
                 </HStack>
             </Dialog.Body>

@@ -7,8 +7,13 @@ import { tableRecipe } from './recipes/table.recipe';
 import { segmentGroupRecipe } from './recipes/segment-group.recipe';
 import { buttonRecipe } from './recipes/button.recipe';
 import { flexRecipe } from './recipes/flex.recipe';
+import { coverRecipe } from './recipes/cover.recipe';
 
-export const adventuria3Recipes = { adventuriaButton: buttonRecipe, adventuriaFlex: flexRecipe };
+export const adventuria3Recipes = {
+    adventuriaButton: buttonRecipe,
+    adventuriaFlex: flexRecipe,
+    adventuriaCover: coverRecipe,
+};
 
 export const adventuria3SlotRecipes = {
     popover: popoverRecipe,

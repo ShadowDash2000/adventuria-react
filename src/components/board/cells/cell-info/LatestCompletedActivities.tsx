@@ -62,8 +62,6 @@ export const LatestCompletedActivities = ({ cellId }: LatestCompletedActivitiesP
                                     width="full"
                                     minH="150px"
                                     maxH="300px"
-                                    aspectRatio="2/3"
-                                    objectFit="cover"
                                     filter="brightness(0.5)"
                                 />
                             </Tooltip>

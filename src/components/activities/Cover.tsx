@@ -1,10 +1,23 @@
-import { Image, type ImageProps } from '@chakra-ui/react';
+import {
+    type HTMLChakraProps,
+    type ImageProps,
+    type RecipeVariantProps,
+    Image,
+    useRecipe,
+} from '@chakra-ui/react';
+import { coverRecipe } from '@/theme/adventuria-3/recipes/cover.recipe';
 
-interface CoverProps extends ImageProps {
+type CoverImageProps = HTMLChakraProps<'image', RecipeVariantProps<typeof coverRecipe>> &
+    ImageProps;
+
+interface CoverProps extends Omit<CoverImageProps, 'src'> {
     coverUrl?: string;
     coverAltUrl?: string;
 }
 
 export const Cover = ({ coverUrl, coverAltUrl, ...rest }: CoverProps) => {
-    return <Image {...rest} src={coverUrl || coverAltUrl} />;
+    const recipe = useRecipe({ key: 'adventuriaCover' });
+    const styles = recipe(rest);
+
+    return <Image css={styles} {...rest} src={coverUrl || coverAltUrl} />;
 };

@@ -1,0 +1,20 @@
+@keyframes wobble-rotate {
+    0% {
+        transform: rotate(-5deg);
+    }
+    100% {
+        transform: rotate(5deg);
+    }
+}
+
+.radio-icon {
+    transform-origin: bottom center;
+
+    &[data-playing="true"] {
+        animation: wobble-rotate 1s ease-in-out infinite alternate;
+    }
+
+    &[data-not-playing="true"] {
+        animation: none;
+    }
+}

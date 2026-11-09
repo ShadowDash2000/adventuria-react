@@ -14,6 +14,7 @@ const themes: Record<Theme, ReactNode | null> = {
     disabled: null,
     white: (
         <Box
+            zIndex={-100}
             position="fixed"
             top={0}
             left={0}
@@ -28,6 +29,7 @@ const themes: Record<Theme, ReactNode | null> = {
     ),
     blue: (
         <Box
+            zIndex={-100}
             position="fixed"
             top={0}
             left={0}

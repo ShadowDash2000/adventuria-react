@@ -12,20 +12,26 @@ export const buttonRecipe = defineRecipe({
         px: '{spacing.10}',
         h: 10,
         border: 0,
+        borderRadius: 'xl',
+        boxShadow: '0 0.2em black',
         textTransform: 'uppercase',
         textShadow: '{spacing.0.5} {spacing.0.5} black',
         fontSize: 'xl',
         color: 'fg',
         fontWeight: 'bold',
-        '--btn-bg': '#AEAFAE',
+        '--btn-bg': '#192e55',
         bgColor: 'var(--btn-bg)',
-        _hover: { '--btn-bg': 'lightgrey' },
-
         cursor: 'pointer',
         userSelect: 'none',
+
         '&:is(:disabled, [disabled], [data-disabled], [aria-disabled=true])': {
             opacity: 0.5,
             cursor: 'not-allowed',
+        },
+        _hover: {
+            '--btn-bg': '#284a89',
+            transform: 'translate(0, -0.05em)',
+            boxShadow: '0 0.25em black',
         },
     },
     variants: {
