@@ -6,16 +6,14 @@ import { ItemInfo } from '../items/ItemInfo';
 import { useEffect, useRef, useState } from 'react';
 import { WheelOFortune, type WheelOFortuneHandle } from '../WheelOFortune';
 import { useWheel, type SpinResult } from '../useWheel';
-import { SliderDebounced } from '@ui/slider-debounced';
-import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
 import type { RecordIdString } from '@shared/types/pocketbase';
+import { VolumeSlider } from '@components/wheels/VolumeSlider';
 
 export const Content = () => {
     const { pb } = useAppAuthContext();
     const wheelRef = useRef<WheelOFortuneHandle>(null);
-    const { volume, setVolume } = useAudioPlayer(AudioKey.music);
     const [wasSpinned, setWasSpinned] = useState(false);
 
     const wheelView = useQuery({
@@ -84,13 +82,7 @@ export const Content = () => {
                     <Button disabled={spinning || wasSpinned} onClick={handleSpin}>
                         Крутить
                     </Button>
-                    <SliderDebounced
-                        w="full"
-                        value={volume}
-                        setValue={val => setVolume(val)}
-                        label="Громкость"
-                        colorPalette="orange"
-                    />
+                    <VolumeSlider />
                 </VStack>
             </VStack>
             <Flex variant="solid" h="vh" overflowY="hidden">

@@ -6,11 +6,10 @@ import { ItemInfo } from './ItemInfo';
 import { useRef, useState } from 'react';
 import { WheelOFortune, type WheelOFortuneHandle } from '../WheelOFortune';
 import { useWheel, type SpinResult } from '../useWheel';
-import { SliderDebounced } from '@ui/slider-debounced';
-import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { Button } from '@theme/button';
 import { Flex } from '@theme/flex';
 import type { ItemView } from './view';
+import { VolumeSlider } from '@components/wheels/VolumeSlider';
 
 export const Content = () => {
     const {
@@ -24,7 +23,6 @@ export const Content = () => {
     } = useAppAuthContext();
     const [loading, setLoading] = useState(false);
     const wheelRef = useRef<WheelOFortuneHandle>(null);
-    const { volume, setVolume, setVolumeImmediate } = useAudioPlayer(AudioKey.music);
 
     const wheelView = useQuery({
         queryFn: () => getWheelView(pb.authStore.token),
@@ -89,15 +87,7 @@ export const Content = () => {
                     >
                         {`Крутить (x${gameState?.item_wheels_count})`}
                     </Button>
-                    <SliderDebounced
-                        w="full"
-                        value={volume}
-                        setValue={val => setVolume(val)}
-                        onValueChangeImmediate={val => setVolumeImmediate(val)}
-                        commitMode="end"
-                        label="Громкость"
-                        colorPalette="orange"
-                    />
+                    <VolumeSlider />
                 </VStack>
             </VStack>
             <Flex variant="solid" h="vh" overflowY="hidden">

@@ -1,5 +1,5 @@
 import { VStack } from '@chakra-ui/react';
-import { RadioButton } from '@components/radio/RadioButton';
+import { RadioDrawer } from '@components/radio/RadioDrawer';
 
 export const PlayerMenuGuest = () => {
     return (
@@ -14,7 +14,7 @@ export const PlayerMenuGuest = () => {
             align="left"
         >
             <VStack justify="center" align="start">
-                <RadioButton />
+                <RadioDrawer />
             </VStack>
         </VStack>
     );

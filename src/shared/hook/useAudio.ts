@@ -161,29 +161,33 @@ export const useAudioStore = create<AudioStoreState>()(
 );
 
 export const useAudioPlayer = (key: AudioKey) => {
-    const volume = useAudioStore(
-        state => state.players[key]?.volume ?? state.playersPersist[key]?.volume ?? 0.3,
-    );
     const isPlaying = useAudioStore(state => state.players[key]?.isPlaying ?? false);
-    const play = useAudioStore(state => state.play);
-    const pause = useAudioStore(state => state.pause);
-    const setVolumeGlobal = useAudioStore(state => state.setVolume);
-    const setVolumeImmediateGlobal = useAudioStore(state => state.setVolumeImmediate);
-    const seek = useAudioStore(state => state.seek);
-    const currentTime = useAudioStore(state => state.currentTime);
-    const duration = useAudioStore(state => state.duration);
-    const subscribeEnded = useAudioStore(state => state.subscribeEnded);
+    const play = (url: string) => useAudioStore.getState().play(key, url);
+    const pause = () => useAudioStore.getState().pause(key);
+    const getVolume = () => {
+        const state = useAudioStore.getState();
+
+        return state.players[key]?.volume ?? state.playersPersist[key]?.volume ?? 0.3;
+    };
+    const setVolume = (volume: number) => useAudioStore.getState().setVolume(key, volume);
+    const setVolumeImmediate = (volume: number) =>
+        useAudioStore.getState().setVolumeImmediate(key, volume);
+    const seek = (time: number) => useAudioStore.getState().seek(key, time);
+    const currentTime = () => useAudioStore.getState().currentTime(key);
+    const duration = () => useAudioStore.getState().duration(key);
+    const subscribeEnded = (callback: () => void) =>
+        useAudioStore.getState().subscribeEnded(key, callback);
 
     return {
-        volume,
         isPlaying,
-        play: (url: string) => play(key, url),
-        pause: () => pause(key),
-        setVolume: (v: number) => setVolumeGlobal(key, v),
-        setVolumeImmediate: (v: number) => setVolumeImmediateGlobal(key, v),
-        seek: (time: number) => seek(key, time),
-        currentTime: () => currentTime(key),
-        duration: () => duration(key),
-        onEnded: (callback: () => void) => subscribeEnded(key, callback),
+        play,
+        pause,
+        getVolume,
+        setVolume,
+        setVolumeImmediate,
+        seek,
+        currentTime,
+        duration,
+        subscribeEnded,
     };
 };

@@ -1,44 +1,41 @@
 import { Listbox, useListCollection } from '@chakra-ui/react';
-import type { AudioRecord } from '@shared/types/audio';
+import { type Track, useRadioStore } from '@components/radio/useRadioStore';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { RecordIdString } from '@shared/types/pocketbase';
+import { useRadio } from '@components/radio/useRadio';
 
-interface RadioTrackListProps {
-    audioId?: RecordIdString;
-    audio: AudioRecord[];
-    onTrackChange?: (id: RecordIdString) => void;
-}
+export const RadioTrackList = () => {
+    const { currentTrack, playById } = useRadio();
+    const trackList = useRadioStore(state => state.trackList);
 
-export const RadioTrackList = ({ audioId, audio, onTrackChange }: RadioTrackListProps) => {
-    const [value, setValue] = useState<string[]>([audioId || '']);
-    const { collection, set: setCollection } = useListCollection<AudioRecord>({
+    const [value, setValue] = useState<string[]>([currentTrack?.id || '']);
+    const { collection, set: setCollection } = useListCollection<Track>({
         initialItems: [],
-        itemToString: item => item.name,
+        itemToString: item => item.title,
         itemToValue: item => item.id,
     });
     const activeItemRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        setCollection(audio || []);
-    }, [audio]);
+        setCollection(Array.from(trackList.values()));
+    }, [trackList]);
 
     useEffect(() => {
-        if (audioId) setValue([audioId]);
-    }, [audioId, setValue]);
+        if (currentTrack) setValue([currentTrack.id]);
+    }, [currentTrack, setValue]);
 
     useLayoutEffect(() => {
         if (activeItemRef.current) {
             activeItemRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         }
-    }, [audioId, collection.items.length]);
+    }, [currentTrack, collection.items.length]);
 
     return (
         <Listbox.Root
             value={value}
             collection={collection}
-            onValueChange={e => {
-                setValue(e.value);
-                onTrackChange?.(e.value[0]);
+            onValueChange={({ value }) => {
+                setValue(value);
+                void playById(value[0]);
             }}
         >
             <Listbox.Content maxH={32} minW={60} bg="none" border="none">
@@ -46,9 +43,9 @@ export const RadioTrackList = ({ audioId, audio, onTrackChange }: RadioTrackList
                     <Listbox.Item
                         item={audio}
                         key={audio.id}
-                        ref={audio.id === audioId ? activeItemRef : null}
+                        ref={audio.id === currentTrack?.id ? activeItemRef : null}
                     >
-                        <Listbox.ItemText>{audio.name}</Listbox.ItemText>
+                        <Listbox.ItemText>{audio.title}</Listbox.ItemText>
                         <Listbox.ItemIndicator />
                     </Listbox.Item>
                 ))}

@@ -6,7 +6,8 @@ import { useState } from 'react';
 import { Tooltip } from '@ui/tooltip';
 
 export const VolumeButton = () => {
-    const { volume, setVolume, setVolumeImmediate } = useAudioPlayer(AudioKey.music);
+    const { getVolume, setVolume, setVolumeImmediate } = useAudioPlayer(AudioKey.music);
+    const [volumeLocal, setVolumeLocal] = useState(getVolume());
     const [hovered, setHovered] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
@@ -57,8 +58,11 @@ export const VolumeButton = () => {
                 >
                     <SliderDebounced
                         w="full"
-                        value={volume}
-                        setValue={val => setVolume(val)}
+                        value={volumeLocal}
+                        setValue={val => {
+                            setVolume(val);
+                            setVolumeLocal(val);
+                        }}
                         onValueChangeImmediate={val => setVolumeImmediate(val)}
                         colorPalette="orange"
                         onDragStart={handleDragStart}
@@ -70,9 +74,13 @@ export const VolumeButton = () => {
             <Tooltip content="Громкость">
                 <IconButton
                     _hover={{ bg: 'orange' }}
-                    onClick={() => setVolume(volume > 0 ? 0 : DEFAULT_VOLUME)}
+                    onClick={() => {
+                        const newVolume = volumeLocal > 0 ? 0 : DEFAULT_VOLUME;
+                        setVolume(newVolume);
+                        setVolumeLocal(newVolume);
+                    }}
                 >
-                    {volume > 0 ? <FaVolumeUp /> : <FaVolumeMute />}
+                    {volumeLocal > 0 ? <FaVolumeUp /> : <FaVolumeMute />}
                 </IconButton>
             </Tooltip>
         </HStack>

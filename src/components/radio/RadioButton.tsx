@@ -1,69 +1,19 @@
-import './radio.css';
-import { useEffect, useState } from 'react';
-import { Drawer, Float, HStack, IconButton, Kbd, Portal } from '@chakra-ui/react';
+import { IconButton, type IconButtonProps } from '@chakra-ui/react';
 import { FaRadio } from 'react-icons/fa6';
-import { Tooltip } from '@ui/tooltip';
-import { Radio } from './Radio';
-import { KbdKey, useKbdSettings } from '@shared/hook/useKbdSettings';
-import { RadioBackgroundController } from './RadioBackgroundController';
 import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 
-export const RadioButton = () => {
-    const [open, setOpen] = useState<boolean>(false);
+interface RadioButtonProps extends IconButtonProps {}
+
+export const RadioButton = ({ ...props }: RadioButtonProps) => {
     const { isPlaying } = useAudioPlayer(AudioKey.radio);
-    const { isBlocked } = useKbdSettings(KbdKey.radio);
-
-    useEffect(() => {
-        const abortController = new AbortController();
-
-        window.addEventListener(
-            'keydown',
-            e => {
-                if (e.code !== KbdKey.radio || isBlocked) return;
-                setOpen(prev => !prev);
-            },
-            { signal: abortController.signal },
-        );
-
-        return () => {
-            abortController.abort();
-        };
-    }, [isBlocked]);
 
     return (
-        <Drawer.Root
-            open={open}
-            onOpenChange={e => setOpen(e.open)}
-            lazyMount
-            placement="bottom"
-            preventScroll={false}
-        >
-            <RadioBackgroundController />
-            <HStack position="relative">
-                <Tooltip content="Радиопопия">
-                    <Drawer.Trigger asChild>
-                        <IconButton _hover={{ bg: 'green' }}>
-                            <FaRadio
-                                data-playing={isPlaying}
-                                data-not-playing={!isPlaying}
-                                className="radio-icon"
-                            />
-                        </IconButton>
-                    </Drawer.Trigger>
-                </Tooltip>
-                <Float pl={2} translate="100% 50%">
-                    <Kbd>P</Kbd>
-                </Float>
-            </HStack>
-            <Portal>
-                <Drawer.Positioner>
-                    <Drawer.Content bg="rgba(0,0,0,0.5)" backdropFilter="blur({sizes.12})">
-                        <Drawer.Body>
-                            <Radio />
-                        </Drawer.Body>
-                    </Drawer.Content>
-                </Drawer.Positioner>
-            </Portal>
-        </Drawer.Root>
+        <IconButton {...props}>
+            <FaRadio
+                data-playing={isPlaying}
+                data-not-playing={!isPlaying}
+                className="radio-icon"
+            />
+        </IconButton>
     );
 };

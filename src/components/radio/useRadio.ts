@@ -1,105 +1,79 @@
-import { useAppContext } from '@context/AppContext';
-import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
-import type { AudioRecord } from '@shared/types/audio';
+import { AudioKey, useAudioPlayer, useAudioStore } from '@shared/hook/useAudio';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import { useRadioStore } from './useRadioStore';
-import { useRadioPreset } from './useRadioPreset';
+import { type PlayMode, type Track, useRadioStore } from './useRadioStore';
 
 interface RadioReturn {
-    play: () => Promise<void>;
-    playById: (id: RecordIdString) => Promise<void>;
-    pause: () => void;
-    volume: number;
     isPlaying: boolean;
-    setVolume: (volume: number) => void;
-    setVolumeImmediate: (volume: number) => void;
-    prevAudio: () => void;
-    nextAudio: () => void;
-    seek: (time: number) => void;
-    currentTime: () => number;
-    duration: () => number;
-    audioId: RecordIdString;
-    audioName: string;
-    isPending: boolean;
-    isError: boolean;
-    error: Error | null;
-    audio: AudioRecord[];
+    currentTrack: Track | undefined;
+    play: () => Promise<void>;
+    pause: () => void;
+    playById: (id: RecordIdString) => Promise<void>;
+    prev: () => void;
+    next: () => void;
+    shuffle: () => void;
+    unshuffle: () => void;
+    playMode: PlayMode;
 }
 
 export const useRadio = (): RadioReturn => {
-    const { pb } = useAppContext();
-    const {
-        volume,
-        setVolume,
-        setVolumeImmediate,
-        play: playAudio,
-        pause,
-        isPlaying,
-        seek,
-        currentTime,
-        duration,
-    } = useAudioPlayer(AudioKey.radio);
-    const { currentAudioIndex, setAudioIndex, prevIndex, nextIndex } = useRadioStore();
+    const isPlaying = useAudioStore(state => state.players[AudioKey.radio]?.isPlaying ?? false);
+    const play = (url: string) => useAudioStore.getState().play(AudioKey.radio, url);
+    const pause = () => useAudioStore.getState().pause(AudioKey.radio);
+    const rewind = useRadioStore(state => state.rewind);
+    const prev = useRadioStore(state => state.prev);
+    const next = useRadioStore(state => state.next);
+    const shuffle = useRadioStore(state => state.shuffle);
+    const unshuffle = useRadioStore(state => state.unshuffle);
+    const playMode = useRadioStore(state => state.playMode);
 
-    const audioPreset = useRadioPreset();
+    const currentTrack = useRadioStore(state => {
+        const { trackList, playList, currentIndex } = state;
 
-    const audioByIndex = audioPreset.data?.expand?.audio ?? [];
-    const audioIdToIndex = audioByIndex.reduce<Record<RecordIdString, number>>(
-        (acc, audio, currentIndex) => {
-            acc[audio.id] = currentIndex;
-            return acc;
-        },
-        {},
-    );
+        const id = playList[currentIndex];
 
-    const play = async () => {
-        const currentAudio = audioByIndex[currentAudioIndex];
-        if (!currentAudio) return;
-        await playAudio(pb.files.getURL(currentAudio, currentAudio.audio));
+        return id ? trackList.get(id) : undefined;
+    });
+
+    const playTrack = async () => {
+        if (!currentTrack) return;
+
+        await play(currentTrack.url);
     };
 
     const playById = async (id: RecordIdString) => {
-        const audioIndex = audioIdToIndex[id] ?? undefined;
-        if (audioIndex === undefined) return;
-        const currentAudio = audioByIndex[audioIndex];
-        await playAudio(pb.files.getURL(currentAudio, currentAudio.audio));
-        setAudioIndex(audioIndex);
+        const currentTrack = rewind(id);
+
+        if (!currentTrack) return;
+
+        await play(currentTrack.url);
     };
 
-    const prevAudio = async () => {
-        prevIndex();
-        const { currentAudioIndex: newIndex } = useRadioStore.getState();
-        const currentAudio = audioByIndex[newIndex];
-        if (!currentAudio) return;
-        await playAudio(pb.files.getURL(currentAudio, currentAudio.audio));
+    const prevTrack = async () => {
+        const prevTrack = prev();
+
+        if (!prevTrack) return;
+
+        await play(prevTrack.url);
     };
 
-    const nextAudio = async () => {
-        nextIndex();
-        const { currentAudioIndex: newIndex } = useRadioStore.getState();
-        const currentAudio = audioByIndex[newIndex];
-        if (!currentAudio) return;
-        await playAudio(pb.files.getURL(currentAudio, currentAudio.audio));
+    const nextTrack = async () => {
+        const nextTrack = next();
+
+        if (!nextTrack) return;
+
+        await play(nextTrack.url);
     };
 
     return {
-        play,
-        playById,
-        pause,
         isPlaying,
-        prevAudio,
-        nextAudio,
-        audioId: audioByIndex[currentAudioIndex]?.id ?? '',
-        audioName: audioByIndex[currentAudioIndex]?.name ?? '',
-        volume,
-        setVolume,
-        setVolumeImmediate,
-        seek,
-        currentTime,
-        duration,
-        isPending: audioPreset.isPending,
-        isError: audioPreset.isError,
-        error: audioPreset.error,
-        audio: audioPreset.data?.expand?.audio ?? [],
+        currentTrack,
+        play: playTrack,
+        pause,
+        playById,
+        prev: prevTrack,
+        next: nextTrack,
+        shuffle,
+        unshuffle,
+        playMode,
     };
 };

@@ -3,31 +3,40 @@ import { useEffect } from 'react';
 import { useRadioStore } from './useRadioStore';
 import { useRadioPreset } from './useRadioPreset';
 import { useRadio } from '@components/radio/useRadio';
+import { useAppContext } from '@context/AppContext';
 
 export const RadioBackgroundController = () => {
-    const { setAudioCount } = useRadioStore();
-    const { onEnded } = useAudioPlayer(AudioKey.radio);
-    const { audioName, play, pause, isPlaying, prevAudio, nextAudio } = useRadio();
-
+    const { pb } = useAppContext();
+    const setTrackList = useRadioStore(state => state.setTrackList);
+    const { subscribeEnded } = useAudioPlayer(AudioKey.radio);
+    const { isPlaying, currentTrack, play, pause, prev, next } = useRadio();
     const { data } = useRadioPreset();
 
     useEffect(() => {
-        if (data?.audio) setAudioCount(data.audio.length);
-    }, [data, setAudioCount]);
+        if (!data?.expand?.audio) return;
+
+        setTrackList(
+            data.expand.audio.map(audio => ({
+                id: audio.id,
+                title: audio.name,
+                url: pb.files.getURL(audio, audio.audio),
+            })),
+        );
+    }, [data?.expand?.audio, setTrackList]);
 
     useEffect(() => {
-        const unsubscribe = onEnded(async () => {
-            nextAudio();
+        const unsubscribe = subscribeEnded(async () => {
+            next();
         });
         return () => unsubscribe();
-    }, [onEnded, nextAudio]);
+    }, [subscribeEnded, next]);
 
     useEffect(() => {
         if (!('mediaSession' in navigator)) return;
 
-        if (audioName) {
+        if (currentTrack) {
             navigator.mediaSession.metadata = new MediaMetadata({
-                title: audioName,
+                title: currentTrack.title,
                 artist: 'Приключпопия Team',
             });
         }
@@ -36,8 +45,8 @@ export const RadioBackgroundController = () => {
 
         navigator.mediaSession.setActionHandler('play', () => play());
         navigator.mediaSession.setActionHandler('pause', () => pause());
-        navigator.mediaSession.setActionHandler('previoustrack', () => prevAudio());
-        navigator.mediaSession.setActionHandler('nexttrack', () => nextAudio());
+        navigator.mediaSession.setActionHandler('previoustrack', () => prev());
+        navigator.mediaSession.setActionHandler('nexttrack', () => next());
 
         return () => {
             navigator.mediaSession.setActionHandler('play', null);
@@ -45,7 +54,7 @@ export const RadioBackgroundController = () => {
             navigator.mediaSession.setActionHandler('previoustrack', null);
             navigator.mediaSession.setActionHandler('nexttrack', null);
         };
-    }, [isPlaying, audioName, play, pause, prevAudio, nextAudio]);
+    }, [isPlaying, currentTrack, play, pause, prev, next]);
 
     return null;
 };
