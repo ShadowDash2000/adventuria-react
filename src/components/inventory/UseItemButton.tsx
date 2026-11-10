@@ -8,20 +8,20 @@ import {
 } from '@components/inventory/effects/effect-factory';
 import { CloseButton, Dialog, Flex, Portal } from '@chakra-ui/react';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import type { EffectRecord } from '@shared/types/effect';
+import type { PlayerInventoryItemEffectView } from '@components/inventory/Inventory';
 import { useState } from 'react';
 import { handleApiResponse } from '@shared/helpers/api';
 
 interface UseItemButtonProps {
     canUse: boolean;
-    invItemId: RecordIdString;
-    itemEffects: EffectRecord[];
+    inventoryId: RecordIdString;
+    itemEffects: PlayerInventoryItemEffectView[];
     onItemUse?: () => void;
 }
 
 export const UseItemButton = ({
     canUse,
-    invItemId,
+    inventoryId,
     itemEffects,
     onItemUse,
 }: UseItemButtonProps) => {
@@ -33,7 +33,7 @@ export const UseItemButton = ({
     const handleSubmit = async (formData: FormData) => {
         const res = await useItemRequest(
             pb.authStore.token,
-            invItemId,
+            inventoryId,
             Object.fromEntries(formData),
         );
 
@@ -49,7 +49,7 @@ export const UseItemButton = ({
     };
 
     const handleItemUse = async () => {
-        const res = await useItemRequest(pb.authStore.token, invItemId);
+        const res = await useItemRequest(pb.authStore.token, inventoryId);
 
         if (!handleApiResponse(res)) {
             return;
@@ -62,13 +62,13 @@ export const UseItemButton = ({
     };
 
     const effects =
-        itemEffects.entries()!.reduce(
-            (prev, [, effect]) => {
+        itemEffects.values().reduce(
+            (previousValue, effect) => {
                 const effectFactory = EffectFactory.get(effect.type);
-                if (effectFactory === null) return prev;
-                return [...prev, { effect: effect, effectCreator: effectFactory }];
+                if (!effectFactory) return previousValue;
+                return [...previousValue, { id: effect.id, creator: effectFactory }];
             },
-            [] as { effect: EffectRecord; effectCreator: Type_Effect_Creator }[],
+            [] as { id: RecordIdString; creator: Type_Effect_Creator }[],
         ) || [];
 
     const needModal = effects.length > 0;
@@ -99,9 +99,9 @@ export const UseItemButton = ({
                                         }}
                                     >
                                         {effects.map((effect, i) =>
-                                            effect.effectCreator({
-                                                invItemId,
-                                                effectId: effect.effect.id,
+                                            effect.creator({
+                                                invItemId: inventoryId,
+                                                effectId: effect.id,
                                                 key: i,
                                             }),
                                         )}

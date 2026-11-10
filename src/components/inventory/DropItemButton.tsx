@@ -1,6 +1,5 @@
 import { Button } from '@theme/button';
 import type { RecordIdString } from '@shared/types/pocketbase';
-import type { InventoryItemRecord } from '@shared/types/inventory-item';
 import { invalidateGameState, invalidateInventory, invalidatePlayerProgress } from '@shared/query';
 import { useAppAuthContext } from '@context/AppContext';
 import { ButtonGroup, CloseButton, Dialog, Portal, Text } from '@chakra-ui/react';
@@ -10,17 +9,23 @@ import { handleApiResponse } from '@shared/helpers/api';
 
 interface DropItemButtonProps {
     canDrop: boolean;
-    invItem: InventoryItemRecord;
+    inventoryId: RecordIdString;
+    dropPrice: number;
     onItemDrop?: () => void;
 }
 
-export const DropItemButton = ({ canDrop, invItem, onItemDrop }: DropItemButtonProps) => {
+export const DropItemButton = ({
+    canDrop,
+    inventoryId,
+    dropPrice,
+    onItemDrop,
+}: DropItemButtonProps) => {
     const { pb, playerId } = useAppAuthContext();
     const [openConfirm, setOpenConfirm] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const handleDrop = async () => {
-        const res = await dropItemRequest(pb.authStore.token, invItem.id);
+        const res = await dropItemRequest(pb.authStore.token, inventoryId);
 
         if (!handleApiResponse(res)) {
             return;
@@ -52,13 +57,10 @@ export const DropItemButton = ({ canDrop, invItem, onItemDrop }: DropItemButtonP
                             <Dialog.Title>Вы уверены, что хотите выбросить предмет?</Dialog.Title>
                         </Dialog.Header>
                         <Dialog.Body display="flex" flexDir="column" gap={4}>
-                            {invItem.expand?.item && invItem.expand.item.price > 0 && (
-                                <Text>
-                                    За дроп этого предмета вы получите{' '}
-                                    {Math.trunc(invItem.expand.item.price / 2)}{' '}
-                                    <Coin w={6} display="inline-block" />
-                                </Text>
-                            )}
+                            <Text>
+                                За дроп этого предмета вы получите {dropPrice}{' '}
+                                <Coin w={6} display="inline-block" />
+                            </Text>
                             <ButtonGroup>
                                 <Button colorPalette="red" onClick={() => setOpenConfirm(false)}>
                                     Отмена
