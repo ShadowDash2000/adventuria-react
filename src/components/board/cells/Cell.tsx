@@ -15,11 +15,7 @@ export const Cell = ({ cell, width, height, ...rest }: CellProps) => {
 
     return (
         <Box position="relative" width={width} height={height} {...rest}>
-            <Image
-                src={pb.files.getURL(cell, cell.icon, { thumb: '640x0' })}
-                width="100%"
-                height="100%"
-            />
+            {!cell.cell_event && <Image src={imgUrl} width="100%" height="100%" />}
 
             {cell.cell_event && (
                 <Box
