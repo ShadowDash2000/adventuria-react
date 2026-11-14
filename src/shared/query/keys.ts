@@ -27,4 +27,5 @@ export const queryKeys = {
     latestCompletedActivities: (cellId: RecordIdString) => ['latest-completed-activities', cellId],
     playerEvents: (actionId: RecordIdString) => ['player-events', actionId],
     activePlayers: ['active-players'],
+    activeActors: ['active-actors'],
 } as const;

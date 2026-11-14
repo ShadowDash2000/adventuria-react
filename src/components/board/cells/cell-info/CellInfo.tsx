@@ -24,18 +24,6 @@ export const CellInfo = ({ cell }: CellInfoProps) => {
                     </VStack>
                     <VStack flex={1} alignItems="flex-start">
                         <Image src={pb.files.getURL(cell, cell.icon)} width="100%" height="100%" />
-                        {cell.cell_event && cell.cell_event.description && (
-                            <>
-                                <Heading as="h3" size="xl">
-                                    Событие на клетке
-                                </Heading>
-                                <Blockquote.Root variant="solid">
-                                    <Blockquote.Content>
-                                        {HTMLReactParser(cell.cell_event.description)}
-                                    </Blockquote.Content>
-                                </Blockquote.Root>
-                            </>
-                        )}
                         {cell.description && (
                             <>
                                 <Heading as="h3" size="xl">

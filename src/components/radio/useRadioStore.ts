@@ -20,7 +20,7 @@ interface RadioState {
 
 export type Track = { id: string; title: string; url: string };
 
-export enum PlayMode {
+export const enum PlayMode {
     None = 0,
     Shuffle = 1 << 0,
 }

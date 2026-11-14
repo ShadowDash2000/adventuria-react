@@ -8,7 +8,7 @@ import { AudioKey, useAudioPlayer } from '@shared/hook/useAudio';
 import { useQuery } from '@tanstack/react-query';
 import { BoardHelper, type CellPosition } from '@components/board/BoardHelper';
 import { invalidateAllActions, invalidateGameState } from '@shared/query';
-import { usePlayer } from '@components/board/players/usePlayer';
+import { useActor } from '@components/board/actors/useActor';
 import { audioPresetSchema, pbCollections } from '@shared/pbSchema';
 import { handleApiResponse } from '@shared/helpers/api';
 
@@ -18,7 +18,7 @@ export const useRollDice = () => {
     const { pb, playerId } = useAppAuthContext();
     const { worldsById } = useBoardInnerContext();
     const { play } = useAudioPlayer(AudioKey.music);
-    const { addPaths, setMoveTime } = usePlayer(playerId);
+    const { addPaths, setMoveTime } = useActor(playerId);
 
     const [isPending, setIsPending] = useState(false);
     const { isRolling, setIsRolling, setPendingRoll } = useRollDiceState();

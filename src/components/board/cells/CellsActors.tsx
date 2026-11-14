@@ -1,42 +1,42 @@
 import type { CellPosition } from '@components/board/BoardHelper';
-import type { ActivePlayer } from '@shared/query/requests';
-import { usePlayersStore } from '../players/usePlayersStore';
+import type { ActiveActor } from '@shared/query/requests/active-actors';
+import { useActorsStore } from '@components/board/actors/useActorsStore';
 import { For, HStack, IconButton, VStack, Text, Box } from '@chakra-ui/react';
 import { ToggleTip } from '@ui/toggle-tip';
 import { PlayerAvatar } from '../../PlayerAvatar';
 import { CELL_MAX_PLAYERS } from '../Board';
 
 interface CellsPlayersProps {
-    activePlayers: ActivePlayer[];
+    activeActors: ActiveActor[];
     cellWidth: number;
     cellHeight: number;
 }
 
-export const CellsPlayers = ({ activePlayers, cellWidth, cellHeight }: CellsPlayersProps) => {
-    const playerStates = usePlayersStore(state => state.playerStates);
-    const playersById = new Map(activePlayers.map(player => [player.id, player]));
-    const cells = new Map<string, { position: CellPosition; players: ActivePlayer[] }>();
+export const CellsActors = ({ activeActors, cellWidth, cellHeight }: CellsPlayersProps) => {
+    const actorStates = useActorsStore(state => state.actorStates);
+    const actorsById = new Map(activeActors.map(player => [player.id, player]));
+    const cells = new Map<string, { position: CellPosition; actors: ActiveActor[] }>();
 
-    const orderedPlayers = Array.from(playerStates.entries()).sort(
+    const orderedActors = Array.from(actorStates.entries()).sort(
         ([aId, a], [bId, b]) => a.updated - b.updated || aId.localeCompare(bId),
     );
 
-    for (const [playerId, state] of orderedPlayers) {
-        const player = playersById.get(playerId);
-        if (!player) continue;
+    for (const [actorId, state] of orderedActors) {
+        const actor = actorsById.get(actorId);
+        if (!actor) continue;
 
         const { worldId, row, col } = state.cellPosition;
         const key = JSON.stringify([worldId, row, col]);
         const cell = cells.get(key);
         if (cell) {
-            cell.players.push(player);
+            cell.actors.push(actor);
         } else {
-            cells.set(key, { position: state.cellPosition, players: [player] });
+            cells.set(key, { position: state.cellPosition, actors: [actor] });
         }
     }
 
     const cellsWithoutSpace = Array.from(cells.entries()).filter(
-        ([, cell]) => cell.players.length > CELL_MAX_PLAYERS,
+        ([, cell]) => cell.actors.length > CELL_MAX_PLAYERS,
     );
 
     return (
@@ -45,7 +45,7 @@ export const CellsPlayers = ({ activePlayers, cellWidth, cellHeight }: CellsPlay
                 <CellPlayers
                     key={key}
                     position={cell.position}
-                    players={cell.players}
+                    actors={cell.actors}
                     cellWidth={cellWidth}
                     cellHeight={cellHeight}
                 />
@@ -56,12 +56,12 @@ export const CellsPlayers = ({ activePlayers, cellWidth, cellHeight }: CellsPlay
 
 interface CellPlayersProps {
     position: CellPosition;
-    players: ActivePlayer[];
+    actors: ActiveActor[];
     cellWidth: number;
     cellHeight: number;
 }
 
-const CellPlayers = ({ position, players, cellWidth, cellHeight }: CellPlayersProps) => {
+const CellPlayers = ({ position, actors, cellWidth, cellHeight }: CellPlayersProps) => {
     const x = cellWidth * position.col + cellWidth / 2;
     const y = -(cellHeight * position.row) - cellHeight / 2;
 
@@ -78,20 +78,18 @@ const CellPlayers = ({ position, players, cellWidth, cellHeight }: CellPlayersPr
                     overflowY="scroll"
                     scrollbarColor="black transparent"
                 >
-                    <For each={players}>
-                        {player => (
-                            <HStack key={player.id} gap={4}>
+                    <For each={actors}>
+                        {actor => (
+                            <HStack key={actor.id} gap={4}>
                                 <Box position="relative">
                                     <PlayerAvatar
-                                        avatarUrl={player.avatar}
-                                        color={player.color}
-                                        isStreamLive={player.is_stream_live}
-                                        showStreamLive
+                                        avatarUrl={actor.avatar}
+                                        color={actor.color}
                                         size="xs"
                                         outlineWidth="0.20vw"
                                     />
                                 </Box>
-                                <Text>{player.name}</Text>
+                                <Text>{actor.name}</Text>
                             </HStack>
                         )}
                     </For>
@@ -106,7 +104,7 @@ const CellPlayers = ({ position, players, cellWidth, cellHeight }: CellPlayersPr
                 top="anchor(end)"
                 transform={`translate(calc(${x}px - 50%), calc(${y}px + 50%))`}
             >
-                {players.length}
+                {actors.length}
             </IconButton>
         </ToggleTip>
     );

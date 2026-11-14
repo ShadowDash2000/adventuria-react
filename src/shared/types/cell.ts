@@ -3,7 +3,6 @@ import type { IsoDateString, RecordIdString } from '@shared/types/pocketbase';
 import type { ActivityFilterRecord } from '@shared/types/filter';
 import type { AudioPresetRecord } from '@shared/types/audio-preset';
 import type { WorldRecord } from '@shared/types/world';
-import type { CellEventRecord } from '@shared/types/cell_event';
 
 export type CellRecord = {
     created: IsoDateString;
@@ -27,7 +26,6 @@ export type CellRecord = {
     is_safe_drop: boolean;
     is_custom_filter_not_allowed: boolean;
     is_change_game_not_allowed: boolean;
-    cell_event?: CellEventRecord;
     expand?: FilterRecordExpand;
 } & RecordModel;
 

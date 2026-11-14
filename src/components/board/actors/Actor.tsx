@@ -1,15 +1,17 @@
 import { type CSSProperties, useEffect, useRef } from 'react';
 import type { RecordIdString } from '@shared/types/pocketbase';
+import { ActorKind } from '@shared/types/actor';
 import { PlayerAvatar } from '../../PlayerAvatar';
-import { usePlayerMovement } from './usePlayerMovement';
+import { useActorMovement } from './useActorMovement';
 import { useAnimationControls } from 'framer-motion';
 import { Box, type BoxProps } from '@chakra-ui/react';
 import { MotionBox } from '@shared/components/MotionBox';
 import { PlayerProfileLink } from '@components/profile/Link';
 
-interface PlayerProps extends BoxProps {
-    playerId: RecordIdString;
-    playerName: string;
+interface ActorProps extends BoxProps {
+    id: RecordIdString;
+    kind: ActorKind;
+    name: string;
     avatar: string;
     color: string;
     currenWorld: RecordIdString;
@@ -17,21 +19,22 @@ interface PlayerProps extends BoxProps {
     updated?: number;
 }
 
-export const Player = ({
-    playerId,
-    playerName,
+export const Actor = ({
+    id,
+    kind,
+    name,
     avatar,
     color,
     currenWorld,
     cellsPassed,
     updated,
     ...rest
-}: PlayerProps) => {
+}: ActorProps) => {
     const avatarRef = useRef<HTMLDivElement | null>(null);
     const controls = useAnimationControls();
-    const { position, visible, moving, moveTime } = usePlayerMovement({
-        playerId,
-        playerProgress: { currentWorld: currenWorld, cellsPassed, updated },
+    const { position, visible, moving, moveTime } = useActorMovement({
+        actorId: id,
+        actorInitialState: { currentWorld: currenWorld, cellsPassed, updated },
         playerRef: avatarRef,
     });
 
@@ -55,11 +58,11 @@ export const Player = ({
             void highlightPlayer();
         };
 
-        document.addEventListener(`player.scroll.${playerId}`, handler);
+        document.addEventListener(`player.scroll.${id}`, handler);
         return () => {
-            document.removeEventListener(`player.scroll.${playerId}`, handler);
+            document.removeEventListener(`player.scroll.${id}`, handler);
         };
-    }, [controls, playerId]);
+    }, [controls, id]);
 
     return (
         <Box
@@ -85,14 +88,23 @@ export const Player = ({
             }}
         >
             <MotionBox whileHover={{ scale: 1.1 }}>
-                <PlayerProfileLink playerName={playerName}>
+                {(kind === ActorKind.Player && (
+                    <PlayerProfileLink playerName={name}>
+                        <PlayerAvatar
+                            avatarUrl={avatar}
+                            color={color}
+                            animate={controls}
+                            initial={false}
+                        />
+                    </PlayerProfileLink>
+                )) || (
                     <PlayerAvatar
                         avatarUrl={avatar}
                         color={color}
                         animate={controls}
                         initial={false}
                     />
-                </PlayerProfileLink>
+                )}
             </MotionBox>
         </Box>
     );

@@ -1,26 +1,27 @@
 import { useEffect, useRef } from 'react';
 import type PocketBase from 'pocketbase';
 import { BoardHelper, type CellPosition, type WorldBoard } from './BoardHelper';
-import { usePlayersStore } from './players/usePlayersStore';
+import { useActorsStore } from '@components/board/actors/useActorsStore';
 import { useRollDice } from '@components/dices';
 import type { RecordIdString } from '@shared/types/pocketbase';
+import type { ActorKind } from '@shared/types/actor';
 import type { Move } from '@shared/types/move';
 
-type PlayerMoveData = { player_id: RecordIdString; moves: Move[] };
+type ActorMoveData = { actor_id: RecordIdString; actor_kind: ActorKind; moves: Move[] };
 
-type PlayersProgressSubscriptionProps = {
+type ActorMovementSubscriptionProps = {
     pb: PocketBase;
     isAuth: boolean;
     playerId: RecordIdString | null;
     worldsById: Map<string, WorldBoard>;
 };
 
-export const usePlayersMovementSubscription = ({
+export const useActorsMovementSubscription = ({
     pb,
     isAuth,
     playerId,
     worldsById,
-}: PlayersProgressSubscriptionProps) => {
+}: ActorMovementSubscriptionProps) => {
     const worldsByIdRef = useRef(worldsById);
     const { getIsRolling } = useRollDice();
 
@@ -35,9 +36,9 @@ export const usePlayersMovementSubscription = ({
         let unsubscribe: (() => void) | undefined;
 
         void pb.realtime
-            .subscribe('player_moved', (data: PlayerMoveData) => {
+            .subscribe('actor_moved', (data: ActorMoveData) => {
                 if (disposed) return;
-                if (data.player_id === playerId && getIsRolling()) return;
+                if (data.actor_id === playerId && getIsRolling()) return;
 
                 const paths: CellPosition[] = [];
 
@@ -60,7 +61,7 @@ export const usePlayersMovementSubscription = ({
                 }
 
                 if (paths.length) {
-                    usePlayersStore.getState().addPaths(data.player_id, paths);
+                    useActorsStore.getState().addPaths(data.actor_id, paths);
                 }
             })
             .then(callback => {

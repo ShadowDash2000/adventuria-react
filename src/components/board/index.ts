@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react';
 import { BoardContextType, BoardInnerContextType } from './types';
 import type { CellRecord } from '@shared/types/cell';
 import type { WorldRecord } from '@shared/types/world';
-import type { ActivePlayer } from '@shared/query/requests';
+import type { ActiveActor } from '@shared/query/requests/active-actors';
 
 export const BoardContext = createContext<BoardContextType>({} as BoardContextType);
 
@@ -16,7 +16,7 @@ export const useBoardInnerContext: () => BoardInnerContextType = () =>
 export const useBoardDataContext = () => useContext(BoardDataContext);
 
 export const BoardDataContext = createContext({
-    activePlayers: [] as ActivePlayer[],
+    activeActors: [] as ActiveActor[],
     cells: [] as CellRecord[],
     worlds: [] as WorldRecord[],
 });

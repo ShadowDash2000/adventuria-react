@@ -15,21 +15,7 @@ export const Cell = ({ cell, width, height, ...rest }: CellProps) => {
 
     return (
         <Box position="relative" width={width} height={height} {...rest}>
-            {!cell.cell_event && <Image src={imgUrl} width="100%" height="100%" />}
-
-            {cell.cell_event && (
-                <Box
-                    top={0}
-                    position="absolute"
-                    backgroundImage={`linear-gradient(var(--borderAngle, 0deg), ${cell.cell_event.colors}), url(${imgUrl})`}
-                    backgroundBlendMode="hard-light"
-                    backgroundSize="cover"
-                    animation="spinBorderAngle 5s linear infinite"
-                    width={width}
-                    height={height}
-                />
-            )}
-
+            <Image src={imgUrl} width="100%" height="100%" />
             <Box
                 top={0}
                 position="absolute"

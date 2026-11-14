@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 import type { WorldBoard } from '@components/board/BoardHelper';
-import { ActivePlayer } from '@shared/query/requests';
+import type { ActiveActor } from '@shared/query/requests/active-actors';
 
 export type BoardContextType = {
     boardRef: RefObject<HTMLDivElement | null>;
@@ -8,7 +8,7 @@ export type BoardContextType = {
 };
 
 export type BoardInnerContextType = {
-    activePlayers: ActivePlayer[];
+    activeActors: ActiveActor[];
     worldsById: Map<string, WorldBoard>;
     cellWidth: number;
     cellHeight: number;

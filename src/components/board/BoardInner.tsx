@@ -1,18 +1,18 @@
-import { Players } from './players/Players';
+import { Actors } from '@components/board/actors/Actors';
 import { useAppContext } from '@context/AppContext';
 import { Cells } from './cells/Cells';
 import { BoardHelper } from './BoardHelper';
-import { CellsPlayers } from './cells/CellsPlayers';
+import { CellsActors } from './cells/CellsActors';
 import { PlayerActionMenu } from '@components/PlayerActionMenu';
 import { BoardInnerContext, useBoardContext, useBoardDataContext } from '.';
 import { useBoardDimensions } from './useBoardDimensions';
-import { usePlayersMovementSubscription } from './usePlayersMovementSubscription';
+import { useActorsMovementSubscription } from './useActorsMovementSubscription';
 import { useCellsSubscription } from '@components/board/useCellsSubscription';
 
 export const BoardInner = () => {
     const { pb, isAuth, playerId } = useAppContext();
     const { boardInnerRef } = useBoardContext();
-    const { activePlayers, cells, worlds } = useBoardDataContext();
+    const { activeActors, cells, worlds } = useBoardDataContext();
 
     const board = BoardHelper.buildBoard(cells, worlds);
 
@@ -24,16 +24,16 @@ export const BoardInner = () => {
     const cellHeight = rows ? Math.floor(boardDimensions.height / Math.max(rows, 1)) : 0;
 
     useCellsSubscription({ pb, isAuth });
-    usePlayersMovementSubscription({ pb, isAuth, playerId, worldsById: board.worldsById });
+    useActorsMovementSubscription({ pb, isAuth, playerId, worldsById: board.worldsById });
 
     return (
         <BoardInnerContext.Provider
-            value={{ activePlayers, worldsById: board.worldsById, cellWidth, cellHeight }}
+            value={{ activeActors, worldsById: board.worldsById, cellWidth, cellHeight }}
         >
             <Cells />
-            {cellWidth !== 0 && cellHeight !== 0 && <Players />}
-            <CellsPlayers
-                activePlayers={activePlayers}
+            {cellWidth !== 0 && cellHeight !== 0 && <Actors />}
+            <CellsActors
+                activeActors={activeActors}
                 cellWidth={cellWidth}
                 cellHeight={cellHeight}
             />

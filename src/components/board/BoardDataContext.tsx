@@ -6,14 +6,14 @@ import { useQuery } from '@tanstack/react-query';
 import { Spinner, Text } from '@chakra-ui/react';
 import { BoardDataContext } from '.';
 import { queryKeys } from '@shared/query';
-import { activePlayersQueryOptions } from '@shared/query/requests';
+import { activeActorsQueryOptions } from '@shared/query/requests/active-actors';
 import { cellSchema, pbCollections, worldSchema } from '@shared/pbSchema';
 import { joinExpand } from '@shared/pbExpand';
 
 export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
     const { pb } = useAppContext();
 
-    const activePlayers = useQuery({ ...activePlayersQueryOptions(), refetchOnWindowFocus: false });
+    const activeActors = useQuery({ ...activeActorsQueryOptions(), refetchOnWindowFocus: false });
 
     const cells = useQuery({
         queryFn: () =>
@@ -28,7 +28,6 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
                         cellSchema.type,
                         cellSchema.world,
                         cellSchema.icon,
-                        cellSchema.cellEvent,
                     ),
                 }),
         refetchOnWindowFocus: false,
@@ -47,14 +46,14 @@ export const BoardDataProvider = ({ children }: { children: ReactNode }) => {
         queryKey: queryKeys.worlds,
     });
 
-    if (activePlayers.isPending || cells.isPending || worlds.isPending) return <Spinner />;
-    if (activePlayers.isError) return <Text>Error: {activePlayers.error?.message}</Text>;
+    if (activeActors.isPending || cells.isPending || worlds.isPending) return <Spinner />;
+    if (activeActors.isError) return <Text>Error: {activeActors.error?.message}</Text>;
     if (cells.isError) return <Text>Error: {cells.error?.message}</Text>;
     if (worlds.isError) return <Text>Error: {worlds.error?.message}</Text>;
 
     return (
         <BoardDataContext.Provider
-            value={{ activePlayers: activePlayers.data, cells: cells.data, worlds: worlds.data }}
+            value={{ activeActors: activeActors.data, cells: cells.data, worlds: worlds.data }}
         >
             {children}
         </BoardDataContext.Provider>
