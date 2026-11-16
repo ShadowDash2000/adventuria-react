@@ -104,7 +104,7 @@ export const Content = () => {
                                 setOpenConfirm(true);
                             }}
                         >
-                            Дроп (todo <EnergyIcon />)
+                            Дроп ({activityView.data.drop_energy_consume} <EnergyIcon />)
                         </Button>
                         {activityView.data.is_safe_drop && (
                             <Float placement="top-center" offsetY={-4} textWrap="nowrap">
@@ -214,6 +214,7 @@ type CompleteActivityViewData = {
     done_points: number;
     done_energy_consume: number;
     done_coins: number;
+    drop_energy_consume: number;
     is_safe_drop: boolean;
 };
 
