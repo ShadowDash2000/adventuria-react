@@ -3,7 +3,7 @@ import { Cell } from '@components/board/cells/Cell';
 import { ItemIcon } from '@components/items/ItemIcon';
 import { PlayerAvatar } from '@components/PlayerAvatar';
 import { useQuery } from '@tanstack/react-query';
-import { type EventStatsEntries, eventStatsQueryOptions } from '@shared/query/requests/event-stats';
+import { type EventStatsEntries, eventStatsQueryOptions } from '@shared/query/requests';
 import type { ClientResponseError } from 'pocketbase';
 import type { CellRecord } from '@shared/types/cell';
 import { useCellsStore } from '@components/board/useCellsStore';

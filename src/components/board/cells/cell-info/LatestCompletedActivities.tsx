@@ -9,10 +9,7 @@ import { PlayerAvatar } from '@components/PlayerAvatar';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import { ToggleTip } from '@ui/toggle-tip';
 import { formatDateLocalized } from '@shared/helpers/helper';
-import {
-    completedActivitiesQueryOptions,
-    type PlayerStatus,
-} from '@shared/query/requests/completed-activities';
+import { completedActivitiesQueryOptions, type PlayerStatus } from '@shared/query/requests';
 
 const MAX_PLAYERS = 6;
 

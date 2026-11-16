@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 import type { WorldBoard } from '@components/board/BoardHelper';
-import type { ActiveActor } from '@shared/query/requests/active-actors';
+import type { ActiveActor } from '@shared/query/requests';
 
 export type BoardContextType = {
     boardRef: RefObject<HTMLDivElement | null>;

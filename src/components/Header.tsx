@@ -1,5 +1,5 @@
 import { useAppContext } from '@context/AppContext';
-import { PlayersFloatingList } from '@components/players-floating-list/PlayersFloatingList';
+import { ActorsFloatingList } from '@components/actors-floating-list/ActorsFloatingList';
 import { PlayerMenuAuth } from '@components/player-menu/PlayerMenuAuth';
 import { PlayerMenuGuest } from '@components/player-menu/PlayerMenuGuest';
 import { ControlsMenu } from '@components/ControlsMenu';
@@ -9,7 +9,7 @@ export const Header = () => {
 
     return (
         <>
-            <PlayersFloatingList />
+            <ActorsFloatingList />
             {isAuth ? <PlayerMenuAuth /> : <PlayerMenuGuest />}
             <ControlsMenu />
         </>

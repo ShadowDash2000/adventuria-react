@@ -1,5 +1,5 @@
 import type { CellPosition } from '@components/board/BoardHelper';
-import type { ActiveActor } from '@shared/query/requests/active-actors';
+import type { ActiveActor } from '@shared/query/requests';
 import { useActorsStore } from '@components/board/actors/useActorsStore';
 import { For, HStack, IconButton, VStack, Text, Box } from '@chakra-ui/react';
 import { ToggleTip } from '@ui/toggle-tip';

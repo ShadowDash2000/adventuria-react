@@ -2,7 +2,7 @@ import { Tooltip } from '@ui/tooltip';
 import { Box } from '@chakra-ui/react';
 import { ShiftChangeTimer } from '@components/board/actors/npc/ShiftChangeTimer';
 import { PlayerAvatar } from '@components/PlayerAvatar';
-import type { ActiveNPCActor } from '@shared/query/requests/active-actors';
+import type { ActiveNPCActor } from '@shared/query/requests';
 import type { RefObject } from 'react';
 
 interface ActorNPCProps {

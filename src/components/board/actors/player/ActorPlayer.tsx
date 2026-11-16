@@ -1,6 +1,6 @@
 import { PlayerProfileLink } from '@components/profile/Link';
 import { PlayerAvatar } from '@components/PlayerAvatar';
-import { ActivePlayerActor } from '@shared/query/requests/active-actors';
+import { ActivePlayerActor } from '@shared/query/requests';
 import type { RefObject } from 'react';
 
 interface ActorPlayerProps {

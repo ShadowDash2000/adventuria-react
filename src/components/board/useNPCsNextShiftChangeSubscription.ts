@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import type PocketBase from 'pocketbase';
 import type { IsoDateString, RecordIdString } from '@shared/types/pocketbase';
-import type { ActiveActor } from '@shared/query/requests/active-actors';
+import type { ActiveActor } from '@shared/query/requests';
 import { queryClient, queryKeys } from '@shared/query';
 
 type NextShiftChangeData = { npc_id: RecordIdString; next_shift_change_at: IsoDateString };

@@ -26,6 +26,6 @@ export const queryKeys = {
     item: (itemId: RecordIdString) => ['items', itemId],
     latestCompletedActivities: (cellId: RecordIdString) => ['latest-completed-activities', cellId],
     playerEvents: (actionId: RecordIdString) => ['player-events', actionId],
-    activePlayers: ['active-players'],
+    activeActorsList: ['active-actors-list'],
     activeActors: ['active-actors'],
 } as const;

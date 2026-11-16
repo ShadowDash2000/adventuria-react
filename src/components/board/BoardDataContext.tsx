@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Spinner, Text } from '@chakra-ui/react';
 import { BoardDataContext } from '.';
 import { queryKeys } from '@shared/query';
-import { activeActorsQueryOptions } from '@shared/query/requests/active-actors';
+import { activeActorsQueryOptions } from '@shared/query/requests';
 import { cellSchema, pbCollections, worldSchema } from '@shared/pbSchema';
 import { joinExpand } from '@shared/pbExpand';
 

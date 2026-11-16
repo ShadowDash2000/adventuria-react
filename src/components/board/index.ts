@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react';
 import { BoardContextType, BoardInnerContextType } from './types';
 import type { CellRecord } from '@shared/types/cell';
 import type { WorldRecord } from '@shared/types/world';
-import type { ActiveActor } from '@shared/query/requests/active-actors';
+import type { ActiveActor } from '@shared/query/requests';
 
 export const BoardContext = createContext<BoardContextType>({} as BoardContextType);
 

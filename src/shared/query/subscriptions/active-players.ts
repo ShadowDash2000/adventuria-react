@@ -15,7 +15,7 @@ export const useActivePlayersSubscription = () => {
             .subscribe('new_player', () => {
                 if (disposed) return;
 
-                void queryClient.invalidateQueries({ queryKey: queryKeys.activePlayers });
+                void queryClient.invalidateQueries({ queryKey: queryKeys.activeActorsList });
             })
             .then(callback => {
                 if (disposed) {

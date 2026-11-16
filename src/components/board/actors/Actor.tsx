@@ -1,5 +1,5 @@
 import { type CSSProperties, type RefObject, useEffect, useRef } from 'react';
-import type { ActiveActor } from '@shared/query/requests/active-actors';
+import type { ActiveActor } from '@shared/query/requests';
 import { ActorKind } from '@shared/types/actor';
 import { useActorMovement } from './useActorMovement';
 import { useAnimate } from 'framer-motion';

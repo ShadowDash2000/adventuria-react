@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface PlayerFloatingListStoreState {
+interface ActorsFloatingListStoreState {
     open: boolean;
     setOpen: (open: boolean) => void;
 }
 
-export const usePlayerFloatingListStore = create<PlayerFloatingListStoreState>()(
+export const useActorsFloatingListStore = create<ActorsFloatingListStoreState>()(
     persist(set => ({ open: true, setOpen: open => set({ open }) }), {
-        name: 'player-floatin-list',
+        name: 'actors-floating-list',
         partialize: state => ({ open: state.open }),
     }),
 );
