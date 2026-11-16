@@ -8,6 +8,7 @@ import { BoardInnerContext, useBoardContext, useBoardDataContext } from '.';
 import { useBoardDimensions } from './useBoardDimensions';
 import { useActorsMovementSubscription } from './useActorsMovementSubscription';
 import { useCellsSubscription } from '@components/board/useCellsSubscription';
+import { useNPCsNextShiftChangeSubscription } from '@components/board/useNPCsNextShiftChangeSubscription';
 
 export const BoardInner = () => {
     const { pb, isAuth, playerId } = useAppContext();
@@ -25,6 +26,7 @@ export const BoardInner = () => {
 
     useCellsSubscription({ pb, isAuth });
     useActorsMovementSubscription({ pb, isAuth, playerId, worldsById: board.worldsById });
+    useNPCsNextShiftChangeSubscription({ pb });
 
     return (
         <BoardInnerContext.Provider

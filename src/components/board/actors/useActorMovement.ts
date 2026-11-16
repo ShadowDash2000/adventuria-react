@@ -22,7 +22,7 @@ interface PlayerMovementReturn {
     visible: boolean;
 }
 
-type ActorState = { currentWorld: RecordIdString; cellsPassed: number; updated?: number };
+type ActorState = { currentWorld: RecordIdString; cellsPassed: number; updated: number };
 
 const SCROLL_INTERVAL = 50;
 const EMPTY_POSITION: ActorPosition = { x: 0, y: 0, offsetX: 0, offsetY: 0 };
@@ -85,9 +85,9 @@ export const useActorMovement = ({
     };
 
     useEffect(() => {
-        const saved = getActorState();
-        const updated = actorInitialState.updated ?? 0;
-        if (saved && saved.updated >= updated) return;
+        const currentState = getActorState();
+        const updated = actorInitialState.updated;
+        if (currentState && currentState.updated >= updated) return;
         if (moving || paths || (isRolling && isCurrentPlayer)) return;
 
         const world = worldsById.get(actorInitialState.currentWorld);

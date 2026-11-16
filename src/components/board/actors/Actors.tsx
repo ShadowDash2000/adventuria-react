@@ -7,20 +7,7 @@ export const Actors = () => {
 
     return (
         <For each={activeActors}>
-            {actor => (
-                <Actor
-                    id={actor.id}
-                    kind={actor.kind}
-                    name={actor.name}
-                    avatar={actor.avatar}
-                    color={actor.color}
-                    currenWorld={actor.current_world}
-                    cellsPassed={actor.cells_passed}
-                    updated={new Date(actor.updated).getTime()}
-                    key={actor.id}
-                    zIndex={13}
-                />
-            )}
+            {actor => <Actor actor={actor} key={actor.id} zIndex={13} zIndexHighlight={23} />}
         </For>
     );
 };

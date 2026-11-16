@@ -1,6 +1,7 @@
 import { useAppContext } from '@context/AppContext';
 import { useEffect, useRef } from 'react';
 import { Text, type TextProps } from '@chakra-ui/react';
+import { formatSecondsToString } from '@shared/helpers/helper';
 
 interface EnergyTimerProps extends Omit<TextProps, 'ref'> {}
 
@@ -44,10 +45,3 @@ export const EnergyTimer = ({ ...textProps }: EnergyTimerProps) => {
         </Text>
     );
 };
-
-function formatSecondsToString(timeSeconds: number) {
-    const hours = String(Math.floor(timeSeconds / 3600)).padStart(2, '0');
-    const minutes = String(Math.floor((timeSeconds % 3600) / 60)).padStart(2, '0');
-    const seconds = String(timeSeconds % 60).padStart(2, '0');
-    return `${hours}:${minutes}:${seconds}`;
-}

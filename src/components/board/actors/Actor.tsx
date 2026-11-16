@@ -1,73 +1,89 @@
-import { type CSSProperties, useEffect, useRef } from 'react';
-import type { RecordIdString } from '@shared/types/pocketbase';
+import { type CSSProperties, type RefObject, useEffect, useRef } from 'react';
+import type { ActiveActor } from '@shared/query/requests/active-actors';
 import { ActorKind } from '@shared/types/actor';
-import { PlayerAvatar } from '../../PlayerAvatar';
 import { useActorMovement } from './useActorMovement';
-import { useAnimationControls } from 'framer-motion';
+import { useAnimate } from 'framer-motion';
 import { Box, type BoxProps } from '@chakra-ui/react';
 import { MotionBox } from '@shared/components/MotionBox';
-import { PlayerProfileLink } from '@components/profile/Link';
+import { ActorPlayer } from '@components/board/actors/player/ActorPlayer';
+import { ActorNPC } from '@components/board/actors/npc/ActorNPC';
 
 interface ActorProps extends BoxProps {
-    id: RecordIdString;
-    kind: ActorKind;
-    name: string;
-    avatar: string;
-    color: string;
-    currenWorld: RecordIdString;
-    cellsPassed: number;
-    updated?: number;
+    actor: ActiveActor;
+    zIndexHighlight?: number;
 }
 
-export const Actor = ({
-    id,
-    kind,
-    name,
-    avatar,
-    color,
-    currenWorld,
-    cellsPassed,
-    updated,
-    ...rest
-}: ActorProps) => {
-    const avatarRef = useRef<HTMLDivElement | null>(null);
-    const controls = useAnimationControls();
+export const Actor = ({ actor, zIndexHighlight, ...boxProps }: ActorProps) => {
+    const playerRef = useRef<HTMLDivElement | null>(null);
+
+    const [avatarScope, animate] = useAnimate<HTMLDivElement>();
+    const animation = useRef<ReturnType<typeof animate> | null>(null);
+    const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     const { position, visible, moving, moveTime } = useActorMovement({
-        actorId: id,
-        actorInitialState: { currentWorld: currenWorld, cellsPassed, updated },
-        playerRef: avatarRef,
+        actorId: actor.id,
+        actorInitialState: {
+            currentWorld: actor.current_world,
+            cellsPassed: actor.cells_passed,
+            updated: new Date(actor.updated).getTime(),
+        },
+        playerRef: playerRef,
     });
 
     const isVisible = visible || moving;
 
     useEffect(() => {
-        const highlightPlayer = async () => {
-            controls.stop();
-            await controls.start({
-                scale: 1.5,
-                filter: 'drop-shadow(0 0 0.5rem black)',
-                transition: { duration: 0.2 },
-            });
+        const handler = () => {
+            const avatar = avatarScope.current;
+            const player = playerRef.current;
 
-            window.setTimeout(() => {
-                void controls.start({ scale: 1, filter: 'unset', transition: { duration: 0.25 } });
+            if (!avatar || !player) return;
+
+            animation.current?.stop();
+
+            if (timeout.current) {
+                clearTimeout(timeout.current);
+            }
+
+            animation.current = animate(
+                avatar,
+                { scale: 1.5, filter: 'drop-shadow(0 0 0.5rem black)' },
+                { duration: 0.2 },
+            );
+
+            if (zIndexHighlight) {
+                player.style.zIndex = zIndexHighlight.toString();
+            }
+
+            timeout.current = setTimeout(() => {
+                animation.current?.stop();
+                player.style.removeProperty('z-index');
+
+                animation.current = animate(
+                    avatar,
+                    { scale: 1, filter: 'unset' },
+                    { duration: 0.25 },
+                );
             }, 3000);
         };
 
-        const handler = () => {
-            void highlightPlayer();
-        };
+        document.addEventListener(`player.scroll.${actor.id}`, handler);
 
-        document.addEventListener(`player.scroll.${id}`, handler);
         return () => {
-            document.removeEventListener(`player.scroll.${id}`, handler);
+            document.removeEventListener(`player.scroll.${actor.id}`, handler);
+
+            if (timeout.current) {
+                clearTimeout(timeout.current);
+            }
+
+            animation.current?.stop();
         };
-    }, [controls, id]);
+    }, [animate, avatarScope, actor.id]);
 
     return (
         <Box
-            {...rest}
-            ref={avatarRef}
+            {...boxProps}
+            ref={playerRef}
             data-visible={isVisible}
             data-not-visible={!isVisible}
             position="absolute"
@@ -88,24 +104,22 @@ export const Actor = ({
             }}
         >
             <MotionBox whileHover={{ scale: 1.1 }}>
-                {(kind === ActorKind.Player && (
-                    <PlayerProfileLink playerName={name}>
-                        <PlayerAvatar
-                            avatarUrl={avatar}
-                            color={color}
-                            animate={controls}
-                            initial={false}
-                        />
-                    </PlayerProfileLink>
-                )) || (
-                    <PlayerAvatar
-                        avatarUrl={avatar}
-                        color={color}
-                        animate={controls}
-                        initial={false}
-                    />
-                )}
+                <ActorAvatar actor={actor} ref={avatarScope} />
             </MotionBox>
         </Box>
     );
+};
+
+interface ActorAvatarProps {
+    ref?: RefObject<HTMLDivElement | null>;
+    actor: ActiveActor;
+}
+
+const ActorAvatar = ({ actor, ref }: ActorAvatarProps) => {
+    switch (actor.kind) {
+        case ActorKind.Player:
+            return <ActorPlayer actor={actor} ref={ref} />;
+        case ActorKind.NPC:
+            return <ActorNPC actor={actor} ref={ref} />;
+    }
 };

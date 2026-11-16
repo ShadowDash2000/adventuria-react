@@ -3,15 +3,29 @@ import { queryOptions } from '@tanstack/react-query';
 import { queryKeys } from '@shared/query';
 import type { ActorKind } from '@shared/types/actor';
 
-export type ActiveActor = {
+export type ActiveActor = ActivePlayerActor | ActiveNPCActor;
+
+export type ActivePlayerActor = {
     id: RecordIdString;
-    kind: ActorKind;
+    kind: ActorKind.Player;
     updated: IsoDateString;
     name: string;
     avatar: string;
     color: string;
     current_world: RecordIdString;
     cells_passed: number;
+};
+
+export type ActiveNPCActor = {
+    id: RecordIdString;
+    kind: ActorKind.NPC;
+    updated: IsoDateString;
+    name: string;
+    avatar: string;
+    color: string;
+    current_world: RecordIdString;
+    cells_passed: number;
+    next_shift_change_at?: IsoDateString;
 };
 
 type GetActiveActorsSuccess = {
