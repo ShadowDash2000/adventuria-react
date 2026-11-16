@@ -54,6 +54,7 @@ type GameAuth = {
     current_world: RecordIdString;
     balance: number;
     energy: number;
+    max_energy_limit: number;
     drops_in_a_row: number;
     item_wheels_count: number;
 };

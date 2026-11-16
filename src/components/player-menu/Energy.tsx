@@ -17,7 +17,11 @@ export const Energy = () => {
             <Tooltip content="Очки энергии">
                 <HStack>
                     <Text userSelect="none">
-                        {isGameStateSuccess ? gameState.energy : <Spinner />}
+                        {isGameStateSuccess ? (
+                            `${gameState.energy}/${gameState.max_energy_limit}`
+                        ) : (
+                            <Spinner />
+                        )}
                     </Text>
                     <Icon size="lg">
                         <EnergyIcon />
@@ -31,7 +35,7 @@ export const Energy = () => {
                     </Box>
                 }
             >
-                <Float pl={2} translate="100% -15%">
+                <Float pl={2} translate="120% -15%">
                     <IconButton variant="ghost" size="xs">
                         <LuTimer />
                     </IconButton>
