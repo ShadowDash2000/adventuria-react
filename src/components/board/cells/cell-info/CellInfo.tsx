@@ -1,17 +1,14 @@
-import { useAppContext } from '@context/AppContext';
 import HTMLReactParser from 'html-react-parser';
 import { Blockquote, Image, Dialog, HStack, VStack, Heading } from '@chakra-ui/react';
 import { CellData } from '@components/board/cells/cell-info/CellData';
 import { LatestCompletedActivities } from '@components/board/cells/cell-info/LatestCompletedActivities';
-import type { CellRecord } from '@shared/types/cell';
+import type { CellDetailed } from '@shared/query/requests/cell-detailed';
 
 interface CellInfoProps {
-    cell: CellRecord;
+    cell: CellDetailed;
 }
 
 export const CellInfo = ({ cell }: CellInfoProps) => {
-    const { pb } = useAppContext();
-
     return (
         <>
             <Dialog.Header>
@@ -23,7 +20,7 @@ export const CellInfo = ({ cell }: CellInfoProps) => {
                         <CellData cell={cell} />
                     </VStack>
                     <VStack flex={1} alignItems="flex-start">
-                        <Image src={pb.files.getURL(cell, cell.icon)} width="100%" height="100%" />
+                        <Image src={cell.icon} width="100%" height="100%" />
                         {cell.description && (
                             <>
                                 <Heading as="h3" size="xl">

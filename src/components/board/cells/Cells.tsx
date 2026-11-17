@@ -38,7 +38,7 @@ export const Cells = () => {
                                             userSelect="none"
                                         >
                                             <Cell
-                                                cell={cell.record}
+                                                iconUrl={cell.record.icon}
                                                 width="190px"
                                                 height="128px"
                                                 zIndex={10}

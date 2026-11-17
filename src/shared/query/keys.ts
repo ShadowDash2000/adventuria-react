@@ -28,4 +28,6 @@ export const queryKeys = {
     playerEvents: (actionId: RecordIdString) => ['player-events', actionId],
     activeActorsList: ['active-actors-list'],
     activeActors: ['active-actors'],
+    cellDetailed: (cellId: RecordIdString) => ['cell-detailed', cellId],
+    cellsBoard: ['cells-board'],
 } as const;

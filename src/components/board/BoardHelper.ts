@@ -1,10 +1,12 @@
-import type { CellRecord } from '@shared/types/cell';
-import type { WorldRecord } from '@shared/types/world';
+import type {
+    CellBoard as CellBoardRecord,
+    WorldBoard as WorldBoardRecord,
+} from '@shared/query/requests';
 
 export type CellPosition = { worldId: string; row: number; col: number };
 
 export type CellBoard = {
-    record: CellRecord;
+    record: CellBoardRecord;
     localIndex: number;
     indexInLine: number;
     isLastInLine: boolean;
@@ -34,7 +36,11 @@ export class BoardHelper {
         return ((a % m) + m) % m;
     }
 
-    static buildBoard(cells: CellRecord[], worlds: WorldRecord[], lineSize = 7): BoardModel {
+    static buildBoard(
+        cells: CellBoardRecord[],
+        worlds: WorldBoardRecord[],
+        lineSize = 7,
+    ): BoardModel {
         const worldsById = this.buildWorlds(cells, worlds);
         const rows = this.buildLayouts(cells, worldsById, lineSize);
 
@@ -46,8 +52,8 @@ export class BoardHelper {
     }
 
     private static buildWorlds(
-        cells: CellRecord[],
-        worlds: WorldRecord[],
+        cells: CellBoardRecord[],
+        worlds: WorldBoardRecord[],
     ): Map<string, WorldBoard> {
         const worldsById = new Map<string, WorldBoard>();
 
@@ -74,7 +80,7 @@ export class BoardHelper {
     }
 
     private static buildLayouts(
-        cells: CellRecord[],
+        cells: CellBoardRecord[],
         worldsById: Map<string, WorldBoard>,
         lineSize: number,
     ): number {

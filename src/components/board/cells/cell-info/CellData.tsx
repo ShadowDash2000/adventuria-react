@@ -1,11 +1,12 @@
-import type { CellRecord } from '@shared/types/cell';
 import { Coin } from '@shared/components/Coin';
-import { DataList, Grid, GridItem, Text } from '@chakra-ui/react';
+import { DataList, Grid, GridItem, Icon, Text } from '@chakra-ui/react';
 import { Tooltip } from '@ui/tooltip';
 import { Cover } from '@components/activities/Cover';
+import { EnergyIcon } from '@shared/components/EnergyIcon';
+import type { CellDetailed } from '@shared/query/requests/cell-detailed';
 
 interface CellDataProps {
-    cell: CellRecord;
+    cell: CellDetailed;
 }
 
 const activityListTitle: Record<string, string> = {
@@ -16,11 +17,6 @@ const activityListTitle: Record<string, string> = {
 };
 
 export const CellData = ({ cell }: CellDataProps) => {
-    const hasActivityFilter = !!(
-        cell.expand?.filter?.expand?.activities && cell.expand.filter.expand.activities.length > 0
-    );
-    const activities = hasActivityFilter ? (cell.expand!.filter!.expand!.activities ?? []) : [];
-
     return (
         <>
             <DataList.Root orientation="horizontal">
@@ -34,81 +30,93 @@ export const CellData = ({ cell }: CellDataProps) => {
                         {cell.coins} <Coin w={6} />
                     </DataList.ItemValue>
                 </DataList.Item>
-                {cell.expand?.filter && (
+                <DataList.Item>
+                    <DataList.ItemLabel>Энергии для завершения</DataList.ItemLabel>
+                    <DataList.ItemValue display="flex" alignItems="center" gap={2}>
+                        {cell.done_energy_consume}{' '}
+                        <Icon size="lg">
+                            <EnergyIcon />
+                        </Icon>
+                    </DataList.ItemValue>
+                </DataList.Item>
+                <DataList.Item>
+                    <DataList.ItemLabel>Энергии для дропа</DataList.ItemLabel>
+                    <DataList.ItemValue display="flex" alignItems="center" gap={2}>
+                        {cell.drop_energy_consume}{' '}
+                        <Icon size="lg">
+                            <EnergyIcon />
+                        </Icon>
+                    </DataList.ItemValue>
+                </DataList.Item>
+                {cell.activity_filter && (
                     <>
-                        {cell.expand.filter.expand?.platforms && (
+                        {cell.activity_filter.platforms.length > 0 && (
                             <DataList.Item>
                                 <DataList.ItemLabel>Платформы</DataList.ItemLabel>
                                 <DataList.ItemValue>
-                                    {cell.expand.filter.expand.platforms
+                                    {cell.activity_filter.platforms
                                         .map(item => item.name)
                                         .join(', ')}
                                 </DataList.ItemValue>
                             </DataList.Item>
                         )}
-                        {cell.expand.filter.expand?.developers && (
+                        {cell.activity_filter.developers.length > 0 && (
                             <DataList.Item>
                                 <DataList.ItemLabel>Разработчики</DataList.ItemLabel>
                                 <DataList.ItemValue>
-                                    {cell.expand.filter.expand.developers
+                                    {cell.activity_filter.developers
                                         .map(item => item.name)
                                         .join(', ')}
                                 </DataList.ItemValue>
                             </DataList.Item>
                         )}
-                        {cell.expand.filter.expand?.publishers && (
+                        {cell.activity_filter.publishers.length > 0 && (
                             <DataList.Item>
                                 <DataList.ItemLabel>Издатели</DataList.ItemLabel>
                                 <DataList.ItemValue>
-                                    {cell.expand.filter.expand.publishers
+                                    {cell.activity_filter.publishers
                                         .map(item => item.name)
                                         .join(', ')}
                                 </DataList.ItemValue>
                             </DataList.Item>
                         )}
-                        {cell.expand.filter.expand?.genres && (
+                        {cell.activity_filter.genres.length > 0 && (
                             <DataList.Item>
                                 <DataList.ItemLabel>Жанры</DataList.ItemLabel>
                                 <DataList.ItemValue>
-                                    {cell.expand.filter.expand.genres
-                                        .map(item => item.name)
-                                        .join(', ')}
+                                    {cell.activity_filter.genres.map(item => item.name).join(', ')}
                                 </DataList.ItemValue>
                             </DataList.Item>
                         )}
-                        {cell.expand.filter.expand?.tags && (
+                        {cell.activity_filter.tags.length > 0 && (
                             <DataList.Item>
                                 <DataList.ItemLabel>Теги</DataList.ItemLabel>
                                 <DataList.ItemValue>
-                                    {cell.expand.filter.expand.tags
-                                        .map(item => item.name)
-                                        .join(', ')}
+                                    {cell.activity_filter.tags.map(item => item.name).join(', ')}
                                 </DataList.ItemValue>
                             </DataList.Item>
                         )}
-                        {cell.expand.filter.expand?.themes && (
+                        {cell.activity_filter.themes.length > 0 && (
                             <DataList.Item>
                                 <DataList.ItemLabel>Темы</DataList.ItemLabel>
                                 <DataList.ItemValue>
-                                    {cell.expand.filter.expand.themes
-                                        .map(item => item.name)
-                                        .join(', ')}
+                                    {cell.activity_filter.themes.map(item => item.name).join(', ')}
                                 </DataList.ItemValue>
                             </DataList.Item>
                         )}
-                        {cell.expand.filter.min_campaign_time > 0 && (
+                        {cell.activity_filter.min_campaign_time > 0 && (
                             <DataList.Item>
                                 <DataList.ItemLabel>Мин. время</DataList.ItemLabel>
                                 <DataList.ItemValue>
-                                    {cell.expand.filter.min_campaign_time} ч.
+                                    {cell.activity_filter.min_campaign_time} ч.
                                 </DataList.ItemValue>
                             </DataList.Item>
                         )}
-                        {cell.expand.filter.max_campaign_time > 0 && (
+                        {cell.activity_filter.max_campaign_time > 0 && (
                             <DataList.Item>
                                 <DataList.ItemLabel>Макс. время</DataList.ItemLabel>
                                 <DataList.ItemValue>
-                                    {cell.expand.filter.max_campaign_time} ч.
+                                    {cell.activity_filter.max_campaign_time} ч.
                                 </DataList.ItemValue>
                             </DataList.Item>
                         )}
@@ -123,11 +131,11 @@ export const CellData = ({ cell }: CellDataProps) => {
                     </>
                 )}
             </DataList.Root>
-            {activities && activities.length > 0 && (
+            {cell.activity_filter?.activities && cell.activity_filter.activities.length > 0 && (
                 <>
                     <Text>{activityListTitle[cell.type] || 'Пул'}</Text>
                     <Grid templateColumns="repeat(3, 1fr)" gap={2}>
-                        {activities.map(activity => (
+                        {cell.activity_filter.activities.map(activity => (
                             <GridItem key={activity.id} display="flex" flexDir="column">
                                 <Tooltip
                                     content={`Время прохождения: ${activity.hltb_campaign_time} ч.`}

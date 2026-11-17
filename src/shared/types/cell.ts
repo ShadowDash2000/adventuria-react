@@ -16,7 +16,8 @@ export type CellRecord = {
     icon: string;
     name: string;
     points: number;
-    energy_consume: number;
+    done_energy_consume: number;
+    drop_energy_consume: number;
     coins: number;
     description: string;
     color: string;

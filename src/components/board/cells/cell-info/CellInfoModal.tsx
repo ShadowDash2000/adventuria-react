@@ -1,54 +1,18 @@
 import { Dialog, Portal, CloseButton, Flex, Spinner, Text } from '@chakra-ui/react';
 import { CellInfo } from './CellInfo';
 import type { CSSProperties, ReactNode } from 'react';
-import type { CellRecord } from '@shared/types/cell';
-import { dotExpand, joinExpand } from '@shared/pbExpand';
-import { activityFilterSchema, cellSchema, pbCollections } from '@/shared/pbSchema';
-import { queryKeys } from '@shared/query';
 import { useCellsStore } from '@components/board/useCellsStore';
 import { useQuery } from '@tanstack/react-query';
-import { useAppContext } from '@context/AppContext';
+import { cellDetailedQueryOptions } from '@shared/query/requests';
 
 type CellInfoProps = { children?: ReactNode };
 
 export const CellInfoModal = ({ children }: CellInfoProps) => {
-    const { pb } = useAppContext();
     const { selectedCellId, isModalOpen, closeCellInfo } = useCellsStore();
 
     const cell = useQuery({
-        queryFn: async () => {
-            if (!selectedCellId) {
-                throw new Error('No cell selected');
-            }
-
-            const result = await pb
-                .collection(pbCollections.cells)
-                .getOne<CellRecord>(selectedCellId, {
-                    expand: joinExpand(
-                        dotExpand(cellSchema.filter, activityFilterSchema.platforms),
-                        dotExpand(cellSchema.filter, activityFilterSchema.developers),
-                        dotExpand(cellSchema.filter, activityFilterSchema.publishers),
-                        dotExpand(cellSchema.filter, activityFilterSchema.genres),
-                        dotExpand(cellSchema.filter, activityFilterSchema.tags),
-                        dotExpand(cellSchema.filter, activityFilterSchema.themes),
-                        dotExpand(cellSchema.filter, activityFilterSchema.activities),
-                    ),
-                });
-
-            if (result.expand?.filter?.expand?.activities) {
-                result.expand.filter.expand.activities =
-                    result.expand?.filter?.expand?.activities.map(activity => ({
-                        ...activity,
-                        cover_alt: activity.cover_alt
-                            ? pb.files.getURL(activity, activity.cover_alt)
-                            : '',
-                    }));
-            }
-
-            return result;
-        },
+        ...cellDetailedQueryOptions(selectedCellId || ''),
         enabled: isModalOpen,
-        queryKey: queryKeys.cell(selectedCellId || ''),
         refetchOnWindowFocus: false,
     });
 
