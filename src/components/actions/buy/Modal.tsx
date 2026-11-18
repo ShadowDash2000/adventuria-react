@@ -7,7 +7,7 @@ export const Modal = () => {
     return (
         <Dialog.Root variant="transparent" lazyMount unmountOnExit size="xl">
             <Dialog.Trigger asChild>
-                <Button colorPalette="purple">
+                <Button colorPalette="orange">
                     <LuShoppingCart />
                     Магаз
                 </Button>
