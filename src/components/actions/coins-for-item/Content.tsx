@@ -21,7 +21,9 @@ export const Content = () => {
                 throw new Error(res.message);
             }
 
-            return res;
+            res.data.item.icon = new URL(res.data.item.icon, import.meta.env.VITE_PB_URL).href;
+
+            return res.data;
         },
         queryKey: [...queryKeys.coinsForItemView],
         refetchOnWindowFocus: false,
@@ -46,7 +48,7 @@ export const Content = () => {
         return <Text color="red.500">{dealView.error.message}</Text>;
     }
 
-    const item = dealView.data.data.item;
+    const item = dealView.data.item;
 
     return (
         <Box position="relative" w="70vw">
@@ -63,7 +65,7 @@ export const Content = () => {
                         h="14vw"
                         itemId={item.id}
                         description={item.description}
-                        src={pb.files.getURL(item, item.icon)}
+                        src={item.icon}
                     />
                     <Text
                         color="white"
