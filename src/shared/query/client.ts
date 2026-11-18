@@ -36,10 +36,6 @@ export const invalidateInventory = async (playerId: RecordIdString) => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.inventory(playerId) });
 };
 
-export const invalidateCells = async () => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.cells });
-};
-
 export const invalidateRefreshShopView = async () => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.refreshShopView });
 };

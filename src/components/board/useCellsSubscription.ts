@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type PocketBase from 'pocketbase';
-import { invalidateAvailableActions, invalidateCells } from '@shared/query';
+import { invalidateAvailableActions } from '@shared/query';
 
 type CellsSubscriptionProps = { pb: PocketBase; isAuth: boolean };
 
@@ -25,7 +25,6 @@ export const useCellsSubscription = ({ pb, isAuth }: CellsSubscriptionProps) => 
 
         pb.realtime
             .subscribe('cell_events_scheduler_end', async () => {
-                await invalidateCells();
                 await invalidateAvailableActions();
             })
             .then(callback => {
