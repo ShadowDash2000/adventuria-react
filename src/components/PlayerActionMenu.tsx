@@ -25,6 +25,7 @@ export const PlayerActionMenu = () => {
             mb={10}
             justify="center"
             align="center"
+            gap={4}
         >
             {(isAvailableActionsPending && <Spinner />) ||
                 (isAvailableActionsError && <Text>{availableActionsError.message}</Text>) || (
